@@ -11,6 +11,6 @@
     "format": "wp-scripts format assets"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^35.0.0"
+    "@wordpress/scripts": "^36.1.0"
   }
 }
