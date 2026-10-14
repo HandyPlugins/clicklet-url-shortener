@@ -138,6 +138,36 @@ class UserAgent {
 	}
 
 	/**
+	 * Stable, untranslated keys for stored values, used in CSV files.
+	 */
+	const KEYS = [
+		'device'  => [
+			self::UNKNOWN        => '',
+			self::DEVICE_DESKTOP => 'desktop',
+			self::DEVICE_MOBILE  => 'mobile',
+			self::DEVICE_TABLET  => 'tablet',
+		],
+		'os'      => [
+			self::UNKNOWN     => '',
+			self::OS_WINDOWS  => 'windows',
+			self::OS_MACOS    => 'macos',
+			self::OS_IOS      => 'ios',
+			self::OS_ANDROID  => 'android',
+			self::OS_LINUX    => 'linux',
+			self::OS_CHROMEOS => 'chromeos',
+		],
+		'browser' => [
+			self::UNKNOWN         => '',
+			self::BROWSER_CHROME  => 'chrome',
+			self::BROWSER_SAFARI  => 'safari',
+			self::BROWSER_FIREFOX => 'firefox',
+			self::BROWSER_EDGE    => 'edge',
+			self::BROWSER_OPERA   => 'opera',
+			self::BROWSER_SAMSUNG => 'samsung',
+		],
+	];
+
+	/**
 	 * Human-readable labels for stored values.
 	 *
 	 * @return array{device: array, os: array, browser: array}

@@ -9,6 +9,7 @@ namespace FastUrlShortener\Admin;
 
 use FastUrlShortener\Rest\Controller;
 use FastUrlShortener\Settings;
+use FastUrlShortener\Transfer\Exporter;
 
 /**
  * Registers the admin menu and mounts the React app. All data goes through
@@ -64,7 +65,7 @@ class Page {
 
 		$this->hooks['links'] = add_submenu_page( self::SLUG, __( 'Short Links', 'fast-url-shortener' ), __( 'All Links', 'fast-url-shortener' ), $capability, self::SLUG, [ $this, 'render_links' ] );
 
-		$this->hooks['import'] = add_submenu_page( self::SLUG, __( 'Import Links', 'fast-url-shortener' ), __( 'Import', 'fast-url-shortener' ), $capability, self::SLUG . '-import', [ $this, 'render_import' ] );
+		$this->hooks['import'] = add_submenu_page( self::SLUG, __( 'Import & Export', 'fast-url-shortener' ), __( 'Import / Export', 'fast-url-shortener' ), $capability, self::SLUG . '-import', [ $this, 'render_import' ] );
 
 		$this->hooks['settings'] = add_submenu_page( self::SLUG, __( 'Short Link Settings', 'fast-url-shortener' ), __( 'Settings', 'fast-url-shortener' ), $capability, self::SLUG . '-settings', [ $this, 'render_settings' ] );
 	}
@@ -143,6 +144,11 @@ class Page {
 					'pageSlug'  => self::SLUG,
 					'timezone'  => wp_timezone_string(),
 					'canManage' => current_user_can( 'manage_options' ),
+					'exportUrl' => [
+						'links'  => Exporter::url( 'links' ),
+						'stats'  => Exporter::url( 'stats' ),
+						'clicks' => Exporter::url( 'clicks' ),
+					],
 				]
 			) . ';',
 			'before'

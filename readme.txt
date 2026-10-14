@@ -37,7 +37,9 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 * Query string forwarding
 * Optional prefix, for example `/go/promo`
 * Protection against slugs that would hide existing pages
-* WP-CLI commands
+* Import & export links, daily stats and click details as CSV: move everything between sites or edit links in a spreadsheet (Excel files with semicolons work too)
+* One-click migration from URL Shortify and Pretty Links, including click history
+* REST API and WP-CLI commands
 * Multisite support
 
 == Installation ==
@@ -50,9 +52,16 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 `wp fast-url-shortener link create https://example.com/a/very/long/url --slug=promo`
 `wp fast-url-shortener link list`
 `wp fast-url-shortener stats promo --days=7`
+`wp fast-url-shortener export links --file=links.csv`
+`wp fast-url-shortener import links.csv`
+`wp fast-url-shortener migrate pretty-links`
 `wp fast-url-shortener fast-path enable`
 
 == Frequently Asked Questions ==
+
+= How do I move my links to another site? =
+
+In Short Links → Import / Export, download the links, daily stats and click details files, then import them on the other site in that order. Files reference links by slug, so they work across sites, and importing the same file twice changes nothing.
 
 = What is the fast path? =
 

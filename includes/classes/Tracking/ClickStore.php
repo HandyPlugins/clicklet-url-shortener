@@ -132,6 +132,95 @@ class ClickStore {
 	}
 
 	/**
+	 * Delete a link's raw clicks within a time range (inclusive). Importers
+	 * use it to replace a range instead of adding to it.
+	 *
+	 * @param int    $link_id Link ID.
+	 * @param string $from    UTC datetime.
+	 * @param string $to      UTC datetime.
+	 *
+	 * @return void
+	 */
+	public function delete_range( $link_id, $from, $to ) {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE link_id = %d AND clicked_at BETWEEN %s AND %s',
+				Schema::table( 'clicks' ),
+				$link_id,
+				$from,
+				$to
+			)
+		);
+	}
+
+	/**
+	 * Set (not add to) a day's totals for a link.
+	 *
+	 * @param int    $link_id Link ID.
+	 * @param string $day     Site-local date, Y-m-d.
+	 * @param int    $clicks  Human clicks.
+	 * @param int    $uniques Unique visitors.
+	 * @param int    $bots    Bot hits.
+	 *
+	 * @return void
+	 */
+	public function set_daily( $link_id, $day, $clicks, $uniques, $bots ) {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				'INSERT INTO %i (link_id, day, clicks, uniques, bots) VALUES (%d, %s, %d, %d, %d)
+				ON DUPLICATE KEY UPDATE clicks = %d, uniques = %d, bots = %d',
+				Schema::table( 'stats_daily' ),
+				$link_id,
+				$day,
+				$clicks,
+				$uniques,
+				$bots,
+				$clicks,
+				$uniques,
+				$bots
+			)
+		);
+	}
+
+	/**
+	 * Whether a link has any daily totals.
+	 *
+	 * @param int $link_id Link ID.
+	 *
+	 * @return bool
+	 */
+	public function has_daily( $link_id ) {
+		global $wpdb;
+
+		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT 1 FROM %i WHERE link_id = %d LIMIT 1', Schema::table( 'stats_daily' ), $link_id ) );
+	}
+
+	/**
+	 * Set a link's click counter to the sum of its daily totals.
+	 *
+	 * @param int $link_id Link ID.
+	 *
+	 * @return void
+	 */
+	public function recount( $link_id ) {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET total_clicks = (SELECT COALESCE(SUM(clicks), 0) FROM %i WHERE link_id = %d) WHERE id = %d',
+				Schema::table( 'links' ),
+				Schema::table( 'stats_daily' ),
+				$link_id,
+				$link_id
+			)
+		);
+	}
+
+	/**
 	 * Recompute daily totals and the click counter of a link from raw clicks.
 	 *
 	 * Used after importing history. Days are bucketed with the site's current

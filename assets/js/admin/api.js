@@ -48,3 +48,30 @@ export const startImport = ( source ) =>
 
 export const importStep = ( source ) =>
 	apiFetch( { path: `${ BASE }/import/${ source }/step`, method: 'POST' } );
+
+export const getCsvImport = () => apiFetch( { path: `${ BASE }/transfer` } );
+
+export const cancelCsvImport = () =>
+	apiFetch( { path: `${ BASE }/transfer`, method: 'DELETE' } );
+
+/**
+ * Upload a CSV file and read its header.
+ *
+ * @param {File}    file      CSV file.
+ * @param {boolean} overwrite Update links whose slug already exists.
+ * @return {Promise<Object>} Import progress.
+ */
+export function uploadCsv( file, overwrite ) {
+	const body = new window.FormData();
+	body.append( 'file', file );
+	body.append( 'overwrite', overwrite ? '1' : '0' );
+
+	return apiFetch( {
+		path: `${ BASE }/transfer/upload`,
+		method: 'POST',
+		body,
+	} );
+}
+
+export const csvImportStep = () =>
+	apiFetch( { path: `${ BASE }/transfer/step`, method: 'POST' } );

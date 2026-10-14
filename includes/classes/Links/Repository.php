@@ -322,7 +322,10 @@ class Repository {
 		$fields = [];
 
 		if ( ! $existing || array_key_exists( 'target_url', $data ) ) {
-			$url = esc_url_raw( trim( (string) ( $data['target_url'] ?? '' ) ), [ 'http', 'https' ] );
+			$raw = trim( (string) ( $data['target_url'] ?? '' ) );
+
+			// An explicit http(s) scheme and a host without spaces; esc_url_raw() alone turns "not a url" into "http://not%20a%20url".
+			$url = preg_match( '#^https?://[^\s/?\#]+(?:[/?\#]|$)#i', $raw ) ? esc_url_raw( $raw, [ 'http', 'https' ] ) : '';
 
 			if ( '' === $url || ! wp_parse_url( $url, PHP_URL_HOST ) ) {
 				return new WP_Error( 'fast_url_shortener_invalid_target', __( 'Enter a valid http or https URL.', 'fast-url-shortener' ) );

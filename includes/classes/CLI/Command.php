@@ -7,11 +7,15 @@
 
 namespace FastUrlShortener\CLI;
 
+use FastUrlShortener\Import\Importer;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Redirect\FastPath;
 use FastUrlShortener\Settings;
+use FastUrlShortener\Tracking\ClickStore;
 use FastUrlShortener\Tracking\Stats;
 use FastUrlShortener\Tracking\UserAgent;
+use FastUrlShortener\Transfer\CsvImporter;
+use FastUrlShortener\Transfer\Exporter;
 use WP_CLI;
 use WP_CLI\Utils;
 
@@ -201,5 +205,150 @@ class Command extends \WP_CLI_Command {
 		}
 
 		Utils\format_items( $format, $rows, [ 'setting', 'value' ] );
+	}
+
+	/**
+	 * Export links, daily totals or raw clicks as CSV.
+	 *
+	 * Files reference links by slug, so they can be imported on another site.
+	 * Export and import links first, then stats, then (optionally) clicks.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <type>
+	 * : What to export.
+	 * ---
+	 * options:
+	 *   - links
+	 *   - stats
+	 *   - clicks
+	 * ---
+	 *
+	 * [--file=<path>]
+	 * : Write to a file instead of standard output.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp fast-url-shortener export links --file=links.csv
+	 *     wp fast-url-shortener export stats > stats.csv
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Flags.
+	 *
+	 * @return void
+	 */
+	public function export( $args, $assoc_args ) {
+		$file   = $assoc_args['file'] ?? '';
+		$handle = fopen( '' !== $file ? $file : 'php://stdout', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Streams CSV output.
+
+		if ( ! $handle ) {
+			WP_CLI::error( 'Could not open the output file.' );
+		}
+
+		$rows = ( new Exporter() )->write( $args[0], $handle );
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		if ( '' !== $file ) {
+			WP_CLI::success( sprintf( 'Exported %d rows to %s.', $rows, $file ) );
+		}
+	}
+
+	/**
+	 * Import a links, stats or clicks CSV. The type is detected from the header row.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <file>
+	 * : CSV file.
+	 *
+	 * [--overwrite]
+	 * : Update links whose slug already exists instead of skipping them.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp fast-url-shortener import links.csv
+	 *     wp fast-url-shortener import stats.csv
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Flags.
+	 *
+	 * @return void
+	 */
+	public function import( $args, $assoc_args ) {
+		$importer = new CsvImporter( new Repository(), new ClickStore() );
+		$progress = $importer->start( realpath( $args[0] ) ? realpath( $args[0] ) : $args[0], (bool) Utils\get_flag_value( $assoc_args, 'overwrite', false ), false );
+
+		if ( is_wp_error( $progress ) ) {
+			WP_CLI::error( $progress );
+		}
+
+		WP_CLI::log( sprintf( 'Importing %d %s rows…', $progress['total'], $progress['type'] ) );
+
+		while ( ! $progress['done'] ) {
+			$progress = $importer->step();
+
+			if ( is_wp_error( $progress ) ) {
+				WP_CLI::error( $progress );
+			}
+		}
+
+		$this->report( $progress['imported'], $progress['updated'], $progress['skipped'], $progress['skipped_rows'] );
+	}
+
+	/**
+	 * Migrate links and click history from another plugin on this site.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <source>
+	 * : Plugin to migrate from.
+	 * ---
+	 * options:
+	 *   - url-shortify
+	 *   - pretty-links
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp fast-url-shortener migrate pretty-links
+	 *
+	 * @param array $args Positional arguments.
+	 *
+	 * @return void
+	 */
+	public function migrate( $args ) {
+		$source = Importer::sources()[ $args[0] ];
+
+		if ( ! $source->is_available() ) {
+			WP_CLI::error( sprintf( 'No %s data found on this site.', $source->label() ) );
+		}
+
+		$importer = new Importer( new Repository(), new ClickStore() );
+		$progress = $importer->start( $source );
+
+		while ( ! $progress['done'] ) {
+			$progress = $importer->step( $source );
+		}
+
+		WP_CLI::log( sprintf( 'Clicks imported: %d', $progress['clicks_imported'] ) );
+		$this->report( $progress['links_imported'], 0, $progress['links_skipped'], $progress['skipped'] );
+	}
+
+	/**
+	 * Print an import summary.
+	 *
+	 * @param int   $imported Created rows.
+	 * @param int   $updated  Updated rows.
+	 * @param int   $skipped  Skipped rows.
+	 * @param array $rows     Skipped row details.
+	 *
+	 * @return void
+	 */
+	protected function report( $imported, $updated, $skipped, array $rows ) {
+		if ( $rows ) {
+			Utils\format_items( 'table', $rows, array_keys( $rows[0] ) );
+		}
+
+		WP_CLI::success( sprintf( 'Imported %d, updated %d, skipped %d.', $imported, $updated, $skipped ) );
 	}
 }

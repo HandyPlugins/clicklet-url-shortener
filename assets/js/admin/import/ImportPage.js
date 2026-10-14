@@ -16,6 +16,8 @@ import {
 	startImport,
 } from '../api';
 import { formatNumber, screenUrl } from '../utils';
+import CsvImportCard from './CsvImportCard';
+import ExportCard from './ExportCard';
 
 const STEP_LABELS = {
 	links: __( 'Importing links…', 'fast-url-shortener' ),
@@ -303,10 +305,19 @@ export default function ImportPage() {
 
 	return (
 		<>
-			<h1>{ __( 'Import Links', 'fast-url-shortener' ) }</h1>
+			<h1>{ __( 'Import & Export', 'fast-url-shortener' ) }</h1>
+
+			<div className="fus-import-grid">
+				<ExportCard />
+				<CsvImportCard />
+			</div>
+
+			<h2 className="fus-section-title">
+				{ __( 'Migrate from another plugin', 'fast-url-shortener' ) }
+			</h2>
 			<p className="fus-intro">
 				{ __(
-					'Bring your short links and their click history from another plugin. Slugs stay the same, so links you already shared keep working. The other plugin is not changed.',
+					'Bring your short links and their click history from another plugin on this site. Slugs stay the same, so links you already shared keep working. The other plugin is not changed and can be inactive.',
 					'fast-url-shortener'
 				) }
 			</p>

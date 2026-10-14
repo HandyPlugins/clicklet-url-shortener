@@ -16,8 +16,11 @@ use FastUrlShortener\Redirect\Router;
 use FastUrlShortener\Rest\ImportController;
 use FastUrlShortener\Rest\LinksController;
 use FastUrlShortener\Rest\SettingsController;
+use FastUrlShortener\Rest\TransferController;
 use FastUrlShortener\Tracking\ClickStore;
 use FastUrlShortener\Tracking\Retention;
+use FastUrlShortener\Transfer\CsvImporter;
+use FastUrlShortener\Transfer\Exporter;
 
 /**
  * Wires the plugin modules together.
@@ -40,15 +43,20 @@ class Plugin {
 
 		Router::route();
 
-		$links = new Repository();
+		$links        = new Repository();
+		$clicks       = new ClickStore();
+		$csv_importer = new CsvImporter( $links, $clicks );
 
 		( new Retention() )->register();
+		$csv_importer->register();
 		( new LinksController( $links ) )->register();
 		( new SettingsController() )->register();
-		( new ImportController( new Importer( $links, new ClickStore() ) ) )->register();
+		( new ImportController( new Importer( $links, $clicks ) ) )->register();
+		( new TransferController( $csv_importer ) )->register();
 
 		if ( is_admin() ) {
 			( new Page() )->register();
+			( new Exporter() )->register();
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
