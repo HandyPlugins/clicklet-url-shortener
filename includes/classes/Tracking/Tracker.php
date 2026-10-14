@@ -7,13 +7,9 @@
 
 namespace FastUrlShortener\Tracking;
 
-use FastUrlShortener\Install;
 use FastUrlShortener\Links\Link;
 use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
 use FastUrlShortener\Settings;
-
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write path on the plugin's own tables.
 
 /**
  * Records clicks without remote calls and without storing raw IPs.
@@ -44,12 +40,21 @@ class Tracker {
 	protected $links;
 
 	/**
+	 * Click storage.
+	 *
+	 * @var ClickStore
+	 */
+	protected $clicks;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Repository $links Link storage.
+	 * @param Repository $links  Link storage.
+	 * @param ClickStore $clicks Click storage.
 	 */
-	public function __construct( Repository $links ) {
-		$this->links = $links;
+	public function __construct( Repository $links, ClickStore $clicks ) {
+		$this->links  = $links;
+		$this->clicks = $clicks;
 	}
 
 	/**
@@ -65,26 +70,26 @@ class Tracker {
 		$day        = wp_date( 'Y-m-d' );
 
 		if ( $agent['is_bot'] ) {
-			$this->bump_daily( $link->id, $day, 'bots' );
+			$this->clicks->bump_daily( $link->id, $day, 0, 0, 1 );
 			return;
 		}
 
 		$now  = current_time( 'mysql', true );
-		$hash = $this->visitor_hash( $user_agent, $day );
+		$hash = ClickStore::visitor_hash( $this->ip(), $user_agent, $day );
 
 		$click = [
 			'link_id'       => $link->id,
 			'clicked_at'    => $now,
-			'is_unique'     => $this->is_new_visitor( $link->id, $hash ) ? 1 : 0,
+			'is_unique'     => $this->clicks->is_new_visitor( $link->id, $hash ) ? 1 : 0,
 			'country'       => $this->country(),
 			'device'        => $agent['device'],
 			'os'            => $agent['os'],
 			'browser'       => $agent['browser'],
-			'referrer_host' => $this->referrer_host(),
+			'referrer_host' => self::host( $this->server( 'HTTP_REFERER' ) ),
 		];
 
-		$this->insert_click( $click, $hash );
-		$this->bump_daily( $link->id, $day, $click['is_unique'] ? 'unique' : 'click' );
+		$this->clicks->insert( $click, $hash );
+		$this->clicks->bump_daily( $link->id, $day, 1, $click['is_unique'], 0 );
 		$this->links->increment_clicks( $link, $now );
 
 		/**
@@ -99,107 +104,30 @@ class Tracker {
 	}
 
 	/**
-	 * Insert the click row. The binary hash goes in as hex so the query stays ASCII.
+	 * Host of a URL, lowercased and without "www.", or an empty string.
 	 *
-	 * @param array  $click Click columns.
-	 * @param string $hash  Visitor hash, 32 hex characters.
+	 * @param string $url URL.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	protected function insert_click( array $click, $hash ) {
-		global $wpdb;
+	public static function host( $url ) {
+		$host = strtolower( (string) wp_parse_url( (string) $url, PHP_URL_HOST ) );
 
-		$wpdb->query(
-			$wpdb->prepare(
-				'INSERT INTO %i (link_id, clicked_at, visitor_hash, is_unique, country, device, os, browser, referrer_host) VALUES (%d, %s, UNHEX(%s), %d, %s, %d, %d, %d, %s)',
-				Schema::table( 'clicks' ),
-				$click['link_id'],
-				$click['clicked_at'],
-				$hash,
-				$click['is_unique'],
-				$click['country'],
-				$click['device'],
-				$click['os'],
-				$click['browser'],
-				$click['referrer_host']
-			)
-		);
+		return substr( preg_replace( '/^www\./', '', $host ), 0, 191 );
 	}
 
 	/**
-	 * Increment today's totals for a link.
+	 * Uppercase ISO country code, or an empty string for unknown values.
 	 *
-	 * @param int    $link_id Link ID.
-	 * @param string $day     Site-local date, Y-m-d.
-	 * @param string $kind    "click", "unique" (a click by a new visitor) or "bots".
+	 * @param string $value Raw value.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	protected function bump_daily( $link_id, $day, $kind ) {
-		global $wpdb;
+	public static function country_code( $value ) {
+		$code = strtoupper( trim( (string) $value ) );
 
-		$clicks  = 'bots' === $kind ? 0 : 1;
-		$uniques = 'unique' === $kind ? 1 : 0;
-		$bots    = 'bots' === $kind ? 1 : 0;
-
-		$wpdb->query(
-			$wpdb->prepare(
-				// VALUES() is deprecated on MySQL 8 and row aliases are not supported by MariaDB, so the increments are repeated.
-				'INSERT INTO %i (link_id, day, clicks, uniques, bots) VALUES (%d, %s, %d, %d, %d)
-				ON DUPLICATE KEY UPDATE clicks = clicks + %d, uniques = uniques + %d, bots = bots + %d',
-				Schema::table( 'stats_daily' ),
-				$link_id,
-				$day,
-				$clicks,
-				$uniques,
-				$bots,
-				$clicks,
-				$uniques,
-				$bots
-			)
-		);
-	}
-
-	/**
-	 * Whether this visitor has not clicked the link yet today.
-	 *
-	 * The hash rotates daily, so a match within the last day is the same
-	 * visitor on the same day.
-	 *
-	 * @param int    $link_id Link ID.
-	 * @param string $hash    Visitor hash.
-	 *
-	 * @return bool
-	 */
-	protected function is_new_visitor( $link_id, $hash ) {
-		global $wpdb;
-
-		$seen = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT 1 FROM %i WHERE link_id = %d AND clicked_at >= %s AND visitor_hash = UNHEX(%s) LIMIT 1',
-				Schema::table( 'clicks' ),
-				$link_id,
-				gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ),
-				$hash
-			)
-		);
-
-		return ! $seen;
-	}
-
-	/**
-	 * Anonymous visitor ID: keyed hash of IP and user agent with a secret that
-	 * changes every day. It cannot be reversed or linked across days.
-	 *
-	 * @param string $user_agent User agent.
-	 * @param string $day        Site-local date.
-	 *
-	 * @return string 32 hex characters.
-	 */
-	protected function visitor_hash( $user_agent, $day ) {
-		$secret = (string) get_option( Install::SECRET_OPTION, '' );
-
-		return substr( hash_hmac( 'sha256', $this->ip() . '|' . $user_agent, $secret . '|' . $day ), 0, 32 );
+		// XX and T1 are Cloudflare's unknown and Tor values.
+		return preg_match( '/^[A-Z]{2}$/', $code ) && 'XX' !== $code && 'T1' !== $code ? $code : '';
 	}
 
 	/**
@@ -223,32 +151,20 @@ class Tracker {
 	}
 
 	/**
-	 * ISO country code from CDN or host headers, or an empty string.
+	 * Country from CDN or host headers, or an empty string.
 	 *
 	 * @return string
 	 */
 	protected function country() {
 		foreach ( self::COUNTRY_HEADERS as $header ) {
-			$code = strtoupper( $this->server( $header ) );
+			$code = self::country_code( $this->server( $header ) );
 
-			// XX and T1 are Cloudflare's unknown and Tor values.
-			if ( preg_match( '/^[A-Z]{2}$/', $code ) && 'XX' !== $code && 'T1' !== $code ) {
+			if ( '' !== $code ) {
 				return $code;
 			}
 		}
 
 		return '';
-	}
-
-	/**
-	 * Referring host without "www.", or an empty string for direct visits.
-	 *
-	 * @return string
-	 */
-	protected function referrer_host() {
-		$host = strtolower( (string) wp_parse_url( $this->server( 'HTTP_REFERER' ), PHP_URL_HOST ) );
-
-		return substr( preg_replace( '/^www\./', '', $host ), 0, 191 );
 	}
 
 	/**

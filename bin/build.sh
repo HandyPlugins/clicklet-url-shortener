@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # Build the release package: copy the plugin without the files listed in
-# .distignore into build/fast-url-shortener and zip it.
+# .distignore into build/fast-url-shortener and zip it. Admin assets are
+# compiled first; their sources ship too, as WordPress.org requires.
 #
 # Usage: bin/build.sh
 
@@ -11,6 +12,9 @@ cd "$(dirname "$0")/.."
 
 SLUG="fast-url-shortener"
 BUILD_DIR="build/${SLUG}"
+
+npm ci --no-audit --no-fund --loglevel=error
+npm run build
 
 rm -rf build
 mkdir -p "${BUILD_DIR}"

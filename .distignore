@@ -15,3 +15,7 @@ tests
 vendor
 *.zip
 build
+eslint.config.cjs
+.nvmrc
+package.json
+package-lock.json

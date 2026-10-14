@@ -12,6 +12,7 @@ use FastUrlShortener\Links\Link;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Links\Slug;
 use FastUrlShortener\Settings;
+use FastUrlShortener\Tracking\ClickStore;
 use FastUrlShortener\Tracking\Tracker;
 
 /**
@@ -197,7 +198,7 @@ class Router {
 
 		if ( $this->should_track( $link ) ) {
 			$this->finish_response();
-			( new Tracker( $this->links ) )->record( $link );
+			( new Tracker( $this->links, new ClickStore() ) )->record( $link );
 		}
 
 		exit;

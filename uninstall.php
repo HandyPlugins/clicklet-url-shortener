@@ -11,6 +11,7 @@
 
 namespace FastUrlShortener;
 
+use FastUrlShortener\Import\Importer;
 use FastUrlShortener\Redirect\FastPath;
 use FastUrlShortener\Tracking\Retention;
 
@@ -40,6 +41,10 @@ foreach ( $fast_url_shortener_site_ids as $fast_url_shortener_site_id ) {
 		delete_option( Settings::OPTION );
 		delete_option( Install::DB_VERSION_OPTION );
 		delete_option( Install::SECRET_OPTION );
+
+		foreach ( Importer::sources() as $fast_url_shortener_source ) {
+			delete_option( Importer::option_name( $fast_url_shortener_source ) );
+		}
 	}
 
 	if ( is_multisite() ) {

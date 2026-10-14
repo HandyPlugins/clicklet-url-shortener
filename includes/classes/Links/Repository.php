@@ -156,12 +156,10 @@ class Repository {
 			[
 				'redirect_type' => (int) Settings::get( 'redirect_type' ),
 				'author_id'     => get_current_user_id(),
+				'created_at'    => $now,
 			],
 			$fields,
-			[
-				'created_at' => $now,
-				'updated_at' => $now,
-			]
+			[ 'updated_at' => $now ]
 		);
 
 		if ( ! $wpdb->insert( Schema::table( 'links' ), $fields ) ) {
@@ -381,6 +379,11 @@ class Repository {
 				// Input is in the site's timezone; storage is UTC.
 				$fields['expires_at'] = get_gmt_from_date( $data['expires_at'] );
 			}
+		}
+
+		// Only honoured on create, so importers can keep the original date (UTC).
+		if ( ! $existing && ! empty( $data['created_at'] ) && false !== strtotime( $data['created_at'] . ' UTC' ) ) {
+			$fields['created_at'] = gmdate( 'Y-m-d H:i:s', strtotime( $data['created_at'] . ' UTC' ) );
 		}
 
 		if ( array_key_exists( 'max_clicks', $data ) ) {
