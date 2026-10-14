@@ -1,0 +1,28 @@
+{
+  "name": "handyplugins/fast-url-shortener",
+  "description": "Fast, self-hosted URL shortener with privacy-friendly click tracking.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "HandyPlugins",
+      "email": "support@handyplugins.co"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "10up/phpcs-composer": "^3.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "lint": "phpcs",
+    "lint-fix": "phpcbf"
+  }
+}

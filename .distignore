@@ -1,0 +1,17 @@
+.distignore
+.editorconfig
+.git
+.gitignore
+.github
+.wordpress-org
+.DS_Store
+composer.json
+composer.lock
+phpcs.xml.dist
+README.md
+bin
+node_modules
+tests
+vendor
+*.zip
+build

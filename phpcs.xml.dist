@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<ruleset name="Fast URL Shortener">
+	<description>Coding standards for Fast URL Shortener.</description>
+
+	<file>.</file>
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/build/</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg value="sp"/>
+	<arg name="colors"/>
+
+	<rule ref="10up-Default"/>
+
+	<config name="minimum_supported_wp_version" value="6.5"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="fast-url-shortener"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="fast_url_shortener"/>
+				<element value="FastUrlShortener"/>
+				<element value="FAST_URL_SHORTENER"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
