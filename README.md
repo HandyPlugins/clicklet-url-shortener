@@ -34,6 +34,50 @@ npm run lint:typos   # spell check; needs typos (brew install typos-cli)
 
 Spell checking uses [typos](https://github.com/crate-ci/typos) with American English (`_typos.toml`). It also runs in CI on every push and pull request.
 
+## Extending
+
+Add-ons extend the plugin through these points; the plugin itself ships no add-on code.
+
+**Data**
+
+- Link meta uses the WordPress metadata API with the object type `Schema::META_TYPE` (`fast_url_shortener_link`): `get_metadata()`, `update_metadata()`, `delete_metadata()`, or `$link->get_meta( $key )`. Meta is deleted with its link.
+- Set `has_rules` on a link when it needs every plugin loaded to redirect (geo rules, rotation…). The fast path then leaves it to the normal path.
+
+**PHP hooks**
+
+| Hook | Type | Use |
+| --- | --- | --- |
+| `fast_url_shortener_capability` | filter | Capability per context: `links` or `settings`. |
+| `fast_url_shortener_prepare_link` | filter | Change or reject (`WP_Error`) link columns before saving. |
+| `fast_url_shortener_link_available` | filter | Whether a link redirects now. |
+| `fast_url_shortener_redirect_target` | filter | Destination URL. |
+| `fast_url_shortener_redirect_status` | filter | HTTP status code. |
+| `fast_url_shortener_before_redirect` | action | Right before the redirect is sent. |
+| `fast_url_shortener_click_recorded` | action | After a human click is stored. |
+| `fast_url_shortener_link_created` / `_updated` / `_deleted` | action | Link lifecycle. |
+| `fast_url_shortener_rest_link_args` | filter | Extra REST fields for links (validated by their schema). |
+| `fast_url_shortener_rest_save_link` | action | Save extra fields from the request. |
+| `fast_url_shortener_rest_prepare_link` | filter | Add fields to REST responses. |
+| `fast_url_shortener_rest_settings_args` / `_rest_settings` | filter | Extra settings in the REST schema and response. |
+| `fast_url_shortener_rest_update_settings` | action | Save extra settings from the request. |
+| `fast_url_shortener_csv_link_columns` / `_csv_export_link` | filter | Extra columns in the links CSV. |
+| `fast_url_shortener_csv_import_link` | action | Read extra columns on import. |
+
+Hooks on the redirect path run before regular plugins load when the fast path is on; use `has_rules` for links that need them.
+
+**Admin UI**
+
+Register a plugin with `registerPlugin( name, { scope: 'fast-url-shortener', render } )` and render `<Fill>`s into these slots (see `assets/js/admin/extensions.js`):
+
+| Slot | Fill props |
+| --- | --- |
+| `FastUrlShortenerLinkForm` | `link`, `values`, `setValue( key, value )` |
+| `FastUrlShortenerSettings` | `values`, `setValue( key, value )` |
+| `FastUrlShortenerStats` | `link`, `days`, `stats` |
+| `FastUrlShortenerApp` | `view` |
+
+Values set with `setValue()` are sent with the link or settings request. The links table takes extra columns from the `fastUrlShortener.linkColumns` filter (`{ id, label, render( link ) }`) and row actions from `fastUrlShortener.rowActions` (`{ id, label, onClick( link ) }`). Load add-on scripts after `fast-url-shortener-admin`.
+
 ## Release
 
 ```bash

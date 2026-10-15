@@ -7,6 +7,7 @@
 
 namespace FastUrlShortener\Links;
 
+use FastUrlShortener\Schema;
 use FastUrlShortener\Settings;
 
 /**
@@ -69,6 +70,14 @@ final class Link {
 	 * @var bool
 	 */
 	public $track_clicks = true;
+
+	/**
+	 * Set by extensions when the link has redirect rules that need every
+	 * plugin loaded; the fast path then leaves the link to the normal path.
+	 *
+	 * @var bool
+	 */
+	public $has_rules = false;
 
 	/**
 	 * Expiry date, or null.
@@ -137,6 +146,7 @@ final class Link {
 		$link->status          = (string) $row['status'];
 		$link->forward_params  = (bool) $row['forward_params'];
 		$link->track_clicks    = (bool) $row['track_clicks'];
+		$link->has_rules       = ! empty( $row['has_rules'] );
 		$link->expires_at      = $row['expires_at'] ? (string) $row['expires_at'] : null;
 		$link->max_clicks      = null !== $row['max_clicks'] ? (int) $row['max_clicks'] : null;
 		$link->total_clicks    = (int) $row['total_clicks'];
@@ -154,19 +164,31 @@ final class Link {
 	 * @return bool
 	 */
 	public function is_available() {
-		if ( 'active' !== $this->status ) {
-			return false;
-		}
+		$available = 'active' === $this->status
+			&& ! ( $this->expires_at && strtotime( $this->expires_at . ' UTC' ) <= time() )
+			&& ! ( null !== $this->max_clicks && $this->total_clicks >= $this->max_clicks );
 
-		if ( $this->expires_at && strtotime( $this->expires_at . ' UTC' ) <= time() ) {
-			return false;
-		}
+		/**
+		 * Filter whether a link redirects right now.
+		 *
+		 * @hook fast_url_shortener_link_available
+		 *
+		 * @param bool $available Availability from status, expiry and click limit.
+		 * @param Link $link      Link.
+		 */
+		return (bool) apply_filters( 'fast_url_shortener_link_available', $available, $this );
+	}
 
-		if ( null !== $this->max_clicks && $this->total_clicks >= $this->max_clicks ) {
-			return false;
-		}
-
-		return true;
+	/**
+	 * Read link meta.
+	 *
+	 * @param string $key    Meta key.
+	 * @param bool   $single Return a single value.
+	 *
+	 * @return mixed
+	 */
+	public function get_meta( $key, $single = true ) {
+		return get_metadata( Schema::META_TYPE, $this->id, $key, $single );
 	}
 
 	/**

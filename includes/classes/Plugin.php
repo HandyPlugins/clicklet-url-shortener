@@ -37,6 +37,8 @@ class Plugin {
 	 * @return void
 	 */
 	public function register() {
+		Schema::register_meta_table();
+
 		$install = new Install();
 		$install->register();
 		$install->maybe_upgrade();

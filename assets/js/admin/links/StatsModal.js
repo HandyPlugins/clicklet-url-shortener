@@ -1,8 +1,9 @@
-import { Button, Modal, Notice, Spinner } from '@wordpress/components';
+import { Button, Modal, Notice, Slot, Spinner } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { getStats } from '../api';
+import { SLOTS } from '../extensions';
 import { countryName, formatNumber } from '../utils';
 import BarChart from './BarChart';
 
@@ -62,9 +63,9 @@ function Breakdown( { title, rows, dimension } ) {
 /**
  * Click statistics of a link.
  *
- * @param {Object}   props
- * @param {Object}   props.link    Link.
- * @param {Function} props.onClose Close handler.
+ * @param {Object}     props
+ * @param {Object}     props.link    Link.
+ * @param {() => void} props.onClose Close handler.
  */
 export default function StatsModal( { link, onClose } ) {
 	const [ days, setDays ] = useState( 30 );
@@ -172,6 +173,11 @@ export default function StatsModal( { link, onClose } ) {
 							/>
 						) ) }
 					</div>
+
+					<Slot
+						name={ SLOTS.stats }
+						fillProps={ { link, days, stats } }
+					/>
 				</>
 			) }
 		</Modal>

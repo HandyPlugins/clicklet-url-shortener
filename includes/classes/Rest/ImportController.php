@@ -19,6 +19,13 @@ use WP_REST_Server;
 class ImportController extends Controller {
 
 	/**
+	 * Capability context.
+	 *
+	 * @var string
+	 */
+	protected $capability_context = 'settings';
+
+	/**
 	 * Import runner.
 	 *
 	 * @var Importer

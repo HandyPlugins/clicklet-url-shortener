@@ -4,6 +4,7 @@ import {
 	Modal,
 	Notice,
 	SelectControl,
+	Slot,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
@@ -11,6 +12,7 @@ import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { createLink, updateLink } from '../api';
+import { SLOTS } from '../extensions';
 import { shortUrlBase } from '../utils';
 
 export const REDIRECT_TYPES = [
@@ -44,10 +46,10 @@ export const REDIRECT_TYPES = [
 /**
  * Create or edit a link in a modal.
  *
- * @param {Object}   props
- * @param {Object}   props.link    Link to edit; an empty object creates a new one.
- * @param {Function} props.onClose Close without saving.
- * @param {Function} props.onSaved Called with the saved link.
+ * @param {Object}                 props
+ * @param {Object}                 props.link    Link to edit; an empty object creates a new one.
+ * @param {() => void}             props.onClose Close without saving.
+ * @param {(link: Object) => void} props.onSaved Called with the saved link.
  */
 export default function LinkForm( { link, onClose, onSaved } ) {
 	const isNew = ! link.id;
@@ -253,6 +255,15 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						}
 					/>
 				) }
+
+				<Slot
+					name={ SLOTS.linkForm }
+					fillProps={ {
+						link,
+						values,
+						setValue: ( key, value ) => set( key )( value ),
+					} }
+				/>
 
 				<div className="fus-form-actions">
 					<Button variant="tertiary" onClick={ onClose }>

@@ -51,7 +51,8 @@ class Page {
 	 * @return void
 	 */
 	public function menu() {
-		$capability = Controller::capability();
+		$capability = Controller::capability( 'links' );
+		$settings   = Controller::capability( 'settings' );
 
 		$this->hooks['links'] = add_menu_page(
 			__( 'Short Links', 'fast-url-shortener' ),
@@ -65,9 +66,9 @@ class Page {
 
 		$this->hooks['links'] = add_submenu_page( self::SLUG, __( 'Short Links', 'fast-url-shortener' ), __( 'All Links', 'fast-url-shortener' ), $capability, self::SLUG, [ $this, 'render_links' ] );
 
-		$this->hooks['import'] = add_submenu_page( self::SLUG, __( 'Import & Export', 'fast-url-shortener' ), __( 'Import / Export', 'fast-url-shortener' ), $capability, self::SLUG . '-import', [ $this, 'render_import' ] );
+		$this->hooks['import'] = add_submenu_page( self::SLUG, __( 'Import & Export', 'fast-url-shortener' ), __( 'Import / Export', 'fast-url-shortener' ), $settings, self::SLUG . '-import', [ $this, 'render_import' ] );
 
-		$this->hooks['settings'] = add_submenu_page( self::SLUG, __( 'Short Link Settings', 'fast-url-shortener' ), __( 'Settings', 'fast-url-shortener' ), $capability, self::SLUG . '-settings', [ $this, 'render_settings' ] );
+		$this->hooks['settings'] = add_submenu_page( self::SLUG, __( 'Short Link Settings', 'fast-url-shortener' ), __( 'Settings', 'fast-url-shortener' ), $settings, self::SLUG . '-settings', [ $this, 'render_settings' ] );
 	}
 
 	/**

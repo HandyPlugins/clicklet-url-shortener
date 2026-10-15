@@ -8,8 +8,8 @@ import CopyButton from '../components/CopyButton';
 /**
  * One-field form: paste a URL, get a short link.
  *
- * @param {Object}   props
- * @param {Function} props.onCreated Called after a link is created.
+ * @param {Object}     props
+ * @param {() => void} props.onCreated Called after a link is created.
  */
 export default function QuickCreate( { onCreated } ) {
 	const [ url, setUrl ] = useState( '' );

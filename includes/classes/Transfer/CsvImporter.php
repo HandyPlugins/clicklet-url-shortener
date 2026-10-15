@@ -351,6 +351,7 @@ class CsvImporter {
 			}
 
 			++$state['updated'];
+			$this->link_imported( $link, $row );
 
 			return null;
 		}
@@ -365,8 +366,29 @@ class CsvImporter {
 		}
 
 		++$state['imported'];
+		$this->link_imported( $link, $row );
 
 		return null;
+	}
+
+	/**
+	 * Let extensions read their own columns of a links row.
+	 *
+	 * @param \FastUrlShortener\Links\Link $link Created or updated link.
+	 * @param array                        $row  Cells by column.
+	 *
+	 * @return void
+	 */
+	protected function link_imported( $link, array $row ) {
+		/**
+		 * Fires after a links CSV row is imported (created or updated).
+		 *
+		 * @hook fast_url_shortener_csv_import_link
+		 *
+		 * @param \FastUrlShortener\Links\Link $link Link.
+		 * @param array                        $row  Cells by column, including extra columns.
+		 */
+		do_action( 'fast_url_shortener_csv_import_link', $link, $row );
 	}
 
 	/**

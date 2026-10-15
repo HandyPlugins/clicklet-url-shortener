@@ -15,5 +15,6 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/autoload.php';
 
 if ( FastPath::is_plugin_active() ) {
+	Schema::register_meta_table();
 	add_action( 'muplugins_loaded', [ Router::class, 'route' ] );
 }

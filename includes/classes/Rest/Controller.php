@@ -34,19 +34,30 @@ abstract class Controller {
 	}
 
 	/**
-	 * Capability required to manage links and settings.
+	 * Which capability guards this controller: "links" (managing links and
+	 * their stats) or "settings" (settings, import and export).
+	 *
+	 * @var string
+	 */
+	protected $capability_context = 'links';
+
+	/**
+	 * Capability for a context.
+	 *
+	 * @param string $context "links" or "settings".
 	 *
 	 * @return string
 	 */
-	public static function capability() {
+	public static function capability( $context = 'links' ) {
 		/**
-		 * Filter the capability required to manage short links.
+		 * Filter the capability required for a part of the plugin.
 		 *
 		 * @hook fast_url_shortener_capability
 		 *
 		 * @param string $capability Capability. Default manage_options.
+		 * @param string $context    "links" (links and stats) or "settings" (settings, import and export).
 		 */
-		return (string) apply_filters( 'fast_url_shortener_capability', 'manage_options' );
+		return (string) apply_filters( 'fast_url_shortener_capability', 'manage_options', $context );
 	}
 
 	/**
@@ -55,6 +66,6 @@ abstract class Controller {
 	 * @return bool
 	 */
 	public function permission_check() {
-		return current_user_can( self::capability() );
+		return current_user_can( self::capability( $this->capability_context ) );
 	}
 }

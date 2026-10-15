@@ -17,12 +17,17 @@ class Schema {
 	/**
 	 * Bump whenever the schema below changes; Install runs dbDelta again.
 	 */
-	const VERSION = '1';
+	const VERSION = '2';
 
 	/**
 	 * Table names without the WordPress or plugin prefix.
 	 */
-	const TABLES = [ 'links', 'clicks', 'stats_daily' ];
+	const TABLES = [ 'links', 'linkmeta', 'clicks', 'stats_daily' ];
+
+	/**
+	 * Object type for the WordPress metadata API: get_metadata( Schema::META_TYPE, $link_id, … ).
+	 */
+	const META_TYPE = 'fast_url_shortener_link';
 
 	/**
 	 * Full table name for the current site.
@@ -38,6 +43,22 @@ class Schema {
 	}
 
 	/**
+	 * Make the link meta table known to the WordPress metadata API, which
+	 * looks it up as $wpdb->{$type}meta. Re-registered on blog switches.
+	 *
+	 * @return void
+	 */
+	public static function register_meta_table() {
+		global $wpdb;
+
+		$wpdb->{self::META_TYPE . 'meta'} = self::table( 'linkmeta' );
+
+		if ( ! has_action( 'switch_blog', [ self::class, 'register_meta_table' ] ) ) {
+			add_action( 'switch_blog', [ self::class, 'register_meta_table' ] );
+		}
+	}
+
+	/**
 	 * Create or update tables.
 	 *
 	 * @return void
@@ -49,6 +70,7 @@ class Schema {
 
 		$collate = $wpdb->get_charset_collate();
 		$links   = self::table( 'links' );
+		$meta    = self::table( 'linkmeta' );
 		$clicks  = self::table( 'clicks' );
 		$stats   = self::table( 'stats_daily' );
 
@@ -64,6 +86,7 @@ class Schema {
 				status varchar(20) NOT NULL DEFAULT 'active',
 				forward_params tinyint(1) unsigned NOT NULL DEFAULT 0,
 				track_clicks tinyint(1) unsigned NOT NULL DEFAULT 1,
+				has_rules tinyint(1) unsigned NOT NULL DEFAULT 0,
 				expires_at datetime DEFAULT NULL,
 				max_clicks int(10) unsigned DEFAULT NULL,
 				total_clicks bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -74,6 +97,20 @@ class Schema {
 				PRIMARY KEY  (id),
 				UNIQUE KEY slug (slug),
 				KEY created_at (created_at)
+			) {$collate};"
+		);
+
+		// Per-link extra data (used by extensions), in the layout the WordPress
+		// metadata API expects for the fast_url_shortener_link object type.
+		dbDelta(
+			"CREATE TABLE {$meta} (
+				meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				fast_url_shortener_link_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				meta_key varchar(255) DEFAULT NULL,
+				meta_value longtext,
+				PRIMARY KEY  (meta_id),
+				KEY fast_url_shortener_link_id (fast_url_shortener_link_id),
+				KEY meta_key (meta_key(191))
 			) {$collate};"
 		);
 

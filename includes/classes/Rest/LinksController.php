@@ -183,6 +183,8 @@ class LinksController extends Controller {
 			return $this->with_status( $link );
 		}
 
+		$this->saved( $link, $request, true );
+
 		$response = rest_ensure_response( $this->prepare_link( $link ) );
 		$response->set_status( 201 );
 
@@ -199,7 +201,13 @@ class LinksController extends Controller {
 	public function update_item( WP_REST_Request $request ) {
 		$link = $this->links->update( (int) $request['id'], $this->link_data( $request ), (bool) $request['force'] );
 
-		return is_wp_error( $link ) ? $this->with_status( $link ) : rest_ensure_response( $this->prepare_link( $link ) );
+		if ( is_wp_error( $link ) ) {
+			return $this->with_status( $link );
+		}
+
+		$this->saved( $link, $request, false );
+
+		return rest_ensure_response( $this->prepare_link( $link ) );
 	}
 
 	/**
@@ -271,7 +279,38 @@ class LinksController extends Controller {
 		// Expiry in the site timezone, for date inputs.
 		$data['expires_at_local'] = $link->expires_at ? get_date_from_gmt( $link->expires_at, 'Y-m-d\TH:i' ) : '';
 
-		return $data;
+		/**
+		 * Filter a link as returned by the REST API, e.g. to add fields
+		 * stored in link meta.
+		 *
+		 * @hook fast_url_shortener_rest_prepare_link
+		 *
+		 * @param array $data Link data.
+		 * @param Link  $link Link.
+		 */
+		return apply_filters( 'fast_url_shortener_rest_prepare_link', $data, $link );
+	}
+
+	/**
+	 * Let extensions save their own fields from the request.
+	 *
+	 * @param Link            $link     Saved link.
+	 * @param WP_REST_Request $request  Request.
+	 * @param bool            $creating Whether the link was just created.
+	 *
+	 * @return void
+	 */
+	protected function saved( Link $link, WP_REST_Request $request, $creating ) {
+		/**
+		 * Fires after a link is created or updated through the REST API.
+		 *
+		 * @hook fast_url_shortener_rest_save_link
+		 *
+		 * @param Link            $link     Saved link.
+		 * @param WP_REST_Request $request  Request.
+		 * @param bool            $creating Whether the link was just created.
+		 */
+		do_action( 'fast_url_shortener_rest_save_link', $link, $request, $creating );
 	}
 
 	/**
@@ -303,7 +342,7 @@ class LinksController extends Controller {
 	 * @return array
 	 */
 	protected function link_args( $creating ) {
-		return [
+		$args = [
 			'target_url'     => [
 				'type'     => 'string',
 				'required' => $creating,
@@ -330,6 +369,16 @@ class LinksController extends Controller {
 				'default' => false,
 			],
 		];
+
+		/**
+		 * Filter the REST arguments accepted when creating or updating a link.
+		 *
+		 * @hook fast_url_shortener_rest_link_args
+		 *
+		 * @param array $args     Argument schema.
+		 * @param bool  $creating Whether this is the create endpoint.
+		 */
+		return apply_filters( 'fast_url_shortener_rest_link_args', $args, $creating );
 	}
 
 	/**

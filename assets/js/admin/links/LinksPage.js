@@ -11,6 +11,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { deleteLink, getLinks } from '../api';
 import CopyButton from '../components/CopyButton';
+import { linkColumns, rowActions } from '../extensions';
 import { formatDate, formatNumber, screenUrl } from '../utils';
 import LinkForm from './LinkForm';
 import QuickCreate from './QuickCreate';
@@ -21,12 +22,12 @@ const PER_PAGE = 20;
 /**
  * Sortable column header.
  *
- * @param {Object}   props
- * @param {string}   props.field     Field name.
- * @param {string}   props.label     Label.
- * @param {Object}   props.query     Current query.
- * @param {Function} props.onSort    Called with the field.
- * @param {string}   props.className Extra class.
+ * @param {Object}                  props
+ * @param {string}                  props.field     Field name.
+ * @param {string}                  props.label     Label.
+ * @param {Object}                  props.query     Current query.
+ * @param {(field: string) => void} props.onSort    Called with the field.
+ * @param {string}                  props.className Extra class.
  */
 function SortableHeader( { field, label, query, onSort, className = '' } ) {
 	const active = query.orderby === field;
@@ -123,6 +124,8 @@ export default function LinksPage() {
 	};
 
 	const isEmpty = ! loading && ! result.total && ! query.search;
+	const extraColumns = linkColumns();
+	const colSpan = 5 + extraColumns.length;
 
 	return (
 		<>
@@ -211,6 +214,15 @@ export default function LinksPage() {
 										'fast-url-shortener'
 									) }
 								</th>
+								{ extraColumns.map( ( column ) => (
+									<th
+										key={ column.id }
+										scope="col"
+										className={ `column-${ column.id }` }
+									>
+										{ column.label }
+									</th>
+								) ) }
 								<SortableHeader
 									field="total_clicks"
 									label={ __(
@@ -239,14 +251,14 @@ export default function LinksPage() {
 						<tbody>
 							{ loading && (
 								<tr>
-									<td colSpan="5">
+									<td colSpan={ colSpan }>
 										<Spinner />
 									</td>
 								</tr>
 							) }
 							{ ! loading && ! result.items.length && (
 								<tr>
-									<td colSpan="5">
+									<td colSpan={ colSpan }>
 										{ __(
 											'No links match your search.',
 											'fast-url-shortener'
@@ -313,12 +325,29 @@ export default function LinksPage() {
 													</Button>{ ' ' }
 													|{ ' ' }
 												</span>
+												{ rowActions( link ).map(
+													( action ) => (
+														<span key={ action.id }>
+															<Button
+																variant="link"
+																onClick={ () =>
+																	action.onClick(
+																		link
+																	)
+																}
+															>
+																{ action.label }
+															</Button>{ ' ' }
+															|{ ' ' }
+														</span>
+													)
+												) }
 												<span className="trash">
 													<Button
 														variant="link"
 														isDestructive
 														onClick={ () =>
-															remove( link )
+															setDeleting( link )
 														}
 													>
 														{ __(
@@ -340,6 +369,14 @@ export default function LinksPage() {
 												{ link.target_url }
 											</a>
 										</td>
+										{ extraColumns.map( ( column ) => (
+											<td
+												key={ column.id }
+												className={ `column-${ column.id }` }
+											>
+												{ column.render( link ) }
+											</td>
+										) ) }
 										<td className="column-clicks">
 											<Button
 												variant="link"

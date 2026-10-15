@@ -5,6 +5,7 @@ import {
 	CardHeader,
 	Notice,
 	SelectControl,
+	Slot,
 	Spinner,
 	TextControl,
 	ToggleControl,
@@ -13,6 +14,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 import { getSettings, saveSettings } from '../api';
+import { SLOTS } from '../extensions';
 import { REDIRECT_TYPES } from '../links/LinkForm';
 import { shortUrlBase } from '../utils';
 
@@ -278,6 +280,14 @@ export default function SettingsPage() {
 					/>
 				</CardBody>
 			</Card>
+
+			<Slot
+				name={ SLOTS.settings }
+				fillProps={ {
+					values,
+					setValue: ( key, value ) => set( key )( value ),
+				} }
+			/>
 
 			<p>
 				<Button

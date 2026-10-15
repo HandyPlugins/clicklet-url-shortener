@@ -250,6 +250,8 @@ class Repository {
 		}
 
 		$wpdb->delete( Schema::table( 'links' ), [ 'id' => $link->id ], [ '%d' ] );
+		$wpdb->delete( Schema::table( 'linkmeta' ), [ Schema::META_TYPE . '_id' => $link->id ], [ '%d' ] );
+		wp_cache_delete( $link->id, Schema::META_TYPE . '_meta' );
 		$wpdb->delete( Schema::table( 'clicks' ), [ 'link_id' => $link->id ], [ '%d' ] );
 		$wpdb->delete( Schema::table( 'stats_daily' ), [ 'link_id' => $link->id ], [ '%d' ] );
 
@@ -367,7 +369,7 @@ class Repository {
 			$fields['status'] = $data['status'];
 		}
 
-		foreach ( [ 'forward_params', 'track_clicks' ] as $flag ) {
+		foreach ( [ 'forward_params', 'track_clicks', 'has_rules' ] as $flag ) {
 			if ( isset( $data[ $flag ] ) ) {
 				$fields[ $flag ] = (int) (bool) $data[ $flag ];
 			}
@@ -393,7 +395,17 @@ class Repository {
 			$fields['max_clicks'] = absint( $data['max_clicks'] ) ? absint( $data['max_clicks'] ) : null;
 		}
 
-		return $fields;
+		/**
+		 * Filter validated link columns before they are saved. Return a
+		 * WP_Error to reject the change.
+		 *
+		 * @hook fast_url_shortener_prepare_link
+		 *
+		 * @param array|\WP_Error $fields   Column => value.
+		 * @param array           $data     Raw input.
+		 * @param Link|null       $existing Link being updated, or null when creating.
+		 */
+		return apply_filters( 'fast_url_shortener_prepare_link', $fields, $data, $existing );
 	}
 
 	/**

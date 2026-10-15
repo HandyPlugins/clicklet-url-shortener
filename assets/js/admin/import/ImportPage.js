@@ -58,10 +58,10 @@ function percent( progress ) {
 /**
  * One import source: summary, prefix hint, start button and progress.
  *
- * @param {Object}   props
- * @param {Object}   props.source         Source from the API.
- * @param {string}   props.prefix         Current prefix setting.
- * @param {Function} props.onPrefixChange Called after the prefix is changed.
+ * @param {Object}                   props
+ * @param {Object}                   props.source         Source from the API.
+ * @param {string}                   props.prefix         Current prefix setting.
+ * @param {(prefix: string) => void} props.onPrefixChange Called after the prefix is changed.
  */
 function SourceCard( { source, prefix, onPrefixChange } ) {
 	const [ progress, setProgress ] = useState( source.progress );

@@ -56,7 +56,7 @@ class Exporter {
 	 * @return void
 	 */
 	public function download() {
-		if ( ! current_user_can( Controller::capability() ) ) {
+		if ( ! current_user_can( Controller::capability( 'settings' ) ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to export links.', 'fast-url-shortener' ), 403 );
 		}
 
@@ -91,7 +91,7 @@ class Exporter {
 	 */
 	public function write( $type, $handle ) {
 		fwrite( $handle, Csv::BOM );
-		$this->put( $handle, Csv::COLUMNS[ $type ] );
+		$this->put( $handle, 'links' === $type ? $this->link_columns() : Csv::COLUMNS[ $type ] );
 
 		$method = 'write_' . $type;
 
@@ -117,22 +117,42 @@ class Exporter {
 				ARRAY_A
 			);
 
+			$columns = $this->link_columns();
+
 			foreach ( $rows as $row ) {
+				$cells = [
+					'slug'           => $row['slug'],
+					'target_url'     => $row['target_url'],
+					'title'          => $row['title'],
+					'redirect_type'  => $row['redirect_type'],
+					'status'         => $row['status'],
+					'forward_params' => $row['forward_params'],
+					'track_clicks'   => $row['track_clicks'],
+					'expires_at_utc' => (string) $row['expires_at'],
+					'max_clicks'     => (string) $row['max_clicks'],
+					'created_at_utc' => $row['created_at'],
+					'total_clicks'   => $row['total_clicks'],
+				];
+
+				/**
+				 * Filter a links CSV row, e.g. to fill columns added with
+				 * fast_url_shortener_csv_link_columns.
+				 *
+				 * @hook fast_url_shortener_csv_export_link
+				 *
+				 * @param array $cells Column => value.
+				 * @param array $row   Database row.
+				 */
+				$cells = apply_filters( 'fast_url_shortener_csv_export_link', $cells, $row );
+
 				$this->put(
 					$handle,
-					[
-						$row['slug'],
-						$row['target_url'],
-						$row['title'],
-						$row['redirect_type'],
-						$row['status'],
-						$row['forward_params'],
-						$row['track_clicks'],
-						(string) $row['expires_at'],
-						(string) $row['max_clicks'],
-						$row['created_at'],
-						$row['total_clicks'],
-					]
+					array_map(
+						static function ( $column ) use ( $cells ) {
+							return $cells[ $column ] ?? '';
+						},
+						$columns
+					)
 				);
 				$after = (int) $row['id'];
 				++$count;
@@ -235,6 +255,23 @@ class Exporter {
 		} while ( self::BATCH === $fetched );
 
 		return $count;
+	}
+
+	/**
+	 * Columns of the links file.
+	 *
+	 * @return string[]
+	 */
+	protected function link_columns() {
+		/**
+		 * Filter the columns of the links CSV file. Extra columns are passed to
+		 * fast_url_shortener_csv_import_link when the file is imported.
+		 *
+		 * @hook fast_url_shortener_csv_link_columns
+		 *
+		 * @param string[] $columns Column names.
+		 */
+		return (array) apply_filters( 'fast_url_shortener_csv_link_columns', Csv::COLUMNS['links'] );
 	}
 
 	/**

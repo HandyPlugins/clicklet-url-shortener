@@ -80,7 +80,17 @@ class Router {
 
 		$link = $this->links->find_by_slug( $slug );
 
-		if ( ! $link || ! $link->is_available() ) {
+		if ( ! $link ) {
+			return;
+		}
+
+		// Links with extension rules need every plugin loaded: leave them to the normal path.
+		if ( $link->has_rules && ! did_action( 'plugins_loaded' ) ) {
+			self::$routed = false;
+			return;
+		}
+
+		if ( ! $link->is_available() ) {
 			return;
 		}
 
@@ -194,7 +204,17 @@ class Router {
 		nocache_headers();
 		header( 'X-Robots-Tag: noindex' );
 		header( 'X-Redirect-By: Fast URL Shortener' );
-		header( 'Location: ' . $target, true, $link->redirect_type );
+		/**
+		 * Filter the HTTP status code of the redirect.
+		 *
+		 * @hook fast_url_shortener_redirect_status
+		 *
+		 * @param int  $status Status code from the link.
+		 * @param Link $link   Link.
+		 */
+		$status = (int) apply_filters( 'fast_url_shortener_redirect_status', $link->redirect_type, $link );
+
+		header( 'Location: ' . $target, true, $status );
 
 		if ( $this->should_track( $link ) ) {
 			$this->finish_response();
