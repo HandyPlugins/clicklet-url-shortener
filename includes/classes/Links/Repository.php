@@ -461,6 +461,16 @@ class Repository {
 	 * @return string
 	 */
 	protected function cache_key( $slug ) {
-		return 'slug_' . $slug;
+		// Bulk changes (imports) bump "last changed" instead of flushing each slug.
+		return 'slug_' . $slug . ':' . wp_cache_get_last_changed( self::CACHE_GROUP );
+	}
+
+	/**
+	 * Invalidate every cached link, e.g. after bulk counter updates.
+	 *
+	 * @return void
+	 */
+	public static function flush_all() {
+		wp_cache_set_last_changed( self::CACHE_GROUP );
 	}
 }

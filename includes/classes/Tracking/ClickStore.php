@@ -8,6 +8,7 @@
 namespace FastUrlShortener\Tracking;
 
 use FastUrlShortener\Install;
+use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Schema;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write path on the plugin's own tables.
@@ -218,6 +219,9 @@ class ClickStore {
 				$link_id
 			)
 		);
+
+		// Cached links carry the old counter.
+		Repository::flush_all();
 	}
 
 	/**
@@ -261,5 +265,8 @@ class ClickStore {
 				$link_id
 			)
 		);
+
+		// Cached links carry the old counter.
+		Repository::flush_all();
 	}
 }

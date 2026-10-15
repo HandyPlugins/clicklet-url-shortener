@@ -4,3 +4,4 @@
 *.zip
 /build/
 /dist/
+.phpunit.result.cache

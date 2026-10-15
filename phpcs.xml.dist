@@ -13,6 +13,20 @@
 
 	<rule ref="10up-Default"/>
 
+	<!-- Tests follow PHPUnit and WordPress test suite conventions. -->
+	<rule ref="WordPress.NamingConventions.ValidFunctionName">
+		<exclude-pattern>/tests/</exclude-pattern>
+	</rule>
+	<rule ref="Generic.Commenting.DocComment.MissingShort">
+		<exclude-pattern>/tests/</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>/tests/</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<exclude-pattern>/tests/</exclude-pattern>
+	</rule>
+
 	<config name="minimum_supported_wp_version" value="6.5"/>
 	<config name="testVersion" value="7.4-"/>
 

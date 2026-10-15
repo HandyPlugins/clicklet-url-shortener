@@ -240,8 +240,21 @@ class Importer {
 			);
 		}
 
-		// One transaction per batch keeps thousands of single-row inserts fast.
-		$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		/**
+		 * Filter whether a batch of clicks is written in one transaction.
+		 *
+		 * A transaction keeps thousands of single-row inserts fast, but it
+		 * commits any transaction the caller has open.
+		 *
+		 * @hook fast_url_shortener_import_use_transaction
+		 *
+		 * @param bool $use Default true.
+		 */
+		$transaction = (bool) apply_filters( 'fast_url_shortener_import_use_transaction', true );
+
+		if ( $transaction ) {
+			$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		}
 
 		foreach ( $rows as $row ) {
 			$state['cursor'] = $row['source_id'];
@@ -271,7 +284,9 @@ class Importer {
 			++$state['clicks_imported'];
 		}
 
-		$wpdb->query( 'COMMIT' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $transaction ) {
+			$wpdb->query( 'COMMIT' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		}
 
 		return $state;
 	}

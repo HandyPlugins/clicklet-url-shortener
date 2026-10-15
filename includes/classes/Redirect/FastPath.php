@@ -64,14 +64,15 @@ class FastPath {
 	 * @return true|WP_Error
 	 */
 	public static function install() {
+		// Many sites have no mu-plugins folder yet; the write check below needs it to exist.
+		if ( ! wp_mkdir_p( WPMU_PLUGIN_DIR ) ) {
+			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The mu-plugins directory could not be created.', 'fast-url-shortener' ) );
+		}
+
 		$filesystem = self::filesystem();
 
 		if ( ! $filesystem ) {
 			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The file system is not writable without credentials.', 'fast-url-shortener' ) );
-		}
-
-		if ( ! $filesystem->is_dir( WPMU_PLUGIN_DIR ) && ! $filesystem->mkdir( WPMU_PLUGIN_DIR, FS_CHMOD_DIR ) ) {
-			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The mu-plugins directory could not be created.', 'fast-url-shortener' ) );
 		}
 
 		if ( ! $filesystem->put_contents( self::path(), self::contents(), FS_CHMOD_FILE ) ) {
