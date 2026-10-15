@@ -34,6 +34,8 @@ class Settings {
 			'ip_header'                => '',
 			// Days to keep raw click rows. Daily totals are always kept. 0 keeps everything.
 			'retention_days'           => 0,
+			// Post types whose published posts get a short link automatically.
+			'auto_post_types'          => [],
 			'fast_path'                => false,
 			'delete_data_on_uninstall' => false,
 		];

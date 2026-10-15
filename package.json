@@ -4,8 +4,8 @@
   "description": "Fast, self-hosted URL shortener with privacy-friendly click tracking.",
   "license": "GPL-2.0-or-later",
   "scripts": {
-    "build": "wp-scripts build admin=./assets/js/admin/index.js --output-path=dist",
-    "start": "wp-scripts start admin=./assets/js/admin/index.js --output-path=dist",
+    "build": "wp-scripts build admin=./assets/js/admin/index.js editor=./assets/js/editor/index.js --output-path=dist",
+    "start": "wp-scripts start admin=./assets/js/admin/index.js editor=./assets/js/editor/index.js --output-path=dist",
     "lint:js": "wp-scripts lint-js assets/js",
     "lint:css": "wp-scripts lint-style \"assets/css/**/*.css\"",
     "format": "wp-scripts format assets",

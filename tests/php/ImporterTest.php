@@ -10,6 +10,7 @@ namespace FastUrlShortener\Tests;
 use FastUrlShortener\Import\Importer;
 use FastUrlShortener\Import\PrettyLinks;
 use FastUrlShortener\Import\UrlShortify;
+use FastUrlShortener\Links\Groups;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Tracking\ClickStore;
 
@@ -58,6 +59,11 @@ class ImporterTest extends TestCase {
 				first_click tinyint DEFAULT 0, created_at datetime NOT NULL, link_id int(11), country char(2) NOT NULL DEFAULT '', PRIMARY KEY (id)
 			)"
 		);
+		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}kc_us_groups ( id int(10) NOT NULL AUTO_INCREMENT, name varchar(255), PRIMARY KEY (id) )" );
+		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}kc_us_links_groups ( id int(10) NOT NULL AUTO_INCREMENT, link_id int(10) NOT NULL, group_id int(10) NOT NULL, PRIMARY KEY (id) )" );
+		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}prli_groups ( id int(11) NOT NULL AUTO_INCREMENT, name varchar(255), PRIMARY KEY (id) )" );
+		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}prli_link_terms ( link_id bigint unsigned NOT NULL, term_id bigint unsigned NOT NULL, taxonomy varchar(32) NOT NULL, PRIMARY KEY (link_id, term_id, taxonomy) )" );
+		$wpdb->query( "ALTER TABLE {$wpdb->prefix}prli_links ADD COLUMN group_id int(11) DEFAULT NULL" );
 	}
 
 	/**
@@ -66,7 +72,7 @@ class ImporterTest extends TestCase {
 	public static function wpTearDownAfterClass() {
 		global $wpdb;
 
-		foreach ( [ 'kc_us_links', 'kc_us_clicks', 'prli_links', 'prli_clicks' ] as $table ) {
+		foreach ( [ 'kc_us_links', 'kc_us_clicks', 'kc_us_groups', 'kc_us_links_groups', 'prli_links', 'prli_clicks', 'prli_groups', 'prli_link_terms' ] as $table ) {
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$table}" );
 		}
 	}
@@ -160,7 +166,7 @@ class ImporterTest extends TestCase {
 	public function tear_down() {
 		global $wpdb;
 
-		foreach ( [ 'kc_us_links', 'kc_us_clicks', 'prli_links', 'prli_clicks' ] as $table ) {
+		foreach ( [ 'kc_us_links', 'kc_us_clicks', 'kc_us_groups', 'kc_us_links_groups', 'prli_links', 'prli_clicks', 'prli_groups', 'prli_link_terms' ] as $table ) {
 			$wpdb->query( "DELETE FROM {$wpdb->prefix}{$table}" );
 		}
 
@@ -290,6 +296,64 @@ class ImporterTest extends TestCase {
 		$this->assertSame( 307, $links->find_by_slug( 'pl-deal' )->redirect_type );
 		$this->assertSame( 302, $links->find_by_slug( 'pl-cloak' )->redirect_type );
 		$this->assertFalse( $links->find_by_slug( 'pl-cloak' )->forward_params );
+	}
+
+	/**
+	 * Groups come along: URL Shortify groups, the Pretty Links 3.x group and
+	 * 4.x categories/tags.
+	 */
+	public function test_groups_import() {
+		global $wpdb;
+
+		$ids = $this->seed_url_shortify();
+
+		$wpdb->insert( "{$wpdb->prefix}kc_us_groups", [ 'name' => 'Campaign A' ] );
+		$campaign = $wpdb->insert_id;
+		$wpdb->insert( "{$wpdb->prefix}kc_us_groups", [ 'name' => 'Partners' ] );
+		$partners = $wpdb->insert_id;
+
+		foreach ( [ [ 'us-promo', $campaign ], [ 'us-promo', $partners ], [ 'US-Upper', $campaign ] ] as $pair ) {
+			$wpdb->insert(
+				"{$wpdb->prefix}kc_us_links_groups",
+				[
+					'link_id'  => $ids[ $pair[0] ],
+					'group_id' => $pair[1],
+				]
+			);
+		}
+
+		$this->run_import( new UrlShortify() );
+
+		$links = new Repository();
+		$this->assertSame( [ 'Campaign A', 'Partners' ], wp_list_pluck( Groups::of( $links->find_by_slug( 'us-promo' )->id ), 'name' ) );
+		$this->assertSame( [ 'Campaign A' ], wp_list_pluck( Groups::of( $links->find_by_slug( 'us-upper' )->id ), 'name' ) );
+
+		// Pretty Links: a 3.x group and a 4.x category on the same link.
+		$wpdb->insert( "{$wpdb->prefix}prli_groups", [ 'name' => 'Legacy' ] );
+		$legacy = $wpdb->insert_id;
+		$term   = wp_insert_term( 'Deals', 'category' );
+
+		$wpdb->insert(
+			"{$wpdb->prefix}prli_links",
+			[
+				'slug'       => 'pl-grouped',
+				'url'        => 'https://example.com/pl',
+				'group_id'   => $legacy,
+				'created_at' => '2024-11-20 08:30:00',
+			]
+		);
+		$wpdb->insert(
+			"{$wpdb->prefix}prli_link_terms",
+			[
+				'link_id'  => $wpdb->insert_id,
+				'term_id'  => $term['term_id'],
+				'taxonomy' => 'category',
+			]
+		);
+
+		$this->run_import( new PrettyLinks() );
+
+		$this->assertSame( [ 'Deals', 'Legacy' ], wp_list_pluck( Groups::of( $links->find_by_slug( 'pl-grouped' )->id ), 'name' ) );
 	}
 
 	/**

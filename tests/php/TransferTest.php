@@ -7,6 +7,7 @@
 
 namespace FastUrlShortener\Tests;
 
+use FastUrlShortener\Links\Groups;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Schema;
 use FastUrlShortener\Tracking\ClickStore;
@@ -59,6 +60,7 @@ class TransferTest extends TestCase {
 				'expires_at'     => '2031-05-06 07:08',
 				'max_clicks'     => 500,
 				'created_at'     => '2024-01-02 03:04:05',
+				'groups'         => [ 'Summer', 'Social' ],
 			]
 		);
 		$other = $this->create_link(
@@ -147,7 +149,16 @@ class TransferTest extends TestCase {
 		$clicks = Schema::table( 'clicks' );
 		$stats  = Schema::table( 'stats_daily' );
 
+		$groups = [];
+
+		foreach ( ( new Repository() )->query( [ 'per_page' => 100 ] )['items'] as $link ) {
+			$groups[ $link->slug ] = wp_list_pluck( Groups::of( $link->id ), 'name' );
+		}
+
+		ksort( $groups );
+
 		return [
+			'groups' => $groups,
 			'links'  => $wpdb->get_results( "SELECT slug, target_url, title, redirect_type, status, forward_params, track_clicks, expires_at, max_clicks, created_at, total_clicks FROM {$links} ORDER BY slug", ARRAY_A ),
 			'stats'  => $wpdb->get_results( "SELECT l.slug, s.day, s.clicks, s.uniques, s.bots FROM {$stats} s JOIN {$links} l ON l.id = s.link_id ORDER BY l.slug, s.day", ARRAY_A ),
 			'clicks' => $wpdb->get_results( "SELECT l.slug, c.clicked_at, HEX(c.visitor_hash) h, c.is_unique, c.country, c.device, c.os, c.browser, c.referrer_host FROM {$clicks} c JOIN {$links} l ON l.id = c.link_id ORDER BY l.slug, c.clicked_at, h, c.is_unique", ARRAY_A ),
@@ -176,6 +187,7 @@ class TransferTest extends TestCase {
 
 		$this->assertSame( "\xEF\xBB\xBF", file_get_contents( $files[0], false, null, 0, 3 ) );
 		$this->assertStringContainsString( "'=HYPERLINK", file_get_contents( $files[0] ) );
+		$this->assertStringContainsString( ',Social|Summer,', file_get_contents( $files[0] ) );
 		$this->assertStringContainsString( ',mobile,ios,safari,', file_get_contents( $files[2] ) );
 
 		$this->empty_site();

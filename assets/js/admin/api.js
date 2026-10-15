@@ -75,3 +75,15 @@ export function uploadCsv( file, overwrite ) {
 
 export const csvImportStep = () =>
 	apiFetch( { path: `${ BASE }/transfer/step`, method: 'POST' } );
+
+export const getGroups = () => apiFetch( { path: `${ BASE }/groups` } );
+
+export const renameGroup = ( id, name ) =>
+	apiFetch( {
+		path: `${ BASE }/groups/${ id }`,
+		method: 'PUT',
+		data: { name },
+	} );
+
+export const deleteGroup = ( id ) =>
+	apiFetch( { path: `${ BASE }/groups/${ id }`, method: 'DELETE' } );

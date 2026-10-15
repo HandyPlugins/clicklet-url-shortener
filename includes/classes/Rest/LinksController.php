@@ -57,6 +57,11 @@ class LinksController extends Controller {
 							'default'           => '',
 							'sanitize_callback' => 'sanitize_text_field',
 						],
+						'group'    => [
+							'type'    => 'integer',
+							'default' => 0,
+							'minimum' => 0,
+						],
 						'orderby'  => [
 							'type'    => 'string',
 							'default' => 'id',
@@ -142,6 +147,7 @@ class LinksController extends Controller {
 		$result = $this->links->query(
 			[
 				'search'   => $request['search'],
+				'group'    => $request['group'],
 				'orderby'  => $request['orderby'],
 				'order'    => $request['order'],
 				'per_page' => $request['per_page'],
@@ -321,7 +327,7 @@ class LinksController extends Controller {
 	 * @return array
 	 */
 	protected function link_data( WP_REST_Request $request ) {
-		$fields = [ 'target_url', 'slug', 'title', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at', 'max_clicks' ];
+		$fields = [ 'target_url', 'slug', 'title', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at', 'max_clicks', 'groups' ];
 		$data   = [];
 		$params = $request->get_params();
 
@@ -363,6 +369,10 @@ class LinksController extends Controller {
 			'max_clicks'     => [
 				'type'    => [ 'integer', 'null' ],
 				'minimum' => 0,
+			],
+			'groups'         => [
+				'type'  => 'array',
+				'items' => [ 'type' => [ 'integer', 'string' ] ],
 			],
 			'force'          => [
 				'type'    => 'boolean',

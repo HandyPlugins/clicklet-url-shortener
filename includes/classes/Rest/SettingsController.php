@@ -83,6 +83,10 @@ class SettingsController extends Controller {
 				'type'    => 'integer',
 				'minimum' => 0,
 			],
+			'auto_post_types'          => [
+				'type'  => 'array',
+				'items' => [ 'type' => 'string' ],
+			],
 			'fast_path'                => [ 'type' => 'boolean' ],
 			'delete_data_on_uninstall' => [ 'type' => 'boolean' ],
 		];
@@ -126,6 +130,10 @@ class SettingsController extends Controller {
 
 		if ( isset( $values['prefix'] ) ) {
 			$values['prefix'] = sanitize_title( $values['prefix'] );
+		}
+
+		if ( isset( $values['auto_post_types'] ) ) {
+			$values['auto_post_types'] = array_values( array_intersect( $values['auto_post_types'], get_post_types( [ 'public' => true ] ) ) );
 		}
 
 		if ( isset( $values['fast_path'] ) && FastPath::is_installed() !== (bool) $values['fast_path'] ) {

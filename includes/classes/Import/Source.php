@@ -64,6 +64,7 @@ abstract class Source {
 	 *     @type string      $status         active or disabled.
 	 *     @type string|null $expires_at     UTC datetime.
 	 *     @type string      $created_at     UTC datetime.
+	 *     @type string[]    $groups         Group, category or tag names.
 	 *     @type bool        $skip           Leave the link out (e.g. trashed).
 	 * }
 	 */
@@ -90,6 +91,25 @@ abstract class Source {
 	 * }
 	 */
 	abstract public function clicks_after( $after, $limit );
+
+	/**
+	 * Whether a table exists, cached per request.
+	 *
+	 * @param string $table Table name.
+	 *
+	 * @return bool
+	 */
+	protected function table_exists( $table ) {
+		global $wpdb;
+
+		static $exists = [];
+
+		if ( ! isset( $exists[ $table ] ) ) {
+			$exists[ $table ] = $table === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) );
+		}
+
+		return $exists[ $table ];
+	}
 
 	/**
 	 * Whether the source tables exist.

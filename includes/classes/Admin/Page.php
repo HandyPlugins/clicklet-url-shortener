@@ -145,6 +145,7 @@ class Page {
 					'pageSlug'  => self::SLUG,
 					'timezone'  => wp_timezone_string(),
 					'canManage' => current_user_can( 'manage_options' ),
+					'postTypes' => self::post_types(),
 					'exportUrl' => [
 						'links'  => Exporter::url( 'links' ),
 						'stats'  => Exporter::url( 'stats' ),
@@ -154,6 +155,26 @@ class Page {
 			) . ';',
 			'before'
 		);
+	}
+
+	/**
+	 * Public post types that can get automatic short links.
+	 *
+	 * @return array[] { name, label }
+	 */
+	protected static function post_types() {
+		$types = [];
+
+		foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $type ) {
+			if ( 'attachment' !== $type->name ) {
+				$types[] = [
+					'name'  => $type->name,
+					'label' => $type->labels->name,
+				];
+			}
+		}
+
+		return $types;
 	}
 
 	/**

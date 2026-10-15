@@ -194,6 +194,7 @@ class Importer {
 					'status'         => $row['status'],
 					'expires_at'     => $row['expires_at'] ? get_date_from_gmt( $row['expires_at'] ) : null,
 					'created_at'     => $row['created_at'],
+					'groups'         => $row['groups'] ?? [],
 				]
 			);
 

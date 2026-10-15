@@ -208,6 +208,12 @@ final class Link {
 	 * @return array
 	 */
 	public function to_array() {
-		return array_merge( get_object_vars( $this ), [ 'short_url' => $this->short_url() ] );
+		return array_merge(
+			get_object_vars( $this ),
+			[
+				'short_url' => $this->short_url(),
+				'groups'    => Groups::of( $this->id ),
+			]
+		);
 	}
 }

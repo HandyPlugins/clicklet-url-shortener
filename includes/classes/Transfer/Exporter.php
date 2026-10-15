@@ -7,6 +7,7 @@
 
 namespace FastUrlShortener\Transfer;
 
+use FastUrlShortener\Links\Groups;
 use FastUrlShortener\Rest\Controller;
 use FastUrlShortener\Schema;
 use FastUrlShortener\Tracking\UserAgent;
@@ -119,11 +120,14 @@ class Exporter {
 
 			$columns = $this->link_columns();
 
+			Groups::prime( array_map( 'intval', wp_list_pluck( $rows, 'id' ) ) );
+
 			foreach ( $rows as $row ) {
 				$cells = [
 					'slug'           => $row['slug'],
 					'target_url'     => $row['target_url'],
 					'title'          => $row['title'],
+					'groups'         => implode( Csv::GROUP_SEPARATOR, wp_list_pluck( Groups::of( (int) $row['id'] ), 'name' ) ),
 					'redirect_type'  => $row['redirect_type'],
 					'status'         => $row['status'],
 					'forward_params' => $row['forward_params'],

@@ -27,7 +27,7 @@ class LinkCommand extends \WP_CLI_Command {
 	/**
 	 * Default list columns.
 	 */
-	const FIELDS = [ 'id', 'slug', 'short_url', 'target_url', 'redirect_type', 'status', 'total_clicks' ];
+	const FIELDS = [ 'id', 'slug', 'short_url', 'target_url', 'groups', 'status', 'total_clicks' ];
 
 	/**
 	 * Link storage.
@@ -71,6 +71,9 @@ class LinkCommand extends \WP_CLI_Command {
 	 *
 	 * [--max-clicks=<number>]
 	 * : Stop redirecting after this many clicks.
+	 *
+	 * [--groups=<names>]
+	 * : Comma-separated group names; missing groups are created.
 	 *
 	 * [--force]
 	 * : Allow a slug that replaces published content.
@@ -134,6 +137,9 @@ class LinkCommand extends \WP_CLI_Command {
 	 * [--max-clicks=<number>]
 	 * : Click limit. Pass 0 to remove.
 	 *
+	 * [--groups=<names>]
+	 * : Comma-separated group names, replacing the current ones. Pass an empty value to remove all.
+	 *
 	 * [--force]
 	 * : Allow a slug that replaces published content.
 	 *
@@ -187,7 +193,7 @@ class LinkCommand extends \WP_CLI_Command {
 	 */
 	public function get( $args, $assoc_args ) {
 		$link = self::resolve( $this->links, $args[0] );
-		$data = $link->to_array();
+		$data = self::row( $link );
 
 		Utils\format_items( $assoc_args['format'], [ $data ], array_keys( $data ) );
 	}
@@ -199,6 +205,9 @@ class LinkCommand extends \WP_CLI_Command {
 	 *
 	 * [--search=<text>]
 	 * : Match slug, title or destination.
+	 *
+	 * [--group=<group>]
+	 * : Only links in this group (name, slug or ID).
 	 *
 	 * [--orderby=<field>]
 	 * : id, slug, created_at or total_clicks.
@@ -251,6 +260,7 @@ class LinkCommand extends \WP_CLI_Command {
 		$result = $this->links->query(
 			[
 				'search'   => $assoc_args['search'] ?? '',
+				'group'    => $assoc_args['group'] ?? 0,
 				'orderby'  => $assoc_args['orderby'],
 				'order'    => $assoc_args['order'],
 				'per_page' => $assoc_args['per-page'],
@@ -259,9 +269,7 @@ class LinkCommand extends \WP_CLI_Command {
 		);
 
 		$items = array_map(
-			static function ( Link $link ) {
-				return $link->to_array();
-			},
+			[ self::class, 'row' ],
 			$result['items']
 		);
 
@@ -331,6 +339,20 @@ class LinkCommand extends \WP_CLI_Command {
 	}
 
 	/**
+	 * Link as a flat row for output, with group names joined.
+	 *
+	 * @param Link $link Link.
+	 *
+	 * @return array
+	 */
+	public static function row( Link $link ) {
+		$data           = $link->to_array();
+		$data['groups'] = implode( ', ', wp_list_pluck( $data['groups'], 'name' ) );
+
+		return $data;
+	}
+
+	/**
 	 * Map CLI flags to link fields.
 	 *
 	 * @param array $assoc_args Flags.
@@ -352,6 +374,10 @@ class LinkCommand extends \WP_CLI_Command {
 			if ( isset( $assoc_args[ $flag ] ) ) {
 				$data[ $field ] = $assoc_args[ $flag ];
 			}
+		}
+
+		if ( isset( $assoc_args['groups'] ) ) {
+			$data['groups'] = array_filter( array_map( 'trim', explode( ',', (string) $assoc_args['groups'] ) ) );
 		}
 
 		// WP-CLI turns --no-track into track => false.

@@ -12,6 +12,7 @@
 namespace FastUrlShortener;
 
 use FastUrlShortener\Import\Importer;
+use FastUrlShortener\Links\Groups;
 use FastUrlShortener\Redirect\FastPath;
 use FastUrlShortener\Tracking\Retention;
 use FastUrlShortener\Transfer\CsvImporter;
@@ -49,6 +50,19 @@ foreach ( $fast_url_shortener_site_ids as $fast_url_shortener_site_id ) {
 	}
 
 	if ( Settings::get( 'delete_data_on_uninstall' ) ) {
+		// Group terms live in core tables; the taxonomy must be registered to delete them.
+		Groups::register_taxonomy();
+
+		foreach ( get_terms(
+			[
+				'taxonomy'   => Groups::TAXONOMY,
+				'hide_empty' => false,
+				'fields'     => 'ids',
+			]
+		) as $fast_url_shortener_term ) {
+			wp_delete_term( $fast_url_shortener_term, Groups::TAXONOMY );
+		}
+
 		Schema::drop_tables();
 		delete_option( Settings::OPTION );
 		delete_option( Install::DB_VERSION_OPTION );

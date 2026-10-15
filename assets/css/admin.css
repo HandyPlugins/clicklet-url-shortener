@@ -347,3 +347,64 @@
 		align-items: stretch;
 	}
 }
+
+/* Groups */
+.fus-toolbar-filters {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: auto;
+}
+
+.fus-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 4px;
+}
+
+.fus-badge {
+	padding: 0 8px;
+	border: 0;
+	border-radius: 2px;
+	background: #f0f0f1;
+	color: #2c3338;
+	font-size: 12px;
+	line-height: 1.8;
+	cursor: pointer;
+}
+
+.fus-badge:hover,
+.fus-badge:focus {
+	background: #dcdcde;
+}
+
+.fus-groups {
+	margin: 0 0 16px;
+}
+
+.fus-groups li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.fus-groups form {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+}
+
+.fus-groups form .components-base-control {
+	flex: 1;
+}
+
+.fus-post-types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+}

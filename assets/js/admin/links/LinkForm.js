@@ -1,6 +1,7 @@
 import {
 	Button,
 	CheckboxControl,
+	FormTokenField,
 	Modal,
 	Notice,
 	SelectControl,
@@ -8,10 +9,10 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-import { createLink, updateLink } from '../api';
+import { createLink, getGroups, updateLink } from '../api';
 import { SLOTS } from '../extensions';
 import { shortUrlBase } from '../utils';
 
@@ -57,6 +58,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 		target_url: link.target_url || '',
 		slug: link.slug || '',
 		title: link.title || '',
+		groups: ( link.groups || [] ).map( ( group ) => group.name ),
 		redirect_type: link.redirect_type || '',
 		status: link.status || 'active',
 		forward_params: !! link.forward_params,
@@ -65,6 +67,15 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 		max_clicks: link.max_clicks || '',
 	} );
 	const [ force, setForce ] = useState( false );
+	const [ groupNames, setGroupNames ] = useState( [] );
+
+	useEffect( () => {
+		getGroups()
+			.then( ( groups ) =>
+				setGroupNames( groups.map( ( group ) => group.name ) )
+			)
+			.catch( () => {} );
+	}, [] );
 	const [ error, setError ] = useState( null );
 	const [ saving, setSaving ] = useState( false );
 
@@ -170,6 +181,22 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					help={ __( 'Only visible to you.', 'fast-url-shortener' ) }
 					value={ values.title }
 					onChange={ set( 'title' ) }
+				/>
+
+				<FormTokenField
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					__experimentalExpandOnFocus
+					label={ __( 'Groups', 'fast-url-shortener' ) }
+					value={ values.groups }
+					suggestions={ groupNames }
+					onChange={ ( tokens ) =>
+						set( 'groups' )(
+							tokens.map( ( token ) =>
+								typeof token === 'string' ? token : token.value
+							)
+						)
+					}
 				/>
 
 				<SelectControl

@@ -8,6 +8,7 @@
 namespace FastUrlShortener\CLI;
 
 use FastUrlShortener\Import\Importer;
+use FastUrlShortener\Links\PostLinks;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Redirect\FastPath;
 use FastUrlShortener\Settings;
@@ -184,6 +185,8 @@ class Command extends \WP_CLI_Command {
 					$value = filter_var( $value, FILTER_VALIDATE_BOOLEAN );
 				} elseif ( is_int( $defaults[ $key ] ) ) {
 					$value = absint( $value );
+				} elseif ( is_array( $defaults[ $key ] ) ) {
+					$value = array_values( array_filter( array_map( 'sanitize_key', explode( ',', (string) $value ) ) ) );
 				} else {
 					$value = sanitize_text_field( $value );
 				}
@@ -200,11 +203,92 @@ class Command extends \WP_CLI_Command {
 		foreach ( Settings::all() as $key => $value ) {
 			$rows[] = [
 				'setting' => $key,
-				'value'   => is_bool( $value ) ? ( $value ? 'true' : 'false' ) : $value,
+				'value'   => is_bool( $value ) ? ( $value ? 'true' : 'false' ) : ( is_array( $value ) ? implode( ',', $value ) : $value ),
 			];
 		}
 
 		Utils\format_items( $format, $rows, [ 'setting', 'value' ] );
+	}
+
+	/**
+	 * Create short links for published posts that have none.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--post_type=<types>]
+	 * : Comma-separated post types. Defaults to the automatic short link setting.
+	 *
+	 * [--dry-run]
+	 * : Count the posts without creating links.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp fast-url-shortener post-links --post_type=post,page
+	 *
+	 * @subcommand post-links
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Flags.
+	 *
+	 * @return void
+	 */
+	public function post_links( $args, $assoc_args ) {
+		$types = isset( $assoc_args['post_type'] ) ? array_map( 'trim', explode( ',', $assoc_args['post_type'] ) ) : PostLinks::auto_post_types();
+		$types = array_values( array_intersect( $types, get_post_types( [ 'public' => true ] ) ) );
+
+		if ( ! $types ) {
+			WP_CLI::error( 'No post types. Pass --post_type or enable automatic short links in the settings.' );
+		}
+
+		$post_links = new PostLinks( new Repository() );
+		$dry_run    = (bool) Utils\get_flag_value( $assoc_args, 'dry-run', false );
+		$count      = 0;
+		$page       = 1;
+
+		do {
+			$ids = get_posts(
+				[
+					'post_type'              => $types,
+					'post_status'            => 'publish',
+					'fields'                 => 'ids',
+					'posts_per_page'         => 100,
+					// Created posts leave the NOT EXISTS set, so a real run always reads page 1.
+					'paged'                  => $dry_run ? $page++ : 1,
+					'orderby'                => 'ID',
+					'order'                  => 'ASC',
+					'no_found_rows'          => true,
+					'update_post_term_cache' => false,
+					'meta_query'             => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- One-off CLI batch.
+						[
+							'key'     => PostLinks::POST_META,
+							'compare' => 'NOT EXISTS',
+						],
+					],
+				]
+			);
+
+			$failed = 0;
+
+			foreach ( $ids as $id ) {
+				if ( $dry_run ) {
+					++$count;
+					continue;
+				}
+
+				$link = $post_links->create( $id );
+
+				if ( is_wp_error( $link ) ) {
+					WP_CLI::warning( sprintf( 'Post %d: %s', $id, $link->get_error_message() ) );
+					++$failed;
+				} else {
+					++$count;
+				}
+			}
+
+			$batch = count( $ids );
+		} while ( 100 === $batch && ( $dry_run || $failed < $batch ) );
+
+		WP_CLI::success( sprintf( $dry_run ? '%d posts need a short link.' : 'Created %d short links.', $count ) );
 	}
 
 	/**

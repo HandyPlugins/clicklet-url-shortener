@@ -7,14 +7,19 @@
 
 namespace FastUrlShortener;
 
+use FastUrlShortener\Admin\Editor;
 use FastUrlShortener\Admin\Page;
 use FastUrlShortener\CLI\Command;
 use FastUrlShortener\CLI\LinkCommand;
 use FastUrlShortener\Import\Importer;
+use FastUrlShortener\Links\Groups;
+use FastUrlShortener\Links\PostLinks;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Redirect\Router;
+use FastUrlShortener\Rest\GroupsController;
 use FastUrlShortener\Rest\ImportController;
 use FastUrlShortener\Rest\LinksController;
+use FastUrlShortener\Rest\PostLinksController;
 use FastUrlShortener\Rest\SettingsController;
 use FastUrlShortener\Rest\TransferController;
 use FastUrlShortener\Tracking\ClickStore;
@@ -49,15 +54,23 @@ class Plugin {
 		$clicks       = new ClickStore();
 		$csv_importer = new CsvImporter( $links, $clicks );
 
+		$post_links       = new PostLinks( $links );
+		$links_controller = new LinksController( $links );
+
+		( new Groups() )->register();
+		$post_links->register();
 		( new Retention() )->register();
 		$csv_importer->register();
-		( new LinksController( $links ) )->register();
+		$links_controller->register();
+		( new PostLinksController( $post_links, $links_controller ) )->register();
+		( new GroupsController() )->register();
 		( new SettingsController() )->register();
 		( new ImportController( new Importer( $links, $clicks ) ) )->register();
 		( new TransferController( $csv_importer ) )->register();
 
 		if ( is_admin() ) {
 			( new Page() )->register();
+			( new Editor() )->register();
 			( new Exporter() )->register();
 		}
 

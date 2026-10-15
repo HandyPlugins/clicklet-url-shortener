@@ -30,6 +30,9 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 = Features =
 
 * Unlimited short links with custom or generated slugs
+* Groups to organize links (a link can be in several groups)
+* Automatic short links for posts, pages and custom post types, kept in sync when the permalink changes
+* Short link panel in the block editor, and short links as the WordPress shortlink (admin bar, rel=shortlink)
 * 301, 302, 307 and 308 redirects
 * Click history with no time limit: clicks, unique visitors, countries, devices, browsers, operating systems and referrers
 * Bots, link previews (Slack, WhatsApp, Facebook…) and browser prefetches are not counted as clicks
@@ -38,7 +41,7 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 * Optional prefix, for example `/go/promo`
 * Protection against slugs that would hide existing pages
 * Import & export links, daily stats and click details as CSV: move everything between sites or edit links in a spreadsheet (Excel files with semicolons work too)
-* One-click migration from URL Shortify and Pretty Links, including click history
+* One-click migration from URL Shortify and Pretty Links, including click history and groups
 * REST API and WP-CLI commands
 * Multisite support
 
@@ -55,6 +58,7 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 `wp fast-url-shortener export links --file=links.csv`
 `wp fast-url-shortener import links.csv`
 `wp fast-url-shortener migrate pretty-links`
+`wp fast-url-shortener post-links --post_type=post,page`
 `wp fast-url-shortener fast-path enable`
 
 == Frequently Asked Questions ==

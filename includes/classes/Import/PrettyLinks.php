@@ -90,10 +90,41 @@ class PrettyLinks extends Source {
 					'expires_at'     => null,
 					'created_at'     => (string) $row['created_at'],
 					'skip'           => $trashed,
+					'groups'         => $trashed ? [] : $this->groups( $row ),
 				];
 			},
 			$rows
 		);
+	}
+
+	/**
+	 * Group names of a link: the 3.x group and 4.x categories and tags.
+	 *
+	 * @param array $row Link row.
+	 *
+	 * @return string[]
+	 */
+	protected function groups( array $row ) {
+		global $wpdb;
+
+		$names  = [];
+		$groups = $wpdb->prefix . 'prli_groups';
+		$terms  = $wpdb->prefix . 'prli_link_terms';
+
+		if ( ! empty( $row['group_id'] ) && $this->table_exists( $groups ) ) {
+			$names[] = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT name FROM %i WHERE id = %d', $groups, $row['group_id'] ) );
+		}
+
+		if ( $this->table_exists( $terms ) ) {
+			$names = array_merge(
+				$names,
+				$wpdb->get_col(
+					$wpdb->prepare( 'SELECT t.name FROM %i lt INNER JOIN %i t ON t.term_id = lt.term_id WHERE lt.link_id = %d', $terms, $wpdb->terms, $row['id'] )
+				)
+			);
+		}
+
+		return array_values( array_unique( array_filter( $names ) ) );
 	}
 
 	/**

@@ -3,16 +3,18 @@ import {
 	Modal,
 	Notice,
 	SearchControl,
+	SelectControl,
 	Spinner,
 } from '@wordpress/components';
 import { useDebounce } from '@wordpress/compose';
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
-import { deleteLink, getLinks } from '../api';
+import { deleteLink, getGroups, getLinks } from '../api';
 import CopyButton from '../components/CopyButton';
 import { linkColumns, rowActions } from '../extensions';
 import { formatDate, formatNumber, screenUrl } from '../utils';
+import GroupsManager from './GroupsManager';
 import LinkForm from './LinkForm';
 import QuickCreate from './QuickCreate';
 import StatsModal from './StatsModal';
@@ -64,12 +66,25 @@ function SortableHeader( { field, label, query, onSort, className = '' } ) {
  * Links screen: quick create, searchable list, edit and stats.
  */
 export default function LinksPage() {
+	// ?s= and ?group= open the list filtered, e.g. from the block editor panel.
+	const params = new window.URLSearchParams( window.location.search );
 	const [ query, setQuery ] = useState( {
-		search: '',
+		search: params.get( 's' ) || '',
+		group: Number( params.get( 'group' ) ) || 0,
 		orderby: 'id',
 		order: 'desc',
 		page: 1,
 	} );
+	const [ groups, setGroups ] = useState( [] );
+	const [ managingGroups, setManagingGroups ] = useState( false );
+
+	const loadGroups = useCallback( () => {
+		getGroups()
+			.then( setGroups )
+			.catch( () => {} );
+	}, [] );
+
+	useEffect( loadGroups, [ loadGroups ] );
 	const [ result, setResult ] = useState( {
 		items: [],
 		total: 0,
@@ -97,7 +112,7 @@ export default function LinksPage() {
 		[]
 	);
 	const search = useDebounce( applySearch, 300 );
-	const [ searchInput, setSearchInput ] = useState( '' );
+	const [ searchInput, setSearchInput ] = useState( query.search );
 
 	const sort = ( field ) =>
 		setQuery( ( q ) => ( {
@@ -121,9 +136,14 @@ export default function LinksPage() {
 	const onSaved = () => {
 		setEditing( null );
 		load();
+		loadGroups();
 	};
 
-	const isEmpty = ! loading && ! result.total && ! query.search;
+	const filterByGroup = ( group ) =>
+		setQuery( ( q ) => ( { ...q, group: Number( group ), page: 1 } ) );
+
+	const isEmpty =
+		! loading && ! result.total && ! query.search && ! query.group;
 	const extraColumns = linkColumns();
 	const colSpan = 5 + extraColumns.length;
 
@@ -181,6 +201,42 @@ export default function LinksPage() {
 								formatNumber( result.total )
 							) }
 						</span>
+						<div className="fus-toolbar-filters">
+							{ groups.length > 0 && (
+								<SelectControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									label={ __(
+										'Filter by group',
+										'fast-url-shortener'
+									) }
+									hideLabelFromVision
+									value={ query.group }
+									options={ [
+										{
+											value: 0,
+											label: __(
+												'All groups',
+												'fast-url-shortener'
+											),
+										},
+										...groups.map( ( group ) => ( {
+											value: group.id,
+											label: `${ group.name } (${ formatNumber(
+												group.count
+											) })`,
+										} ) ),
+									] }
+									onChange={ filterByGroup }
+								/>
+							) }
+							<Button
+								variant="tertiary"
+								onClick={ () => setManagingGroups( true ) }
+							>
+								{ __( 'Manage groups', 'fast-url-shortener' ) }
+							</Button>
+						</div>
 						<SearchControl
 							__nextHasNoMarginBottom
 							value={ searchInput }
@@ -294,6 +350,26 @@ export default function LinksPage() {
 													text={ link.short_url }
 												/>
 											</div>
+											{ link.groups?.length > 0 && (
+												<div className="fus-badges">
+													{ link.groups.map(
+														( group ) => (
+															<button
+																key={ group.id }
+																type="button"
+																className="fus-badge"
+																onClick={ () =>
+																	filterByGroup(
+																		group.id
+																	)
+																}
+															>
+																{ group.name }
+															</button>
+														)
+													) }
+												</div>
+											) }
 											<div className="row-actions visible">
 												<span className="edit">
 													<Button
@@ -493,6 +569,16 @@ export default function LinksPage() {
 						</Button>
 					</div>
 				</Modal>
+			) }
+			{ managingGroups && (
+				<GroupsManager
+					groups={ groups }
+					onChange={ () => {
+						loadGroups();
+						load();
+					} }
+					onClose={ () => setManagingGroups( false ) }
+				/>
 			) }
 			{ viewingStats && (
 				<StatsModal

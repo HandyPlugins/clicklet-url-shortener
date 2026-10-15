@@ -90,9 +90,32 @@ class UrlShortify extends Source {
 					'expires_at'     => $row['expires_at'] ? (string) $row['expires_at'] : null,
 					'created_at'     => (string) $row['created_at'],
 					'skip'           => false,
+					'groups'         => $this->groups( (int) $row['id'] ),
 				];
 			},
 			$rows
+		);
+	}
+
+	/**
+	 * Group names of a link.
+	 *
+	 * @param int $link_id Source link ID.
+	 *
+	 * @return string[]
+	 */
+	protected function groups( $link_id ) {
+		global $wpdb;
+
+		$relations = $wpdb->prefix . 'kc_us_links_groups';
+		$groups    = $wpdb->prefix . 'kc_us_groups';
+
+		if ( ! $this->table_exists( $relations ) || ! $this->table_exists( $groups ) ) {
+			return [];
+		}
+
+		return $wpdb->get_col(
+			$wpdb->prepare( 'SELECT g.name FROM %i lg INNER JOIN %i g ON g.id = lg.group_id WHERE lg.link_id = %d', $relations, $groups, $link_id )
 		);
 	}
 

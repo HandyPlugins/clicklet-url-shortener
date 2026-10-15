@@ -3,6 +3,7 @@ import {
 	Card,
 	CardBody,
 	CardHeader,
+	CheckboxControl,
 	Notice,
 	SelectControl,
 	Slot,
@@ -186,6 +187,59 @@ export default function SettingsPage() {
 							) }
 						</Notice>
 					) }
+				</CardBody>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<h2>
+						{ __( 'Automatic short links', 'fast-url-shortener' ) }
+					</h2>
+				</CardHeader>
+				<CardBody>
+					<p className="fus-muted">
+						{ __(
+							'Create a short link when content of these types is published. It is also used as the WordPress shortlink, for example in the admin bar.',
+							'fast-url-shortener'
+						) }
+					</p>
+					<div className="fus-post-types">
+						{ ( window.fastUrlShortener?.postTypes || [] ).map(
+							( type ) => (
+								<CheckboxControl
+									key={ type.name }
+									__nextHasNoMarginBottom
+									label={ type.label }
+									checked={ (
+										values.auto_post_types || []
+									).includes( type.name ) }
+									onChange={ ( checked ) =>
+										set( 'auto_post_types' )(
+											checked
+												? [
+														...( values.auto_post_types ||
+															[] ),
+														type.name,
+													]
+												: (
+														values.auto_post_types ||
+														[]
+													).filter(
+														( name ) =>
+															name !== type.name
+													)
+										)
+									}
+								/>
+							)
+						) }
+					</div>
+					<p className="fus-muted">
+						{ __(
+							'Existing content gets a short link when it is next updated, or all at once with: wp fast-url-shortener post-links',
+							'fast-url-shortener'
+						) }
+					</p>
 				</CardBody>
 			</Card>
 

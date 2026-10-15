@@ -331,6 +331,11 @@ class CsvImporter {
 			}
 		}
 
+		// Only files with a groups column change groups; an empty cell clears them.
+		if ( array_key_exists( 'groups', $row ) ) {
+			$data['groups'] = array_filter( array_map( 'trim', explode( Csv::GROUP_SEPARATOR, $row['groups'] ) ) );
+		}
+
 		if ( ! empty( $row['expires_at_utc'] ) ) {
 			// The repository expects the site timezone.
 			$data['expires_at'] = get_date_from_gmt( $row['expires_at_utc'] );

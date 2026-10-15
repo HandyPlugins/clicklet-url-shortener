@@ -49,6 +49,28 @@ class Repository {
 	}
 
 	/**
+	 * Find a link by ID through the object cache: the ID maps to the slug, and
+	 * the slug lookup is cached. For front-end use, e.g. shortlinks.
+	 *
+	 * @param int $id Link ID.
+	 *
+	 * @return Link|null
+	 */
+	public function find_cached( $id ) {
+		$key  = 'id_' . absint( $id );
+		$slug = wp_cache_get( $key, self::CACHE_GROUP );
+
+		if ( false === $slug ) {
+			$link = $this->find( $id );
+			wp_cache_set( $key, $link ? $link->slug : '', self::CACHE_GROUP, HOUR_IN_SECONDS );
+
+			return $link;
+		}
+
+		return '' !== $slug ? $this->find_by_slug( $slug ) : null;
+	}
+
+	/**
 	 * Find a link by slug. Misses are cached too, so unknown paths stay cheap
 	 * with a persistent object cache.
 	 *
@@ -80,8 +102,9 @@ class Repository {
 	 * @param array $args {
 	 *     Optional. Query arguments.
 	 *
-	 *     @type string $search   Matches slug, title or target URL.
-	 *     @type string $orderby  id, slug, created_at or total_clicks.
+	 *     @type string     $search   Matches slug, title or target URL.
+	 *     @type int|string $group    Group ID, slug or name.
+	 *     @type string     $orderby  id, slug, created_at or total_clicks.
 	 *     @type string $order    ASC or DESC.
 	 *     @type int    $per_page 1-100.
 	 *     @type int    $page     Page number.
@@ -96,6 +119,7 @@ class Repository {
 			$args,
 			[
 				'search'   => '',
+				'group'    => 0,
 				'orderby'  => 'id',
 				'order'    => 'DESC',
 				'per_page' => 20,
@@ -111,22 +135,68 @@ class Repository {
 		// An empty search becomes "%%", which matches every row.
 		$like = '%' . $wpdb->esc_like( (string) $args['search'] ) . '%';
 
+		// 0 disables the group filter; -1 matches nothing (unknown group).
+		$group = $args['group'] ? Groups::term_taxonomy_id( $args['group'] ) : 0;
+		$group = $args['group'] && ! $group ? -1 : $group;
+
+		$relationships = $wpdb->term_relationships;
+
 		// ORDER BY direction cannot be a placeholder, so each direction gets its own query.
 		if ( 'ASC' === strtoupper( $args['order'] ) ) {
 			$rows = $wpdb->get_results(
-				$wpdb->prepare( 'SELECT * FROM %i WHERE slug LIKE %s OR title LIKE %s OR target_url LIKE %s ORDER BY %i ASC LIMIT %d OFFSET %d', $table, $like, $like, $like, $orderby, $per_page, $offset ),
+				$wpdb->prepare(
+					'SELECT l.* FROM %i l WHERE ( l.slug LIKE %s OR l.title LIKE %s OR l.target_url LIKE %s )
+					AND ( %d = 0 OR EXISTS ( SELECT 1 FROM %i tr WHERE tr.object_id = l.id AND tr.term_taxonomy_id = %d ) )
+					ORDER BY %i ASC LIMIT %d OFFSET %d',
+					$table,
+					$like,
+					$like,
+					$like,
+					$group,
+					$relationships,
+					$group,
+					$orderby,
+					$per_page,
+					$offset
+				),
 				ARRAY_A
 			);
 		} else {
 			$rows = $wpdb->get_results(
-				$wpdb->prepare( 'SELECT * FROM %i WHERE slug LIKE %s OR title LIKE %s OR target_url LIKE %s ORDER BY %i DESC LIMIT %d OFFSET %d', $table, $like, $like, $like, $orderby, $per_page, $offset ),
+				$wpdb->prepare(
+					'SELECT l.* FROM %i l WHERE ( l.slug LIKE %s OR l.title LIKE %s OR l.target_url LIKE %s )
+					AND ( %d = 0 OR EXISTS ( SELECT 1 FROM %i tr WHERE tr.object_id = l.id AND tr.term_taxonomy_id = %d ) )
+					ORDER BY %i DESC LIMIT %d OFFSET %d',
+					$table,
+					$like,
+					$like,
+					$like,
+					$group,
+					$relationships,
+					$group,
+					$orderby,
+					$per_page,
+					$offset
+				),
 				ARRAY_A
 			);
 		}
 
 		$total = (int) $wpdb->get_var(
-			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE slug LIKE %s OR title LIKE %s OR target_url LIKE %s', $table, $like, $like, $like )
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i l WHERE ( l.slug LIKE %s OR l.title LIKE %s OR l.target_url LIKE %s )
+				AND ( %d = 0 OR EXISTS ( SELECT 1 FROM %i tr WHERE tr.object_id = l.id AND tr.term_taxonomy_id = %d ) )',
+				$table,
+				$like,
+				$like,
+				$like,
+				$group,
+				$relationships,
+				$group
+			)
 		);
+
+		Groups::prime( array_map( 'intval', wp_list_pluck( $rows, 'id' ) ) );
 
 		return [
 			'items' => array_map( [ Link::class, 'from_row' ], $rows ),
@@ -168,7 +238,13 @@ class Repository {
 
 		$this->flush_cache( $fields['slug'] );
 
-		$link = $this->find( $wpdb->insert_id );
+		$link_id = (int) $wpdb->insert_id;
+
+		if ( isset( $data['groups'] ) ) {
+			Groups::set( $link_id, (array) $data['groups'] );
+		}
+
+		$link = $this->find( $link_id );
 
 		/**
 		 * Fires after a link is created.
@@ -216,6 +292,11 @@ class Repository {
 
 		if ( isset( $fields['slug'] ) ) {
 			$this->flush_cache( $fields['slug'] );
+			wp_cache_delete( 'id_' . $link->id, self::CACHE_GROUP );
+		}
+
+		if ( array_key_exists( 'groups', $data ) ) {
+			Groups::set( $link->id, (array) $data['groups'] );
 		}
 
 		$updated = $this->find( $link->id );
@@ -252,6 +333,8 @@ class Repository {
 		$wpdb->delete( Schema::table( 'links' ), [ 'id' => $link->id ], [ '%d' ] );
 		$wpdb->delete( Schema::table( 'linkmeta' ), [ Schema::META_TYPE . '_id' => $link->id ], [ '%d' ] );
 		wp_cache_delete( $link->id, Schema::META_TYPE . '_meta' );
+		Groups::remove( $link->id );
+		wp_cache_delete( 'id_' . $link->id, self::CACHE_GROUP );
 		$wpdb->delete( Schema::table( 'clicks' ), [ 'link_id' => $link->id ], [ '%d' ] );
 		$wpdb->delete( Schema::table( 'stats_daily' ), [ 'link_id' => $link->id ], [ '%d' ] );
 
@@ -347,6 +430,10 @@ class Repository {
 			$fields['slug'] = $slug;
 		} elseif ( ! $existing ) {
 			$fields['slug'] = $this->unique_slug();
+		}
+
+		if ( isset( $data['groups'] ) && ! is_array( $data['groups'] ) ) {
+			return new WP_Error( 'fast_url_shortener_invalid_groups', __( 'Groups must be a list.', 'fast-url-shortener' ) );
 		}
 
 		if ( isset( $data['title'] ) ) {
