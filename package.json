@@ -12,6 +12,6 @@
     "lint:typos": "typos"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^35.0.0"
+    "@wordpress/scripts": "^36.1.0"
   }
 }
