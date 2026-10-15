@@ -1,0 +1,19 @@
+# Spell checking with https://github.com/crate-ci/typos
+# Run locally with `typos`; CI runs it on every push and pull request.
+
+[files]
+# Also check dotfiles such as workflows and ignore lists.
+ignore-hidden = false
+extend-exclude = [
+	".git/",
+	"composer.lock",
+	"package-lock.json",
+	"vendor/",
+	"node_modules/",
+	"dist/",
+	"build/",
+]
+
+[default]
+# WordPress uses American English.
+locale = "en-us"

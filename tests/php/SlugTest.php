@@ -69,7 +69,7 @@ class SlugTest extends TestCase {
 	}
 
 	/**
-	 * Generated slugs have the requested length and avoid look-alikes.
+	 * Generated slugs have the requested length and avoid easily confused characters.
 	 */
 	public function test_generate() {
 		$slug = Slug::generate( 12 );

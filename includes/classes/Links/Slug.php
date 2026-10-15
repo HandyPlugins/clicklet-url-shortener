@@ -20,7 +20,7 @@ class Slug {
 	const PATTERN = '/^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/';
 
 	/**
-	 * Characters for generated slugs. Look-alikes (0/o, 1/l/i) are left out.
+	 * Characters for generated slugs. Characters that are easy to confuse (0/o, 1/l/i) are left out.
 	 */
 	const ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 

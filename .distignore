@@ -21,3 +21,4 @@ package.json
 package-lock.json
 phpunit.xml.dist
 .phpunit.result.cache
+_typos.toml

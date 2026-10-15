@@ -8,7 +8,8 @@
     "start": "wp-scripts start admin=./assets/js/admin/index.js --output-path=dist",
     "lint:js": "wp-scripts lint-js assets/js",
     "lint:css": "wp-scripts lint-style \"assets/css/**/*.css\"",
-    "format": "wp-scripts format assets"
+    "format": "wp-scripts format assets",
+    "lint:typos": "typos"
   },
   "devDependencies": {
     "@wordpress/scripts": "^35.0.0"

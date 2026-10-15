@@ -29,7 +29,10 @@ Defaults in `tests/wp-tests-config.php` fit a plugin checked out in `wp-content/
 composer lint        # PHPCS (10up-Default)
 npm run lint:js
 npm run lint:css
+npm run lint:typos   # spell check; needs typos (brew install typos-cli)
 ```
+
+Spell checking uses [typos](https://github.com/crate-ci/typos) with American English (`_typos.toml`). It also runs in CI on every push and pull request.
 
 ## Release
 
