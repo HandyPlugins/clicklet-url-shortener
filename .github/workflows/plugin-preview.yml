@@ -1,0 +1,38 @@
+name: Preview package
+
+# preview-* tags (e.g. preview-1.0) build the release package and publish it
+# as a GitHub pre-release, without touching WordPress.org. Use them for the
+# package sent to plugin review and for re-submissions, so each one stays
+# reproducible from its tag.
+on:
+  push:
+    tags:
+      - 'preview-*'
+
+permissions:
+  contents: write
+
+jobs:
+  preview:
+    name: Package ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Builds the admin assets and zips the plugin without the files in .distignore.
+      - name: Build package
+        run: bin/build.sh
+
+      - name: Publish pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" build/fast-url-shortener.zip \
+            --prerelease \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "Package for WordPress.org plugin review, built from ${GITHUB_SHA}. Not deployed to WordPress.org."

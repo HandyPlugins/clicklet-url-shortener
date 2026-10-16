@@ -85,6 +85,14 @@ Values set with `setValue()` are sent with the link or settings request. The lin
 bin/build.sh   # build/fast-url-shortener.zip, without files in .distignore
 ```
 
+Releases are driven by tags (GitHub Actions):
+
+- `preview-*` (e.g. `preview-1.0`): builds the package and publishes it as a GitHub pre-release. Nothing goes to WordPress.org. Use it for packages sent to plugin review, so each submission can be rebuilt from its tag.
+- `X.Y.Z` (e.g. `1.0.1`): checks that the tag matches `Version` in the plugin header and `Stable tag` in readme.txt, builds the admin assets, deploys to WordPress.org and attaches the package to a GitHub release.
+- Pushes to `main` update readme.txt and `.wordpress-org` assets on WordPress.org.
+
+The WordPress.org workflows need the `SVN_USERNAME` and `SVN_PASSWORD` repository secrets.
+
 Run Plugin Check on the built package, not the working copy:
 
 ```bash
