@@ -19,6 +19,7 @@ Integration tests run against a real WordPress install and a separate, disposabl
 
 ```bash
 composer test
+WP_MULTISITE=1 composer test   # the same suite on a multisite network
 ```
 
 Defaults in `tests/wp-tests-config.php` fit a plugin checked out in `wp-content/plugins` of a local site. Override them with environment variables: `WP_CORE_DIR`, `WP_TESTS_DB_NAME`, `WP_TESTS_DB_USER`, `WP_TESTS_DB_PASSWORD`, `WP_TESTS_DB_HOST`.

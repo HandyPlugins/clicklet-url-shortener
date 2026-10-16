@@ -4,7 +4,7 @@ Tags:              url shortener, short links, link tracking, affiliate links, r
 Requires at least: 6.5
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        0.1.0
+Stable tag:        1.0.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 = Built for speed =
 
 * Short links resolve before the theme and most of WordPress load. With the optional fast path, they resolve before other plugins load too.
-* Pages that are not short links cost nothing: they are filtered out from the URL alone, without a database query.
+* Requests that cannot be a short link (multi-segment paths, files, admin, REST) are filtered out from the URL alone, without a database query.
 * Clicks are recorded after the visitor has been redirected, so tracking never slows a redirect down.
 * Works with persistent object caches such as Redis and Memcached.
 
@@ -80,9 +80,17 @@ Links and statistics are kept unless you turn on "delete data on uninstall", so 
 
 = Are short links case-sensitive? =
 
-Not by default: `/Promo` and `/promo` are the same link. Set `case_sensitive` to make them case-sensitive, e.g. `wp fast-url-shortener settings --case_sensitive=1`.
+Not by default: `/Promo` and `/promo` are the same link. Turn on "Case-sensitive slugs" in Short Links → Settings to make them different links.
+
+= Does the plugin send data to external services? =
+
+No. Short links, click statistics and QR codes are all handled on your site. Country information comes from request headers your CDN or host already adds, when available.
+
+= Where is the source code of the admin scripts? =
+
+The scripts in `dist/` are built from the readable sources in `assets/js/`, which are included in the plugin. The complete source with build tools is on GitHub: https://github.com/HandyPlugins/fast-url-shortener. To build it, run `npm ci && npm run build`. QR codes use the qrcode-generator library (MIT): https://github.com/kazuhikoarase/qrcode-generator.
 
 == Changelog ==
 
-= 0.1.0 =
+= 1.0.0 =
 * Initial release.
