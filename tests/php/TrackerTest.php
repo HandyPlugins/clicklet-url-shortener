@@ -141,6 +141,18 @@ class TrackerTest extends TestCase {
 	}
 
 	/**
+	 * QR scans are stored with their own source.
+	 */
+	public function test_qr_source() {
+		$link = $this->create_link();
+
+		$this->tracker->record( $link );
+		$this->tracker->record( $link, \FastUrlShortener\Tracking\Stats::SOURCE_QR );
+
+		$this->assertSame( [ '0', '1' ], wp_list_pluck( $this->clicks( $link->id ), 'source' ) );
+	}
+
+	/**
 	 * Helpers.
 	 */
 	public function test_helpers() {

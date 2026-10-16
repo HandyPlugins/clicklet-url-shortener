@@ -61,6 +61,7 @@ class TransferTest extends TestCase {
 				'max_clicks'     => 500,
 				'created_at'     => '2024-01-02 03:04:05',
 				'groups'         => [ 'Summer', 'Social' ],
+				'password'       => 's3cret',
 			]
 		);
 		$other = $this->create_link(
@@ -88,6 +89,7 @@ class TransferTest extends TestCase {
 					'os'            => 3,
 					'browser'       => 2,
 					'referrer_host' => 't.co',
+					'source'        => 'bb' === $click[2] ? 1 : 0,
 				],
 				str_repeat( $click[2], 16 )
 			);
@@ -159,9 +161,9 @@ class TransferTest extends TestCase {
 
 		return [
 			'groups' => $groups,
-			'links'  => $wpdb->get_results( "SELECT slug, target_url, title, redirect_type, status, forward_params, track_clicks, expires_at, max_clicks, created_at, total_clicks FROM {$links} ORDER BY slug", ARRAY_A ),
+			'links'  => $wpdb->get_results( "SELECT slug, target_url, title, redirect_type, status, forward_params, track_clicks, expires_at, max_clicks, password_hash, created_at, total_clicks FROM {$links} ORDER BY slug", ARRAY_A ),
 			'stats'  => $wpdb->get_results( "SELECT l.slug, s.day, s.clicks, s.uniques, s.bots FROM {$stats} s JOIN {$links} l ON l.id = s.link_id ORDER BY l.slug, s.day", ARRAY_A ),
-			'clicks' => $wpdb->get_results( "SELECT l.slug, c.clicked_at, HEX(c.visitor_hash) h, c.is_unique, c.country, c.device, c.os, c.browser, c.referrer_host FROM {$clicks} c JOIN {$links} l ON l.id = c.link_id ORDER BY l.slug, c.clicked_at, h, c.is_unique", ARRAY_A ),
+			'clicks' => $wpdb->get_results( "SELECT l.slug, c.clicked_at, HEX(c.visitor_hash) h, c.is_unique, c.country, c.device, c.os, c.browser, c.referrer_host, c.source FROM {$clicks} c JOIN {$links} l ON l.id = c.link_id ORDER BY l.slug, c.clicked_at, h, c.is_unique", ARRAY_A ),
 		];
 	}
 
@@ -198,6 +200,7 @@ class TransferTest extends TestCase {
 		}
 
 		$this->assertSame( $before, $this->snapshot() );
+		$this->assertTrue( ( new Repository() )->find_by_slug( 'promo' )->check_password( 's3cret' ), 'Passwords survive the move.' );
 
 		foreach ( $files as $file ) {
 			$this->import( $file );

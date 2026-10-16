@@ -19,7 +19,38 @@ class Stats {
 	/**
 	 * Breakdown dimensions and their columns in the clicks table.
 	 */
-	const DIMENSIONS = [ 'country', 'device', 'os', 'browser', 'referrer_host' ];
+	const DIMENSIONS = [ 'country', 'device', 'os', 'browser', 'referrer_host', 'source' ];
+
+	/**
+	 * Click sources: the short link itself, or a scan of its QR code.
+	 */
+	const SOURCE_LINK = 0;
+	const SOURCE_QR   = 1;
+
+	/**
+	 * Stable keys for sources, used in CSV files.
+	 */
+	const SOURCE_KEYS = [
+		self::SOURCE_LINK => 'link',
+		self::SOURCE_QR   => 'qr',
+	];
+
+	/**
+	 * Labels for stored dimension values (devices, systems, browsers, sources).
+	 *
+	 * @return array
+	 */
+	public static function labels() {
+		return array_merge(
+			UserAgent::labels(),
+			[
+				'source' => [
+					self::SOURCE_LINK => __( 'Link', 'fast-url-shortener' ),
+					self::SOURCE_QR   => __( 'QR code', 'fast-url-shortener' ),
+				],
+			]
+		);
+	}
 
 	/**
 	 * Daily totals for a link over the last N days, oldest first, with
@@ -59,6 +90,42 @@ class Stats {
 		}
 
 		return $series;
+	}
+
+	/**
+	 * Most clicked links over the last N days, from daily totals.
+	 *
+	 * @param int $days  Number of days, including today.
+	 * @param int $limit Links to return.
+	 *
+	 * @return array<int, array{link_id: int, slug: string, title: string, clicks: int}>
+	 */
+	public function top_links( $days = 7, $limit = 5 ) {
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT s.link_id, l.slug, l.title, SUM(s.clicks) AS clicks FROM %i s INNER JOIN %i l ON l.id = s.link_id
+				WHERE s.day >= %s GROUP BY s.link_id, l.slug, l.title HAVING clicks > 0 ORDER BY clicks DESC LIMIT %d',
+				Schema::table( 'stats_daily' ),
+				Schema::table( 'links' ),
+				wp_date( 'Y-m-d', time() - ( max( 1, absint( $days ) ) - 1 ) * DAY_IN_SECONDS ),
+				max( 1, absint( $limit ) )
+			),
+			ARRAY_A
+		);
+
+		return array_map(
+			static function ( $row ) {
+				return [
+					'link_id' => (int) $row['link_id'],
+					'slug'    => (string) $row['slug'],
+					'title'   => (string) $row['title'],
+					'clicks'  => (int) $row['clicks'],
+				];
+			},
+			$rows
+		);
 	}
 
 	/**

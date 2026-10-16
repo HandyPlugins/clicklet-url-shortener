@@ -15,6 +15,7 @@ const BREAKDOWNS = [
 	{ key: 'device', title: __( 'Devices', 'fast-url-shortener' ) },
 	{ key: 'browser', title: __( 'Browsers', 'fast-url-shortener' ) },
 	{ key: 'os', title: __( 'Operating systems', 'fast-url-shortener' ) },
+	{ key: 'source', title: __( 'Sources', 'fast-url-shortener' ) },
 ];
 
 /**

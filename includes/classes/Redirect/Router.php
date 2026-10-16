@@ -13,6 +13,7 @@ use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Links\Slug;
 use FastUrlShortener\Settings;
 use FastUrlShortener\Tracking\ClickStore;
+use FastUrlShortener\Tracking\Stats;
 use FastUrlShortener\Tracking\Tracker;
 
 /**
@@ -23,6 +24,11 @@ use FastUrlShortener\Tracking\Tracker;
  * link are rejected from the path alone, without touching the database.
  */
 class Router {
+
+	/**
+	 * Query parameter QR codes add to the short URL, to count scans separately.
+	 */
+	const QR_PARAM = 'qr';
 
 	/**
 	 * Whether this request was already routed.
@@ -94,6 +100,21 @@ class Router {
 			return;
 		}
 
+		// The password form is translated, so it waits for template_redirect (after init).
+		if ( $link->has_password() ) {
+			if ( did_action( 'plugins_loaded' ) ) {
+				( new PasswordGate( $this, $link ) )->register();
+			} else {
+				self::$routed = false;
+			}
+
+			return;
+		}
+
+		if ( 'POST' === $this->method() ) {
+			return;
+		}
+
 		$this->redirect( $link );
 	}
 
@@ -128,13 +149,23 @@ class Router {
 	 * @return bool
 	 */
 	protected function is_routable_request() {
-		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
+		$method = $this->method();
 
-		if ( 'GET' !== $method && 'HEAD' !== $method ) {
+		// POST only reaches password-protected links (see maybe_redirect()).
+		if ( ! in_array( $method, [ 'GET', 'HEAD', 'POST' ], true ) ) {
 			return false;
 		}
 
 		return ! ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) );
+	}
+
+	/**
+	 * HTTP method.
+	 *
+	 * @return string
+	 */
+	protected function method() {
+		return isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
 	}
 
 	/**
@@ -161,12 +192,13 @@ class Router {
 
 	/**
 	 * Send the redirect, then record the click after the visitor has left.
+	 * Ends the request.
 	 *
 	 * @param Link $link Link.
 	 *
 	 * @return void
 	 */
-	protected function redirect( Link $link ) {
+	public function redirect( Link $link ) {
 		/**
 		 * Filter the redirect destination.
 		 *
@@ -218,7 +250,7 @@ class Router {
 
 		if ( $this->should_track( $link ) ) {
 			$this->finish_response();
-			( new Tracker( $this->links, new ClickStore() ) )->record( $link );
+			( new Tracker( $this->links, new ClickStore() ) )->record( $link, $this->is_qr_scan() ? Stats::SOURCE_QR : Stats::SOURCE_LINK );
 		}
 
 		exit;
@@ -237,6 +269,9 @@ class Router {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by the regex.
 		$query = isset( $_SERVER['QUERY_STRING'] ) ? (string) preg_replace( '/[^\x21-\x7E]/', '', wp_unslash( $_SERVER['QUERY_STRING'] ) ) : '';
 
+		// The QR marker is ours; never pass it on.
+		$query = trim( (string) preg_replace( '/(^|&)' . self::QR_PARAM . '=1(?=&|$)/', '', $query ), '&' );
+
 		if ( ! $link->forward_params || '' === $query ) {
 			return $target;
 		}
@@ -253,6 +288,15 @@ class Router {
 	}
 
 	/**
+	 * Whether the visit came from the link's QR code, which encodes ?qr=1.
+	 *
+	 * @return bool
+	 */
+	protected function is_qr_scan() {
+		return isset( $_GET[ self::QR_PARAM ] ) && '1' === $_GET[ self::QR_PARAM ]; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- Read-only flag compared to a literal.
+	}
+
+	/**
 	 * Whether this request should be counted.
 	 *
 	 * HEAD requests and browser prefetches are not visits.
@@ -266,7 +310,7 @@ class Router {
 			return false;
 		}
 
-		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'HEAD' === $_SERVER['REQUEST_METHOD'] ) {
+		if ( 'HEAD' === $this->method() ) {
 			return false;
 		}
 

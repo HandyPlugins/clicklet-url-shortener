@@ -11,6 +11,7 @@ use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Links\Slug;
 use FastUrlShortener\Tracking\ClickStore;
 use FastUrlShortener\Tracking\Retention;
+use FastUrlShortener\Tracking\Stats;
 use FastUrlShortener\Tracking\UserAgent;
 use WP_Error;
 
@@ -325,7 +326,7 @@ class CsvImporter {
 			$data['forward_params'] = Csv::to_bool( $row['forward_params'], false );
 		}
 
-		foreach ( [ 'redirect_type', 'status', 'max_clicks' ] as $field ) {
+		foreach ( [ 'redirect_type', 'status', 'max_clicks', 'password_hash' ] as $field ) {
 			if ( isset( $row[ $field ] ) && '' !== $row[ $field ] ) {
 				$data[ $field ] = $row[ $field ];
 			}
@@ -466,6 +467,7 @@ class CsvImporter {
 				'os'            => $this->key_value( 'os', $row['os'] ?? '' ),
 				'browser'       => $this->key_value( 'browser', $row['browser'] ?? '' ),
 				'referrer_host' => substr( strtolower( $row['referrer_host'] ?? '' ), 0, 191 ),
+				'source'        => 'qr' === strtolower( $row['source'] ?? '' ) ? Stats::SOURCE_QR : Stats::SOURCE_LINK,
 			],
 			$hash
 		);

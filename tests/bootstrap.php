@@ -29,3 +29,4 @@ require $fus_tests_dir . '/includes/bootstrap.php';
 FastUrlShortener\Schema::drop_tables();
 FastUrlShortener\Schema::create_tables();
 require __DIR__ . '/php/TestCase.php';
+require __DIR__ . '/php/Doubles/RecordingRouter.php';

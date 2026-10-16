@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "@wordpress/scripts": "^36.1.0"
+  },
+  "dependencies": {
+    "qrcode-generator": "^2.0.4"
   }
 }

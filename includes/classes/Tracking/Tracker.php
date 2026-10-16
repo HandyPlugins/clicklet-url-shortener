@@ -60,11 +60,12 @@ class Tracker {
 	/**
 	 * Record a click on a link.
 	 *
-	 * @param Link $link Link.
+	 * @param Link $link   Link.
+	 * @param int  $source Stats::SOURCE_* value.
 	 *
 	 * @return void
 	 */
-	public function record( Link $link ) {
+	public function record( Link $link, $source = Stats::SOURCE_LINK ) {
 		$user_agent = $this->server( 'HTTP_USER_AGENT' );
 		$agent      = UserAgent::parse( $user_agent );
 		$day        = wp_date( 'Y-m-d' );
@@ -75,7 +76,7 @@ class Tracker {
 		}
 
 		$now  = current_time( 'mysql', true );
-		$hash = ClickStore::visitor_hash( $this->ip(), $user_agent, $day );
+		$hash = ClickStore::visitor_hash( self::client_ip(), $user_agent, $day );
 
 		$click = [
 			'link_id'       => $link->id,
@@ -86,6 +87,7 @@ class Tracker {
 			'os'            => $agent['os'],
 			'browser'       => $agent['browser'],
 			'referrer_host' => self::host( $this->server( 'HTTP_REFERER' ) ),
+			'source'        => (int) $source,
 		];
 
 		$this->clicks->insert( $click, $hash );
@@ -136,12 +138,12 @@ class Tracker {
 	 *
 	 * @return string
 	 */
-	protected function ip() {
+	public static function client_ip() {
 		$header = (string) Settings::get( 'ip_header' );
-		$value  = '' !== $header ? $this->server( $header ) : '';
+		$value  = '' !== $header && isset( $_SERVER[ $header ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ) : '';
 
-		if ( '' === $value ) {
-			$value = $this->server( 'REMOTE_ADDR' );
+		if ( '' === $value && isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$value = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 		}
 
 		// Forwarded headers may hold a list; the client is first.

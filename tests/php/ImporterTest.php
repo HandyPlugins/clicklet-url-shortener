@@ -204,7 +204,12 @@ class ImporterTest extends TestCase {
 		$this->assertSame( 3, $promo->total_clicks );
 
 		$this->assertNotNull( $links->find_by_slug( 'us-upper' ) );
-		$this->assertSame( 'disabled', $links->find_by_slug( 'us-secret' )->status, 'Password-protected links must not become public.' );
+		// URL Shortify keeps plain-text passwords; they arrive hashed and still protect the link.
+		$secret = $links->find_by_slug( 'us-secret' );
+		$this->assertSame( 'active', $secret->status );
+		$this->assertTrue( $secret->has_password() );
+		$this->assertTrue( $secret->check_password( 'hunter2' ) );
+		$this->assertNotSame( 'hunter2', $secret->password_hash() );
 
 		// Running it again adds nothing.
 		$again = $this->run_import( $source );

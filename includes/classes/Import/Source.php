@@ -65,6 +65,7 @@ abstract class Source {
 	 *     @type string|null $expires_at     UTC datetime.
 	 *     @type string      $created_at     UTC datetime.
 	 *     @type string[]    $groups         Group, category or tag names.
+	 *     @type string      $password       Plain password, if any. Optional.
 	 *     @type bool        $skip           Leave the link out (e.g. trashed).
 	 * }
 	 */
@@ -88,6 +89,7 @@ abstract class Source {
 	 *     @type string $country        Country code, if known.
 	 *     @type bool   $is_first       First click of the visitor.
 	 *     @type bool   $is_robot       Flagged as a bot by the source.
+	 *     @type bool   $is_qr          A QR code scan. Optional.
 	 * }
 	 */
 	abstract public function clicks_after( $after, $limit );

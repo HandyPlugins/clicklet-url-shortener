@@ -67,6 +67,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 		max_clicks: link.max_clicks || '',
 	} );
 	const [ force, setForce ] = useState( false );
+	const [ removePassword, setRemovePassword ] = useState( false );
 	const [ groupNames, setGroupNames ] = useState( [] );
 
 	useEffect( () => {
@@ -94,6 +95,8 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 				: undefined,
 			expires_at: values.expires_at || null,
 			max_clicks: values.max_clicks ? Number( values.max_clicks ) : null,
+			// Only sent when changed: a new password, or '' to remove it.
+			password: removePassword ? '' : values.password || undefined,
 			force,
 		};
 
@@ -198,6 +201,64 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						)
 					}
 				/>
+
+				{ link.has_password && ! removePassword ? (
+					<div className="fus-password-set">
+						<p>
+							{ __(
+								'This link is password protected.',
+								'fast-url-shortener'
+							) }{ ' ' }
+							<Button
+								variant="link"
+								isDestructive
+								onClick={ () => setRemovePassword( true ) }
+							>
+								{ __(
+									'Remove password',
+									'fast-url-shortener'
+								) }
+							</Button>
+						</p>
+						<TextControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+							type="password"
+							autoComplete="new-password"
+							label={ __( 'New password', 'fast-url-shortener' ) }
+							help={ __(
+								'Leave empty to keep the current password.',
+								'fast-url-shortener'
+							) }
+							value={ values.password || '' }
+							onChange={ set( 'password' ) }
+						/>
+					</div>
+				) : (
+					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						type="password"
+						autoComplete="new-password"
+						label={ __( 'Password', 'fast-url-shortener' ) }
+						help={
+							removePassword
+								? __(
+										'The password will be removed when you save.',
+										'fast-url-shortener'
+									)
+								: __(
+										'Optional. Visitors must enter it before they are redirected.',
+										'fast-url-shortener'
+									)
+						}
+						value={ values.password || '' }
+						onChange={ ( value ) => {
+							setRemovePassword( false );
+							set( 'password' )( value );
+						} }
+					/>
+				) }
 
 				<SelectControl
 					__nextHasNoMarginBottom

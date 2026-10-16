@@ -478,6 +478,20 @@ class Repository {
 			$fields['created_at'] = gmdate( 'Y-m-d H:i:s', strtotime( $data['created_at'] . ' UTC' ) );
 		}
 
+		// A plain password is hashed; an empty one removes the protection.
+		if ( array_key_exists( 'password', $data ) && null !== $data['password'] ) {
+			$fields['password_hash'] = '' === (string) $data['password'] ? '' : wp_hash_password( (string) $data['password'] );
+		}
+
+		// An existing hash, from an export of another WordPress site.
+		if ( ! empty( $data['password_hash'] ) && is_string( $data['password_hash'] ) ) {
+			if ( 0 !== strpos( $data['password_hash'], '$' ) || strlen( $data['password_hash'] ) > 255 ) {
+				return new WP_Error( 'fast_url_shortener_invalid_password_hash', __( 'The password hash is not valid.', 'fast-url-shortener' ) );
+			}
+
+			$fields['password_hash'] = $data['password_hash'];
+		}
+
 		if ( array_key_exists( 'max_clicks', $data ) ) {
 			$fields['max_clicks'] = absint( $data['max_clicks'] ) ? absint( $data['max_clicks'] ) : null;
 		}

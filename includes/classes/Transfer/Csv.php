@@ -20,9 +20,9 @@ class Csv {
 	 * Columns per file type, in export order.
 	 */
 	const COLUMNS = [
-		'links'  => [ 'slug', 'target_url', 'title', 'groups', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at_utc', 'max_clicks', 'created_at_utc', 'total_clicks' ],
+		'links'  => [ 'slug', 'target_url', 'title', 'groups', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at_utc', 'max_clicks', 'password_hash', 'created_at_utc', 'total_clicks' ],
 		'stats'  => [ 'slug', 'day', 'clicks', 'uniques', 'bots' ],
-		'clicks' => [ 'slug', 'clicked_at_utc', 'visitor_hash', 'is_unique', 'country', 'device', 'os', 'browser', 'referrer_host' ],
+		'clicks' => [ 'slug', 'clicked_at_utc', 'visitor_hash', 'is_unique', 'country', 'device', 'os', 'browser', 'referrer_host', 'source' ],
 	];
 
 	/**

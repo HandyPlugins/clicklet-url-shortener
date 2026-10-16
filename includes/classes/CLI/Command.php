@@ -14,7 +14,6 @@ use FastUrlShortener\Redirect\FastPath;
 use FastUrlShortener\Settings;
 use FastUrlShortener\Tracking\ClickStore;
 use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\UserAgent;
 use FastUrlShortener\Transfer\CsvImporter;
 use FastUrlShortener\Transfer\Exporter;
 use WP_CLI;
@@ -80,7 +79,7 @@ class Command extends \WP_CLI_Command {
 		}
 
 		$rows   = $stats->breakdown( $link->id, $dimension, gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS ), 20 );
-		$labels = UserAgent::labels();
+		$labels = Stats::labels();
 
 		if ( isset( $labels[ $dimension ] ) ) {
 			foreach ( $rows as &$row ) {

@@ -408,3 +408,22 @@
 	flex-wrap: wrap;
 	gap: 8px 24px;
 }
+
+/* QR codes and passwords */
+.fus-qr-code {
+	display: block;
+	width: 100%;
+	max-width: 280px;
+	height: auto;
+	margin: 0 auto 16px;
+}
+
+.fus-status-locked {
+	margin-left: 4px;
+	background: #fcf9e8;
+	color: #614200;
+}
+
+.fus-password-set p {
+	margin-top: 0;
+}

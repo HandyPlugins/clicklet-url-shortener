@@ -10,6 +10,7 @@ namespace FastUrlShortener\Transfer;
 use FastUrlShortener\Links\Groups;
 use FastUrlShortener\Rest\Controller;
 use FastUrlShortener\Schema;
+use FastUrlShortener\Tracking\Stats;
 use FastUrlShortener\Tracking\UserAgent;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Batched export reads on the plugin's own tables.
@@ -134,6 +135,8 @@ class Exporter {
 					'track_clicks'   => $row['track_clicks'],
 					'expires_at_utc' => (string) $row['expires_at'],
 					'max_clicks'     => (string) $row['max_clicks'],
+					// Hashes are portable between WordPress sites; plain passwords are never stored.
+					'password_hash'  => (string) $row['password_hash'],
 					'created_at_utc' => $row['created_at'],
 					'total_clicks'   => $row['total_clicks'],
 				];
@@ -226,7 +229,7 @@ class Exporter {
 		do {
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT c.id, c.clicked_at, HEX(c.visitor_hash) AS visitor_hash, c.is_unique, c.country, c.device, c.os, c.browser, c.referrer_host, l.slug
+					'SELECT c.id, c.clicked_at, HEX(c.visitor_hash) AS visitor_hash, c.is_unique, c.country, c.device, c.os, c.browser, c.referrer_host, c.source, l.slug
 					FROM %i c INNER JOIN %i l ON l.id = c.link_id WHERE c.id > %d ORDER BY c.id ASC LIMIT %d',
 					Schema::table( 'clicks' ),
 					Schema::table( 'links' ),
@@ -249,6 +252,7 @@ class Exporter {
 						UserAgent::KEYS['os'][ (int) $row['os'] ] ?? '',
 						UserAgent::KEYS['browser'][ (int) $row['browser'] ] ?? '',
 						$row['referrer_host'],
+						Stats::SOURCE_KEYS[ (int) $row['source'] ] ?? 'link',
 					]
 				);
 				$after = (int) $row['id'];

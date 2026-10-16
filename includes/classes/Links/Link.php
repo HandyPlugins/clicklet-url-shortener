@@ -80,6 +80,13 @@ final class Link {
 	public $has_rules = false;
 
 	/**
+	 * Password hash, or an empty string. Never part of the public data.
+	 *
+	 * @var string
+	 */
+	protected $password_hash = '';
+
+	/**
 	 * Expiry date, or null.
 	 *
 	 * @var string|null
@@ -147,6 +154,7 @@ final class Link {
 		$link->forward_params  = (bool) $row['forward_params'];
 		$link->track_clicks    = (bool) $row['track_clicks'];
 		$link->has_rules       = ! empty( $row['has_rules'] );
+		$link->password_hash   = (string) ( $row['password_hash'] ?? '' );
 		$link->expires_at      = $row['expires_at'] ? (string) $row['expires_at'] : null;
 		$link->max_clicks      = null !== $row['max_clicks'] ? (int) $row['max_clicks'] : null;
 		$link->total_clicks    = (int) $row['total_clicks'];
@@ -180,6 +188,35 @@ final class Link {
 	}
 
 	/**
+	 * Whether visitors need a password.
+	 *
+	 * @return bool
+	 */
+	public function has_password() {
+		return '' !== $this->password_hash;
+	}
+
+	/**
+	 * Check a password.
+	 *
+	 * @param string $password Plain password.
+	 *
+	 * @return bool
+	 */
+	public function check_password( $password ) {
+		return $this->has_password() && '' !== $password && wp_check_password( $password, $this->password_hash );
+	}
+
+	/**
+	 * Password hash, for exports to another site.
+	 *
+	 * @return string
+	 */
+	public function password_hash() {
+		return $this->password_hash;
+	}
+
+	/**
 	 * Read link meta.
 	 *
 	 * @param string $key    Meta key.
@@ -208,11 +245,15 @@ final class Link {
 	 * @return array
 	 */
 	public function to_array() {
+		$data = get_object_vars( $this );
+		unset( $data['password_hash'] );
+
 		return array_merge(
-			get_object_vars( $this ),
+			$data,
 			[
-				'short_url' => $this->short_url(),
-				'groups'    => Groups::of( $this->id ),
+				'has_password' => $this->has_password(),
+				'short_url'    => $this->short_url(),
+				'groups'       => Groups::of( $this->id ),
 			]
 		);
 	}

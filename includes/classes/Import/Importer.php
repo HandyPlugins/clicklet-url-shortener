@@ -10,6 +10,7 @@ namespace FastUrlShortener\Import;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Settings;
 use FastUrlShortener\Tracking\ClickStore;
+use FastUrlShortener\Tracking\Stats;
 use FastUrlShortener\Tracking\Tracker;
 use FastUrlShortener\Tracking\UserAgent;
 
@@ -195,6 +196,7 @@ class Importer {
 					'expires_at'     => $row['expires_at'] ? get_date_from_gmt( $row['expires_at'] ) : null,
 					'created_at'     => $row['created_at'],
 					'groups'         => $row['groups'] ?? [],
+					'password'       => $row['password'] ?? '',
 				]
 			);
 
@@ -278,6 +280,7 @@ class Importer {
 					'os'            => $agent['os'],
 					'browser'       => $agent['browser'],
 					'referrer_host' => Tracker::host( $row['referrer'] ),
+					'source'        => empty( $row['is_qr'] ) ? Stats::SOURCE_LINK : Stats::SOURCE_QR,
 				],
 				ClickStore::visitor_hash( $row['ip'], $row['user_agent'], get_date_from_gmt( $row['clicked_at'], 'Y-m-d' ) )
 			);

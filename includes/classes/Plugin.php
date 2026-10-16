@@ -7,6 +7,7 @@
 
 namespace FastUrlShortener;
 
+use FastUrlShortener\Admin\DashboardWidget;
 use FastUrlShortener\Admin\Editor;
 use FastUrlShortener\Admin\Page;
 use FastUrlShortener\CLI\Command;
@@ -71,6 +72,7 @@ class Plugin {
 		if ( is_admin() ) {
 			( new Page() )->register();
 			( new Editor() )->register();
+			( new DashboardWidget( $links ) )->register();
 			( new Exporter() )->register();
 		}
 

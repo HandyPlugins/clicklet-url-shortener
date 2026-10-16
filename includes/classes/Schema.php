@@ -17,7 +17,7 @@ class Schema {
 	/**
 	 * Bump whenever the schema below changes; Install runs dbDelta again.
 	 */
-	const VERSION = '2';
+	const VERSION = '3';
 
 	/**
 	 * Table names without the WordPress or plugin prefix.
@@ -87,6 +87,7 @@ class Schema {
 				forward_params tinyint(1) unsigned NOT NULL DEFAULT 0,
 				track_clicks tinyint(1) unsigned NOT NULL DEFAULT 1,
 				has_rules tinyint(1) unsigned NOT NULL DEFAULT 0,
+				password_hash varchar(255) NOT NULL DEFAULT '',
 				expires_at datetime DEFAULT NULL,
 				max_clicks int(10) unsigned DEFAULT NULL,
 				total_clicks bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -128,6 +129,7 @@ class Schema {
 				os tinyint(3) unsigned NOT NULL DEFAULT 0,
 				browser tinyint(3) unsigned NOT NULL DEFAULT 0,
 				referrer_host varchar(191) NOT NULL DEFAULT '',
+				source tinyint(3) unsigned NOT NULL DEFAULT 0,
 				PRIMARY KEY  (id),
 				KEY link_clicked (link_id,clicked_at),
 				KEY clicked_at (clicked_at)

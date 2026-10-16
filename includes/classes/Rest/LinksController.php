@@ -10,7 +10,6 @@ namespace FastUrlShortener\Rest;
 use FastUrlShortener\Links\Link;
 use FastUrlShortener\Links\Repository;
 use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\UserAgent;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -248,7 +247,7 @@ class LinksController extends Controller {
 		$stats  = new Stats();
 		$days   = (int) $request['days'];
 		$since  = gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS );
-		$labels = UserAgent::labels();
+		$labels = Stats::labels();
 		$data   = [
 			'daily'      => $stats->daily( $link->id, $days ),
 			'breakdowns' => [],
@@ -327,7 +326,7 @@ class LinksController extends Controller {
 	 * @return array
 	 */
 	protected function link_data( WP_REST_Request $request ) {
-		$fields = [ 'target_url', 'slug', 'title', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at', 'max_clicks', 'groups' ];
+		$fields = [ 'target_url', 'slug', 'title', 'redirect_type', 'status', 'forward_params', 'track_clicks', 'expires_at', 'max_clicks', 'groups', 'password' ];
 		$data   = [];
 		$params = $request->get_params();
 
@@ -374,6 +373,8 @@ class LinksController extends Controller {
 				'type'  => 'array',
 				'items' => [ 'type' => [ 'integer', 'string' ] ],
 			],
+			// Write-only: responses only say has_password. An empty string removes the password.
+			'password'       => [ 'type' => 'string' ],
 			'force'          => [
 				'type'    => 'boolean',
 				'default' => false,

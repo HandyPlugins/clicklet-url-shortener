@@ -131,13 +131,45 @@ class RouterTest extends TestCase {
 	}
 
 	/**
-	 * Only front-end GET and HEAD requests are routed.
+	 * The QR marker counts the scan and is never forwarded.
+	 */
+	public function test_qr_marker() {
+		$link = $this->create_link(
+			[
+				'target_url'     => 'https://example.com/landing',
+				'forward_params' => true,
+			]
+		);
+
+		$_GET['qr']              = '1';
+		$_SERVER['QUERY_STRING'] = 'qr=1&utm_source=x';
+		$this->assertTrue( $this->call( 'is_qr_scan' ) );
+		$this->assertSame( 'https://example.com/landing?utm_source=x', $this->call( 'target', [ $link ] ) );
+
+		$_SERVER['QUERY_STRING'] = 'utm_source=x&qr=1';
+		$this->assertSame( 'https://example.com/landing?utm_source=x', $this->call( 'target', [ $link ] ) );
+
+		$_SERVER['QUERY_STRING'] = 'qr=1';
+		$this->assertSame( 'https://example.com/landing', $this->call( 'target', [ $link ] ) );
+
+		$_SERVER['QUERY_STRING'] = 'qr=10&code=qr=1x';
+		$this->assertSame( 'https://example.com/landing?qr=10&code=qr=1x', $this->call( 'target', [ $link ] ), 'Only the exact marker is removed.' );
+
+		unset( $_GET['qr'] );
+		$this->assertFalse( $this->call( 'is_qr_scan' ) );
+	}
+
+	/**
+	 * Only front-end GET, HEAD and POST (password forms) requests are routed.
 	 */
 	public function test_is_routable_request() {
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 		$this->assertTrue( $this->call( 'is_routable_request' ) );
 
 		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$this->assertTrue( $this->call( 'is_routable_request' ) );
+
+		$_SERVER['REQUEST_METHOD'] = 'PUT';
 		$this->assertFalse( $this->call( 'is_routable_request' ) );
 
 		$_SERVER['REQUEST_METHOD'] = 'GET';

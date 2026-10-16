@@ -37,11 +37,14 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 * Click history with no time limit: clicks, unique visitors, countries, devices, browsers, operating systems and referrers
 * Bots, link previews (Slack, WhatsApp, Facebook…) and browser prefetches are not counted as clicks
 * Expiring links, by date or number of clicks
+* Password-protected links (passwords are stored hashed, with brute-force protection)
+* QR codes generated on your site (SVG and PNG), with QR scans counted separately in the stats
+* Dashboard widget: shorten a URL and see the week's most clicked links
 * Query string forwarding
 * Optional prefix, for example `/go/promo`
 * Protection against slugs that would hide existing pages
 * Import & export links, daily stats and click details as CSV: move everything between sites or edit links in a spreadsheet (Excel files with semicolons work too)
-* One-click migration from URL Shortify and Pretty Links, including click history and groups
+* One-click migration from URL Shortify and Pretty Links, including click history, groups and link passwords
 * REST API and WP-CLI commands
 * Multisite support
 

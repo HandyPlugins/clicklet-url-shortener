@@ -7,7 +7,13 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { useDebounce } from '@wordpress/compose';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 import { deleteLink, getGroups, getLinks } from '../api';
@@ -20,6 +26,9 @@ import QuickCreate from './QuickCreate';
 import StatsModal from './StatsModal';
 
 const PER_PAGE = 20;
+
+// The QR library is only loaded when a QR code is opened.
+const QrModal = lazy( () => import( './QrModal' ) );
 
 /**
  * Sortable column header.
@@ -95,6 +104,7 @@ export default function LinksPage() {
 	const [ editing, setEditing ] = useState( null );
 	const [ viewingStats, setViewingStats ] = useState( null );
 	const [ deleting, setDeleting ] = useState( null );
+	const [ viewingQr, setViewingQr ] = useState( null );
 
 	const load = useCallback( () => {
 		setLoading( true );
@@ -401,6 +411,20 @@ export default function LinksPage() {
 													</Button>{ ' ' }
 													|{ ' ' }
 												</span>
+												<span>
+													<Button
+														variant="link"
+														onClick={ () =>
+															setViewingQr( link )
+														}
+													>
+														{ __(
+															'QR code',
+															'fast-url-shortener'
+														) }
+													</Button>{ ' ' }
+													|{ ' ' }
+												</span>
 												{ rowActions( link ).map(
 													( action ) => (
 														<span key={ action.id }>
@@ -479,6 +503,14 @@ export default function LinksPage() {
 															'fast-url-shortener'
 														) }
 											</span>
+											{ link.has_password && (
+												<span className="fus-status fus-status-locked">
+													{ __(
+														'Password',
+														'fast-url-shortener'
+													) }
+												</span>
+											) }
 										</td>
 										<td className="column-date">
 											{ formatDate( link.created_at ) }
@@ -569,6 +601,14 @@ export default function LinksPage() {
 						</Button>
 					</div>
 				</Modal>
+			) }
+			{ viewingQr && (
+				<Suspense fallback={ <Spinner /> }>
+					<QrModal
+						link={ viewingQr }
+						onClose={ () => setViewingQr( null ) }
+					/>
+				</Suspense>
 			) }
 			{ managingGroups && (
 				<GroupsManager

@@ -48,6 +48,7 @@ class ClickStore {
 	 *     @type int    $os            UserAgent::OS_* value.
 	 *     @type int    $browser       UserAgent::BROWSER_* value.
 	 *     @type string $referrer_host Referring host or empty.
+	 *     @type int    $source        Stats::SOURCE_* value. Optional.
 	 * }
 	 * @param string $hash  Visitor hash, 32 hex characters.
 	 *
@@ -58,7 +59,7 @@ class ClickStore {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				'INSERT INTO %i (link_id, clicked_at, visitor_hash, is_unique, country, device, os, browser, referrer_host) VALUES (%d, %s, UNHEX(%s), %d, %s, %d, %d, %d, %s)',
+				'INSERT INTO %i (link_id, clicked_at, visitor_hash, is_unique, country, device, os, browser, referrer_host, source) VALUES (%d, %s, UNHEX(%s), %d, %s, %d, %d, %d, %s, %d)',
 				Schema::table( 'clicks' ),
 				$click['link_id'],
 				$click['clicked_at'],
@@ -68,7 +69,8 @@ class ClickStore {
 				$click['device'],
 				$click['os'],
 				$click['browser'],
-				$click['referrer_host']
+				$click['referrer_host'],
+				$click['source'] ?? Stats::SOURCE_LINK
 			)
 		);
 	}

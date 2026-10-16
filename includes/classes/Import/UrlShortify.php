@@ -85,8 +85,9 @@ class UrlShortify extends Source {
 					'redirect_type'  => $this->redirect_type( $row['redirect_type'] ),
 					'forward_params' => (bool) $row['params_forwarding'],
 					'track_clicks'   => (bool) $row['track_me'],
-					// Password protection is not supported yet; keep those links private.
-					'status'         => 1 === (int) $row['status'] && empty( $row['password'] ) ? 'active' : 'disabled',
+					'status'         => 1 === (int) $row['status'] ? 'active' : 'disabled',
+					// URL Shortify stores link passwords in plain text; they are hashed on import.
+					'password'       => (string) $row['password'],
 					'expires_at'     => $row['expires_at'] ? (string) $row['expires_at'] : null,
 					'created_at'     => (string) $row['created_at'],
 					'skip'           => false,
@@ -132,7 +133,7 @@ class UrlShortify extends Source {
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT id, link_id, created_at, ip, user_agent, referer, country, is_first_click, is_robot FROM %i WHERE id > %d ORDER BY id ASC LIMIT %d',
+				'SELECT * FROM %i WHERE id > %d ORDER BY id ASC LIMIT %d',
 				$this->clicks_table(),
 				$after,
 				$limit
@@ -152,6 +153,7 @@ class UrlShortify extends Source {
 					'country'        => (string) $row['country'],
 					'is_first'       => (bool) $row['is_first_click'],
 					'is_robot'       => (bool) $row['is_robot'],
+					'is_qr'          => 'qr' === ( $row['source'] ?? '' ),
 				];
 			},
 			$rows

@@ -218,7 +218,7 @@ class RestTest extends TestCase {
 		$data = $this->request( 'GET', "/links/{$link->id}/stats", [ 'days' => 7 ] )->get_data();
 
 		$this->assertCount( 7, $data['daily'] );
-		$this->assertSame( [ 'country', 'device', 'os', 'browser', 'referrer_host' ], array_keys( $data['breakdowns'] ) );
+		$this->assertSame( [ 'country', 'device', 'os', 'browser', 'referrer_host', 'source' ], array_keys( $data['breakdowns'] ) );
 		$this->assertSame( 404, $this->request( 'GET', '/links/999999/stats' )->get_status() );
 	}
 

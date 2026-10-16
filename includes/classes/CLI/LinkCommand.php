@@ -75,6 +75,9 @@ class LinkCommand extends \WP_CLI_Command {
 	 * [--groups=<names>]
 	 * : Comma-separated group names; missing groups are created.
 	 *
+	 * [--password=<password>]
+	 * : Ask visitors for this password before redirecting.
+	 *
 	 * [--force]
 	 * : Allow a slug that replaces published content.
 	 *
@@ -139,6 +142,9 @@ class LinkCommand extends \WP_CLI_Command {
 	 *
 	 * [--groups=<names>]
 	 * : Comma-separated group names, replacing the current ones. Pass an empty value to remove all.
+	 *
+	 * [--password=<password>]
+	 * : Password visitors must enter. Pass an empty value to remove it.
 	 *
 	 * [--force]
 	 * : Allow a slug that replaces published content.
@@ -367,6 +373,7 @@ class LinkCommand extends \WP_CLI_Command {
 			'status'     => 'status',
 			'expires'    => 'expires_at',
 			'max-clicks' => 'max_clicks',
+			'password'   => 'password',
 		];
 		$data = [];
 
