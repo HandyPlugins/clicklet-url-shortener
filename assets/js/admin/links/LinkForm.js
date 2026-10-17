@@ -1,4 +1,5 @@
 import {
+	BaseControl,
 	Button,
 	CheckboxControl,
 	FormTokenField,
@@ -9,6 +10,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
+import { useInstanceId } from '@wordpress/compose';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -54,6 +56,8 @@ export const REDIRECT_TYPES = [
  */
 export default function LinkForm( { link, onClose, onSaved } ) {
 	const isNew = ! link.id;
+	const slugId = useInstanceId( LinkForm, 'fus-link-slug' );
+	const base = shortUrlBase();
 	const [ values, setValues ] = useState( {
 		target_url: link.target_url || '',
 		slug: link.slug || '',
@@ -78,10 +82,17 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 			.catch( () => {} );
 	}, [] );
 	const [ error, setError ] = useState( null );
+	// Slug the last error was about; a conflict only holds while the slug is unchanged.
+	const [ errorSlug, setErrorSlug ] = useState( null );
 	const [ saving, setSaving ] = useState( false );
 
 	const set = ( key ) => ( value ) =>
 		setValues( ( v ) => ( { ...v, [ key ]: value } ) );
+
+	const conflictError = error?.code === 'fast_url_shortener_slug_conflict';
+	const conflict = conflictError && values.slug === errorSlug;
+	// A conflict warning for a slug that has since been edited is stale.
+	const showError = error && ( ! conflictError || conflict );
 
 	const submit = async ( event ) => {
 		event.preventDefault();
@@ -97,7 +108,8 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 			max_clicks: values.max_clicks ? Number( values.max_clicks ) : null,
 			// Only sent when changed: a new password, or '' to remove it.
 			password: removePassword ? '' : values.password || undefined,
-			force,
+			// The confirmation only covers the slug it was given for.
+			force: conflict && force,
 		};
 
 		try {
@@ -107,11 +119,11 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 			onSaved( saved );
 		} catch ( e ) {
 			setError( e );
+			setErrorSlug( values.slug );
+			setForce( false );
 			setSaving( false );
 		}
 	};
-
-	const conflict = error?.code === 'fast_url_shortener_slug_conflict';
 
 	return (
 		<Modal
@@ -125,7 +137,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 			size="medium"
 		>
 			<form onSubmit={ submit } className="fus-form">
-				{ error && (
+				{ showError && (
 					<Notice
 						status={ conflict ? 'warning' : 'error' }
 						isDismissible={ false }
@@ -144,26 +156,47 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					required
 				/>
 
-				<div className="fus-slug-field">
-					<span className="fus-slug-base">{ shortUrlBase() }</span>
-					<TextControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __( 'Slug', 'fast-url-shortener' ) }
-						help={
-							isNew
-								? __(
-										'Leave empty to generate one.',
-										'fast-url-shortener'
-									)
-								: undefined
-						}
-						value={ values.slug }
-						onChange={ set( 'slug' ) }
-						pattern="[A-Za-z0-9][A-Za-z0-9_\-]*"
-						maxLength={ 100 }
-					/>
-				</div>
+				<BaseControl
+					__nextHasNoMarginBottom
+					id={ slugId }
+					label={ __( 'Short link', 'fast-url-shortener' ) }
+					help={
+						isNew
+							? __(
+									'Leave the slug empty to generate one.',
+									'fast-url-shortener'
+								)
+							: undefined
+					}
+				>
+					{ /* Reads like a browser address bar: the fixed base, then the editable slug. */ }
+					<div className="fus-url-input">
+						<span className="fus-url-input__base" title={ base }>
+							{ base.replace( /^https?:\/\//, '' ) }
+						</span>
+						<input
+							id={ slugId }
+							type="text"
+							className="fus-url-input__slug"
+							value={ values.slug }
+							onChange={ ( event ) =>
+								set( 'slug' )( event.target.value )
+							}
+							placeholder={
+								isNew
+									? __( 'random', 'fast-url-shortener' )
+									: undefined
+							}
+							pattern="[A-Za-z0-9][A-Za-z0-9_\-]*"
+							maxLength={ 100 }
+							autoComplete="off"
+							spellCheck={ false }
+							aria-describedby={
+								isNew ? `${ slugId }__help` : undefined
+							}
+						/>
+					</div>
+				</BaseControl>
 
 				{ conflict && (
 					<CheckboxControl
