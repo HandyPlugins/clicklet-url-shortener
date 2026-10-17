@@ -17,7 +17,6 @@ vendor
 build
 eslint.config.cjs
 .nvmrc
-package.json
 package-lock.json
 phpunit.xml.dist
 .phpunit.result.cache

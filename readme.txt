@@ -88,7 +88,7 @@ No. Short links, click statistics and QR codes are all handled on your site. Cou
 
 = Where is the source code of the admin scripts? =
 
-The scripts in `dist/` are built from the readable sources in `assets/js/`, which are included in the plugin. The complete source with build tools is on GitHub: https://github.com/HandyPlugins/fast-url-shortener. To build it, run `npm ci && npm run build`. QR codes use the qrcode-generator library (MIT): https://github.com/kazuhikoarase/qrcode-generator.
+The scripts in `dist/` are built from the readable sources in `assets/js/`, which are included in the plugin together with `package.json`. To rebuild them, run `npm install && npm run build` in the plugin folder. QR codes use the qrcode-generator library (MIT): https://github.com/kazuhikoarase/qrcode-generator.
 
 == Changelog ==
 

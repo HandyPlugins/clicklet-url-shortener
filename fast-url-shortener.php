@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name:       Fast URL Shortener
- * Plugin URI:        https://handyplugins.co/fast-url-shortener/
  * Description:       Fast, self-hosted URL shortener with privacy-friendly click tracking.
  * Version:           1.0.0
  * Requires at least: 6.5
