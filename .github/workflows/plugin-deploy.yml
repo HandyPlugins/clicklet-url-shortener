@@ -15,7 +15,7 @@ jobs:
     name: Deploy ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check that the tag matches the plugin version
         run: |
@@ -23,7 +23,7 @@ jobs:
           grep -Eq "^ \* Version: +${tag}$" clicklet-url-shortener.php || { echo "::error::Plugin header Version is not ${tag}"; exit 1; }
           grep -Eq "^Stable tag: +${tag}$" readme.txt || { echo "::error::readme.txt Stable tag is not ${tag}"; exit 1; }
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
