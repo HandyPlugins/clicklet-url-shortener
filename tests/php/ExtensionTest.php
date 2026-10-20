@@ -2,25 +2,25 @@
 /**
  * Extension points, used the way an add-on would.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\Router;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Transfer\CsvImporter;
-use FastUrlShortener\Transfer\Exporter;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\Router;
+use Clicklet\Schema;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Transfer\CsvImporter;
+use Clicklet\Transfer\Exporter;
 use WP_Error;
 use WP_REST_Request;
 
 // phpcs:disable WordPress.WP.AlternativeFunctions -- Temporary CSV files.
 
 /**
- * @covers \FastUrlShortener\Links\Link::get_meta
- * @covers \FastUrlShortener\Schema::register_meta_table
+ * @covers \Clicklet\Links\Link::get_meta
+ * @covers \Clicklet\Schema::register_meta_table
  */
 class ExtensionTest extends TestCase {
 
@@ -62,7 +62,7 @@ class ExtensionTest extends TestCase {
 	 */
 	public function test_prepare_link_filter() {
 		add_filter(
-			'fast_url_shortener_prepare_link',
+			'clicklet_prepare_link',
 			static function ( $fields, $data ) {
 				if ( isset( $data['target_url'] ) && false !== strpos( $data['target_url'], 'blocked.example' ) ) {
 					return new WP_Error( 'blocked', 'Blocked domain.' );
@@ -85,7 +85,7 @@ class ExtensionTest extends TestCase {
 		$link = $this->create_link();
 		$this->assertTrue( $link->is_available() );
 
-		add_filter( 'fast_url_shortener_link_available', '__return_false' );
+		add_filter( 'clicklet_link_available', '__return_false' );
 		$this->assertFalse( $link->is_available() );
 	}
 
@@ -128,7 +128,7 @@ class ExtensionTest extends TestCase {
 		wp_set_current_user( $editor );
 
 		add_filter(
-			'fast_url_shortener_capability',
+			'clicklet_capability',
 			static function ( $capability, $context ) {
 				return 'links' === $context ? 'edit_posts' : $capability;
 			},
@@ -136,9 +136,9 @@ class ExtensionTest extends TestCase {
 			2
 		);
 
-		$this->assertSame( 200, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/fast-url-shortener/v1/links' ) )->get_status() );
-		$this->assertSame( 403, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/fast-url-shortener/v1/settings' ) )->get_status() );
-		$this->assertSame( 403, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/fast-url-shortener/v1/transfer' ) )->get_status() );
+		$this->assertSame( 200, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/clicklet-url-shortener/v1/links' ) )->get_status() );
+		$this->assertSame( 403, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/clicklet-url-shortener/v1/settings' ) )->get_status() );
+		$this->assertSame( 403, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/clicklet-url-shortener/v1/transfer' ) )->get_status() );
 	}
 
 	/**
@@ -148,14 +148,14 @@ class ExtensionTest extends TestCase {
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 
 		add_filter(
-			'fast_url_shortener_rest_link_args',
+			'clicklet_rest_link_args',
 			static function ( $args ) {
 				$args['campaign'] = [ 'type' => 'string' ];
 				return $args;
 			}
 		);
 		add_action(
-			'fast_url_shortener_rest_save_link',
+			'clicklet_rest_save_link',
 			static function ( $link, $request ) {
 				if ( isset( $request['campaign'] ) ) {
 					update_metadata( Schema::META_TYPE, $link->id, 'campaign', sanitize_text_field( $request['campaign'] ) );
@@ -165,7 +165,7 @@ class ExtensionTest extends TestCase {
 			2
 		);
 		add_filter(
-			'fast_url_shortener_rest_prepare_link',
+			'clicklet_rest_prepare_link',
 			static function ( $data, $link ) {
 				$data['campaign'] = (string) $link->get_meta( 'campaign' );
 				return $data;
@@ -174,7 +174,7 @@ class ExtensionTest extends TestCase {
 			2
 		);
 
-		$request = new WP_REST_Request( 'POST', '/fast-url-shortener/v1/links' );
+		$request = new WP_REST_Request( 'POST', '/clicklet-url-shortener/v1/links' );
 		$request->set_param( 'target_url', 'https://example.com/' );
 		$request->set_param( 'campaign', 'black-friday' );
 		$response = rest_get_server()->dispatch( $request );
@@ -182,7 +182,7 @@ class ExtensionTest extends TestCase {
 		$this->assertSame( 201, $response->get_status() );
 		$this->assertSame( 'black-friday', $response->get_data()['campaign'] );
 
-		$invalid = new WP_REST_Request( 'POST', '/fast-url-shortener/v1/links' );
+		$invalid = new WP_REST_Request( 'POST', '/clicklet-url-shortener/v1/links' );
 		$invalid->set_param( 'target_url', 'https://example.com/' );
 		$invalid->set_param( 'campaign', [ 'not', 'a', 'string' ] );
 		$this->assertSame( 400, rest_get_server()->dispatch( $invalid )->get_status(), 'Add-on fields are validated by their schema.' );
@@ -195,14 +195,14 @@ class ExtensionTest extends TestCase {
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 
 		add_filter(
-			'fast_url_shortener_rest_settings_args',
+			'clicklet_rest_settings_args',
 			static function ( $args ) {
 				$args['pro_mode'] = [ 'type' => 'boolean' ];
 				return $args;
 			}
 		);
 		add_action(
-			'fast_url_shortener_rest_update_settings',
+			'clicklet_rest_update_settings',
 			static function ( $request ) {
 				if ( isset( $request['pro_mode'] ) ) {
 					update_option( 'test_pro_mode', (bool) $request['pro_mode'] );
@@ -210,21 +210,21 @@ class ExtensionTest extends TestCase {
 			}
 		);
 		add_filter(
-			'fast_url_shortener_rest_settings',
+			'clicklet_rest_settings',
 			static function ( $settings ) {
 				$settings['pro_mode'] = (bool) get_option( 'test_pro_mode' );
 				return $settings;
 			}
 		);
 
-		$request = new WP_REST_Request( 'POST', '/fast-url-shortener/v1/settings' );
+		$request = new WP_REST_Request( 'POST', '/clicklet-url-shortener/v1/settings' );
 		$request->set_param( 'pro_mode', true );
 		$request->set_param( 'slug_length', 6 );
 		$data = rest_get_server()->dispatch( $request )->get_data();
 
 		$this->assertTrue( $data['pro_mode'] );
 		$this->assertSame( 6, $data['slug_length'] );
-		$this->assertArrayNotHasKey( 'pro_mode', get_option( 'fast_url_shortener_settings' ), 'Core settings stay clean.' );
+		$this->assertArrayNotHasKey( 'pro_mode', get_option( 'clicklet_settings' ), 'Core settings stay clean.' );
 	}
 
 	/**
@@ -232,14 +232,14 @@ class ExtensionTest extends TestCase {
 	 */
 	public function test_csv_link_columns() {
 		add_filter(
-			'fast_url_shortener_csv_link_columns',
+			'clicklet_csv_link_columns',
 			static function ( $columns ) {
 				$columns[] = 'campaign';
 				return $columns;
 			}
 		);
 		add_filter(
-			'fast_url_shortener_csv_export_link',
+			'clicklet_csv_export_link',
 			static function ( $cells, $row ) {
 				$cells['campaign'] = (string) get_metadata( Schema::META_TYPE, (int) $row['id'], 'campaign', true );
 				return $cells;
@@ -248,7 +248,7 @@ class ExtensionTest extends TestCase {
 			2
 		);
 		add_action(
-			'fast_url_shortener_csv_import_link',
+			'clicklet_csv_import_link',
 			static function ( $link, $row ) {
 				update_metadata( Schema::META_TYPE, $link->id, 'campaign', $row['campaign'] ?? '' );
 			},
@@ -259,7 +259,7 @@ class ExtensionTest extends TestCase {
 		$link = $this->create_link( [ 'slug' => 'promo' ] );
 		update_metadata( Schema::META_TYPE, $link->id, 'campaign', 'summer' );
 
-		$path   = get_temp_dir() . 'fus-ext-' . wp_generate_password( 8, false ) . '.csv';
+		$path   = get_temp_dir() . 'clicklet-ext-' . wp_generate_password( 8, false ) . '.csv';
 		$handle = fopen( $path, 'w' );
 		( new Exporter() )->write( 'links', $handle );
 		fclose( $handle );

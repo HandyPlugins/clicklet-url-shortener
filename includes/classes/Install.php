@@ -2,13 +2,13 @@
 /**
  * Install, upgrade and deactivation routines.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Tracking\Retention;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Tracking\Retention;
 
 /**
  * Plugin lifecycle.
@@ -18,12 +18,12 @@ class Install {
 	/**
 	 * Option holding the installed schema version.
 	 */
-	const DB_VERSION_OPTION = 'fast_url_shortener_db_version';
+	const DB_VERSION_OPTION = 'clicklet_db_version';
 
 	/**
 	 * Option holding the secret used to hash visitors.
 	 */
-	const SECRET_OPTION = 'fast_url_shortener_secret';
+	const SECRET_OPTION = 'clicklet_secret';
 
 	/**
 	 * Register hooks.
@@ -93,7 +93,7 @@ class Install {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		if ( ! is_plugin_active_for_network( plugin_basename( FAST_URL_SHORTENER_FILE ) ) ) {
+		if ( ! is_plugin_active_for_network( plugin_basename( CLICKLET_FILE ) ) ) {
 			return;
 		}
 

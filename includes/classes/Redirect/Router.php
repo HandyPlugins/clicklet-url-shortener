@@ -2,19 +2,19 @@
 /**
  * Short link router.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Redirect;
+namespace Clicklet\Redirect;
 
-use FastUrlShortener\Install;
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Links\Slug;
-use FastUrlShortener\Settings;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\Tracker;
+use Clicklet\Install;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Links\Slug;
+use Clicklet\Settings;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Stats;
+use Clicklet\Tracking\Tracker;
 
 /**
  * Matches the request against short links and redirects.
@@ -205,12 +205,12 @@ class Router {
 		 * Note: with the fast path enabled this runs before regular plugins load,
 		 * so only callbacks added by must-use plugins apply.
 		 *
-		 * @hook fast_url_shortener_redirect_target
+		 * @hook clicklet_redirect_target
 		 *
 		 * @param string $target Destination URL.
 		 * @param Link   $link   Link.
 		 */
-		$target = (string) apply_filters( 'fast_url_shortener_redirect_target', $this->target( $link ), $link );
+		$target = (string) apply_filters( 'clicklet_redirect_target', $this->target( $link ), $link );
 
 		// Guard against header injection from filtered values.
 		$target = str_replace( [ "\r", "\n" ], '', $target );
@@ -222,12 +222,12 @@ class Router {
 		/**
 		 * Fires right before a short link redirects.
 		 *
-		 * @hook fast_url_shortener_before_redirect
+		 * @hook clicklet_before_redirect
 		 *
 		 * @param Link   $link   Link.
 		 * @param string $target Destination URL.
 		 */
-		do_action( 'fast_url_shortener_before_redirect', $link, $target );
+		do_action( 'clicklet_before_redirect', $link, $target );
 
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Page cache convention.
@@ -235,16 +235,16 @@ class Router {
 
 		nocache_headers();
 		header( 'X-Robots-Tag: noindex' );
-		header( 'X-Redirect-By: Fast URL Shortener' );
+		header( 'X-Redirect-By: Clicklet URL Shortener' );
 		/**
 		 * Filter the HTTP status code of the redirect.
 		 *
-		 * @hook fast_url_shortener_redirect_status
+		 * @hook clicklet_redirect_status
 		 *
 		 * @param int  $status Status code from the link.
 		 * @param Link $link   Link.
 		 */
-		$status = (int) apply_filters( 'fast_url_shortener_redirect_status', $link->redirect_type, $link );
+		$status = (int) apply_filters( 'clicklet_redirect_status', $link->redirect_type, $link );
 
 		header( 'Location: ' . $target, true, $status );
 

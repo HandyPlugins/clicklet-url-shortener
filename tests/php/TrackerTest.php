@@ -2,19 +2,19 @@
 /**
  * Click tracking.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Tracker;
-use FastUrlShortener\Tracking\UserAgent;
+use Clicklet\Links\Repository;
+use Clicklet\Schema;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Tracker;
+use Clicklet\Tracking\UserAgent;
 
 /**
- * @covers \FastUrlShortener\Tracking\Tracker
+ * @covers \Clicklet\Tracking\Tracker
  */
 class TrackerTest extends TestCase {
 
@@ -147,7 +147,7 @@ class TrackerTest extends TestCase {
 		$link = $this->create_link();
 
 		$this->tracker->record( $link );
-		$this->tracker->record( $link, \FastUrlShortener\Tracking\Stats::SOURCE_QR );
+		$this->tracker->record( $link, \Clicklet\Tracking\Stats::SOURCE_QR );
 
 		$this->assertSame( [ '0', '1' ], wp_list_pluck( $this->clicks( $link->id ), 'source' ) );
 	}

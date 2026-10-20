@@ -2,12 +2,12 @@
 /**
  * Groups REST endpoints.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Links\Groups;
+use Clicklet\Links\Groups;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -69,7 +69,7 @@ class GroupsController extends Controller {
 		$name = trim( (string) $request['name'] );
 
 		if ( '' === $name ) {
-			return new WP_Error( 'fast_url_shortener_invalid_group', __( 'Enter a group name.', 'fast-url-shortener' ), [ 'status' => 400 ] );
+			return new WP_Error( 'clicklet_invalid_group', __( 'Enter a group name.', 'clicklet-url-shortener' ), [ 'status' => 400 ] );
 		}
 
 		$result = wp_update_term(
@@ -103,7 +103,7 @@ class GroupsController extends Controller {
 		$result = wp_delete_term( (int) $request['id'], Groups::TAXONOMY );
 
 		if ( ! $result || is_wp_error( $result ) ) {
-			return new WP_Error( 'fast_url_shortener_group_not_found', __( 'Group not found.', 'fast-url-shortener' ), [ 'status' => 404 ] );
+			return new WP_Error( 'clicklet_group_not_found', __( 'Group not found.', 'clicklet-url-shortener' ), [ 'status' => 404 ] );
 		}
 
 		return [ 'deleted' => true ];

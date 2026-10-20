@@ -2,14 +2,14 @@
 /**
  * Dashboard widget.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Admin;
+namespace Clicklet\Admin;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Rest\Controller;
-use FastUrlShortener\Tracking\Stats;
+use Clicklet\Links\Repository;
+use Clicklet\Rest\Controller;
+use Clicklet\Tracking\Stats;
 
 /**
  * "Short links" dashboard widget: shorten a URL and see the most clicked
@@ -20,17 +20,17 @@ class DashboardWidget {
 	/**
 	 * admin-post action and nonce action.
 	 */
-	const ACTION = 'fast_url_shortener_quick_add';
+	const ACTION = 'clicklet_quick_add';
 
 	/**
 	 * Query argument carrying the created link ID back to the dashboard.
 	 */
-	const CREATED_ARG = 'fus_created';
+	const CREATED_ARG = 'clicklet_created';
 
 	/**
 	 * Transient prefix for quick add errors, per user.
 	 */
-	const ERROR_TRANSIENT = 'fast_url_shortener_quick_add_error_';
+	const ERROR_TRANSIENT = 'clicklet_quick_add_error_';
 
 	/**
 	 * Link storage.
@@ -65,7 +65,7 @@ class DashboardWidget {
 	 */
 	public function add() {
 		if ( current_user_can( Controller::capability( 'links' ) ) ) {
-			wp_add_dashboard_widget( 'fast_url_shortener', __( 'Short Links', 'fast-url-shortener' ), [ $this, 'render' ] );
+			wp_add_dashboard_widget( 'clicklet', __( 'Short Links', 'clicklet-url-shortener' ), [ $this, 'render' ] );
 		}
 	}
 
@@ -86,18 +86,18 @@ class DashboardWidget {
 		if ( $created ) {
 			printf(
 				'<div class="notice notice-success inline"><p>%1$s</p><p><input type="text" class="large-text" readonly value="%2$s" onfocus="this.select()" aria-label="%3$s" /></p></div>',
-				esc_html__( 'Short link ready:', 'fast-url-shortener' ),
+				esc_html__( 'Short link ready:', 'clicklet-url-shortener' ),
 				esc_attr( $created->short_url() ),
-				esc_attr__( 'Short link', 'fast-url-shortener' )
+				esc_attr__( 'Short link', 'clicklet-url-shortener' )
 			);
 		}
 		?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;gap:8px;margin:0 0 16px;">
 			<input type="hidden" name="action" value="<?php echo esc_attr( self::ACTION ); ?>" />
 			<?php wp_nonce_field( self::ACTION ); ?>
-			<label class="screen-reader-text" for="fus-quick-url"><?php esc_html_e( 'Long URL', 'fast-url-shortener' ); ?></label>
-			<input type="url" id="fus-quick-url" name="target_url" class="regular-text" style="flex:1;min-width:0;" required placeholder="<?php esc_attr_e( 'Paste a long URL to shorten it', 'fast-url-shortener' ); ?>" />
-			<?php submit_button( __( 'Shorten', 'fast-url-shortener' ), 'primary', 'submit', false ); ?>
+			<label class="screen-reader-text" for="clicklet-quick-url"><?php esc_html_e( 'Long URL', 'clicklet-url-shortener' ); ?></label>
+			<input type="url" id="clicklet-quick-url" name="target_url" class="regular-text" style="flex:1;min-width:0;" required placeholder="<?php esc_attr_e( 'Paste a long URL to shorten it', 'clicklet-url-shortener' ); ?>" />
+			<?php submit_button( __( 'Shorten', 'clicklet-url-shortener' ), 'primary', 'submit', false ); ?>
 		</form>
 		<?php
 		$this->render_top_links();
@@ -112,10 +112,10 @@ class DashboardWidget {
 		$top   = ( new Stats() )->top_links( 7, 5 );
 		$links = admin_url( 'admin.php?page=' . Page::SLUG );
 
-		echo '<h3>' . esc_html__( 'Most clicked this week', 'fast-url-shortener' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Most clicked this week', 'clicklet-url-shortener' ) . '</h3>';
 
 		if ( ! $top ) {
-			echo '<p>' . esc_html__( 'No clicks in the last 7 days.', 'fast-url-shortener' ) . '</p>';
+			echo '<p>' . esc_html__( 'No clicks in the last 7 days.', 'clicklet-url-shortener' ) . '</p>';
 		} else {
 			echo '<ul>';
 
@@ -127,7 +127,7 @@ class DashboardWidget {
 					esc_html(
 						sprintf(
 							/* translators: %s: number of clicks. */
-							_n( '%s click', '%s clicks', $row['clicks'], 'fast-url-shortener' ),
+							_n( '%s click', '%s clicks', $row['clicks'], 'clicklet-url-shortener' ),
 							number_format_i18n( $row['clicks'] )
 						)
 					)
@@ -137,7 +137,7 @@ class DashboardWidget {
 			echo '</ul>';
 		}
 
-		printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( $links ), esc_html__( 'All short links', 'fast-url-shortener' ) );
+		printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( $links ), esc_html__( 'All short links', 'clicklet-url-shortener' ) );
 	}
 
 	/**
@@ -147,7 +147,7 @@ class DashboardWidget {
 	 */
 	public function quick_add() {
 		if ( ! current_user_can( Controller::capability( 'links' ) ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to create short links.', 'fast-url-shortener' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to create short links.', 'clicklet-url-shortener' ), 403 );
 		}
 
 		check_admin_referer( self::ACTION );

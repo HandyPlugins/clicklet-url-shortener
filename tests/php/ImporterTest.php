@@ -2,25 +2,25 @@
 /**
  * Migration from other plugins.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Import\Importer;
-use FastUrlShortener\Import\PrettyLinks;
-use FastUrlShortener\Import\UrlShortify;
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Tracking\ClickStore;
+use Clicklet\Import\Importer;
+use Clicklet\Import\PrettyLinks;
+use Clicklet\Import\UrlShortify;
+use Clicklet\Links\Groups;
+use Clicklet\Links\Repository;
+use Clicklet\Tracking\ClickStore;
 
 // phpcs:disable WordPress.DB -- Test fixtures for other plugins' tables.
 
 /**
- * @covers \FastUrlShortener\Import\Importer
- * @covers \FastUrlShortener\Import\Source
- * @covers \FastUrlShortener\Import\UrlShortify
- * @covers \FastUrlShortener\Import\PrettyLinks
+ * @covers \Clicklet\Import\Importer
+ * @covers \Clicklet\Import\Source
+ * @covers \Clicklet\Import\UrlShortify
+ * @covers \Clicklet\Import\PrettyLinks
  */
 class ImporterTest extends TestCase {
 
@@ -80,7 +80,7 @@ class ImporterTest extends TestCase {
 	/**
 	 * Run an import to the end.
 	 *
-	 * @param \FastUrlShortener\Import\Source $source Source.
+	 * @param \Clicklet\Import\Source $source Source.
 	 *
 	 * @return array Final progress.
 	 */

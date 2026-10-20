@@ -2,14 +2,14 @@
 /**
  * WP-CLI link commands.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\CLI;
+namespace Clicklet\CLI;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Links\Slug;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Links\Slug;
 use WP_CLI;
 use WP_CLI\Utils;
 
@@ -18,9 +18,9 @@ use WP_CLI\Utils;
  *
  * ## EXAMPLES
  *
- *     wp fast-url-shortener link create https://example.com/a/very/long/url --slug=promo
- *     wp fast-url-shortener link list --search=promo
- *     wp fast-url-shortener link update 12 --status=disabled
+ *     wp clicklet link create https://example.com/a/very/long/url --slug=promo
+ *     wp clicklet link list --search=promo
+ *     wp clicklet link update 12 --status=disabled
  */
 class LinkCommand extends \WP_CLI_Command {
 

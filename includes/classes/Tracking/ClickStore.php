@@ -2,14 +2,14 @@
 /**
  * Click storage.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tracking;
+namespace Clicklet\Tracking;
 
-use FastUrlShortener\Install;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
+use Clicklet\Install;
+use Clicklet\Links\Repository;
+use Clicklet\Schema;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write path on the plugin's own tables.
 

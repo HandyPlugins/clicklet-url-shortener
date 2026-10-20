@@ -2,21 +2,21 @@
 /**
  * Fast path drop-in and lifecycle.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Install;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Settings;
-use FastUrlShortener\Tracking\Retention;
+use Clicklet\Install;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Settings;
+use Clicklet\Tracking\Retention;
 
 /**
  * WPMU_PLUGIN_DIR points to a temporary folder in the test config.
  *
- * @covers \FastUrlShortener\Redirect\FastPath
- * @covers \FastUrlShortener\Install
+ * @covers \Clicklet\Redirect\FastPath
+ * @covers \Clicklet\Install
  */
 class FastPathTest extends TestCase {
 
@@ -32,14 +32,14 @@ class FastPathTest extends TestCase {
 	 * The drop-in only loads the plugin's entry point, via a relative path.
 	 */
 	public function test_install_and_uninstall() {
-		$this->assertStringContainsString( 'fast-url-shortener-tests', WPMU_PLUGIN_DIR, 'Tests must not touch the real mu-plugins folder.' );
+		$this->assertStringContainsString( 'clicklet-url-shortener-tests', WPMU_PLUGIN_DIR, 'Tests must not touch the real mu-plugins folder.' );
 		$this->assertFalse( FastPath::is_installed() );
 
 		$this->assertTrue( FastPath::install() );
 		$this->assertTrue( FastPath::is_installed() );
 
 		$contents = file_get_contents( FastPath::path() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$this->assertStringContainsString( "WP_PLUGIN_DIR . '/" . basename( FAST_URL_SHORTENER_PATH ) . "/includes/fast-path.php'", $contents );
+		$this->assertStringContainsString( "WP_PLUGIN_DIR . '/" . basename( CLICKLET_PATH ) . "/includes/fast-path.php'", $contents );
 		$this->assertStringNotContainsString( ABSPATH, $contents );
 
 		$this->assertTrue( FastPath::uninstall() );
@@ -51,7 +51,7 @@ class FastPathTest extends TestCase {
 	 * The drop-in only acts while the plugin is active.
 	 */
 	public function test_is_plugin_active() {
-		$basename = basename( FAST_URL_SHORTENER_PATH ) . '/fast-url-shortener.php';
+		$basename = basename( CLICKLET_PATH ) . '/clicklet-url-shortener.php';
 
 		update_option( 'active_plugins', [] );
 		$this->assertFalse( FastPath::is_plugin_active() );

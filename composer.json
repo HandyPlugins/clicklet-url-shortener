@@ -1,5 +1,5 @@
 {
-  "name": "handyplugins/fast-url-shortener",
+  "name": "handyplugins/clicklet-url-shortener",
   "description": "Fast, self-hosted URL shortener with privacy-friendly click tracking.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",

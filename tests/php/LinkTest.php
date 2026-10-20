@@ -2,15 +2,15 @@
 /**
  * Link value object.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Link;
+use Clicklet\Links\Link;
 
 /**
- * @covers \FastUrlShortener\Links\Link
+ * @covers \Clicklet\Links\Link
  */
 class LinkTest extends TestCase {
 

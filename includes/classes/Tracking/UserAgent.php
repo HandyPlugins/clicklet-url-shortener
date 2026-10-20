@@ -2,10 +2,10 @@
 /**
  * User agent parsing.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tracking;
+namespace Clicklet\Tracking;
 
 /**
  * Small, dependency-free user agent classifier. It only answers what the
@@ -173,14 +173,14 @@ class UserAgent {
 	 * @return array{device: array, os: array, browser: array}
 	 */
 	public static function labels() {
-		$unknown = __( 'Unknown', 'fast-url-shortener' );
+		$unknown = __( 'Unknown', 'clicklet-url-shortener' );
 
 		return [
 			'device'  => [
 				self::UNKNOWN        => $unknown,
-				self::DEVICE_DESKTOP => __( 'Desktop', 'fast-url-shortener' ),
-				self::DEVICE_MOBILE  => __( 'Mobile', 'fast-url-shortener' ),
-				self::DEVICE_TABLET  => __( 'Tablet', 'fast-url-shortener' ),
+				self::DEVICE_DESKTOP => __( 'Desktop', 'clicklet-url-shortener' ),
+				self::DEVICE_MOBILE  => __( 'Mobile', 'clicklet-url-shortener' ),
+				self::DEVICE_TABLET  => __( 'Tablet', 'clicklet-url-shortener' ),
 			],
 			'os'      => [
 				self::UNKNOWN     => $unknown,

@@ -2,13 +2,13 @@
 /**
  * Link value object.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Links;
+namespace Clicklet\Links;
 
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
+use Clicklet\Schema;
+use Clicklet\Settings;
 
 /**
  * A short link, as stored in the links table. Dates are UTC (MySQL format).
@@ -179,12 +179,12 @@ final class Link {
 		/**
 		 * Filter whether a link redirects right now.
 		 *
-		 * @hook fast_url_shortener_link_available
+		 * @hook clicklet_link_available
 		 *
 		 * @param bool $available Availability from status, expiry and click limit.
 		 * @param Link $link      Link.
 		 */
-		return (bool) apply_filters( 'fast_url_shortener_link_available', $available, $this );
+		return (bool) apply_filters( 'clicklet_link_available', $available, $this );
 	}
 
 	/**

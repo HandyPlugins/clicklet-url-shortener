@@ -2,13 +2,13 @@
 /**
  * Raw click retention.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tracking;
+namespace Clicklet\Tracking;
 
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
+use Clicklet\Schema;
+use Clicklet\Settings;
 
 /**
  * Deletes raw click rows older than the retention setting, in small batches.
@@ -19,7 +19,7 @@ class Retention {
 	/**
 	 * Cron hook.
 	 */
-	const HOOK = 'fast_url_shortener_prune_clicks';
+	const HOOK = 'clicklet_prune_clicks';
 
 	/**
 	 * Rows deleted per query.

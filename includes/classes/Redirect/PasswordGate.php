@@ -2,13 +2,13 @@
 /**
  * Password-protected links.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Redirect;
+namespace Clicklet\Redirect;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Tracking\Tracker;
+use Clicklet\Links\Link;
+use Clicklet\Tracking\Tracker;
 
 /**
  * Asks for the password of a protected link before redirecting.
@@ -22,7 +22,7 @@ class PasswordGate {
 	/**
 	 * Form field name.
 	 */
-	const FIELD = 'fast_url_shortener_password';
+	const FIELD = 'clicklet_password';
 
 	/**
 	 * Failed attempts allowed per window.
@@ -87,11 +87,11 @@ class PasswordGate {
 			return;
 		}
 
-		$key      = 'fus_pw_' . md5( $this->link->id . '|' . Tracker::client_ip() );
+		$key      = 'clicklet_pw_' . md5( $this->link->id . '|' . Tracker::client_ip() );
 		$attempts = (int) get_transient( $key );
 
 		if ( $attempts >= self::MAX_ATTEMPTS ) {
-			$this->render( __( 'Too many attempts. Try again in a few minutes.', 'fast-url-shortener' ), 429 );
+			$this->render( __( 'Too many attempts. Try again in a few minutes.', 'clicklet-url-shortener' ), 429 );
 			return;
 		}
 
@@ -106,7 +106,7 @@ class PasswordGate {
 		}
 
 		set_transient( $key, $attempts + 1, self::WINDOW );
-		$this->render( __( 'That password is not correct.', 'fast-url-shortener' ), 403 );
+		$this->render( __( 'That password is not correct.', 'clicklet-url-shortener' ), 403 );
 	}
 
 	/**
@@ -118,22 +118,22 @@ class PasswordGate {
 	 * @return void
 	 */
 	protected function render( $error, $status ) {
-		$html  = '<h1>' . esc_html__( 'This link is password protected', 'fast-url-shortener' ) . '</h1>';
-		$html .= '<p>' . esc_html__( 'Enter the password to continue.', 'fast-url-shortener' ) . '</p>';
+		$html  = '<h1>' . esc_html__( 'This link is password protected', 'clicklet-url-shortener' ) . '</h1>';
+		$html .= '<p>' . esc_html__( 'Enter the password to continue.', 'clicklet-url-shortener' ) . '</p>';
 
 		if ( '' !== $error ) {
 			$html .= '<p role="alert"><strong>' . esc_html( $error ) . '</strong></p>';
 		}
 
 		$html .= '<form method="post">';
-		$html .= '<p><label for="fus-password">' . esc_html__( 'Password', 'fast-url-shortener' ) . '</label><br />';
-		$html .= '<input type="password" id="fus-password" name="' . esc_attr( self::FIELD ) . '" required autofocus autocomplete="current-password" style="width:100%;padding:6px;" /></p>';
-		$html .= '<p><button type="submit" class="button button-primary">' . esc_html__( 'Continue', 'fast-url-shortener' ) . '</button></p>';
+		$html .= '<p><label for="clicklet-password">' . esc_html__( 'Password', 'clicklet-url-shortener' ) . '</label><br />';
+		$html .= '<input type="password" id="clicklet-password" name="' . esc_attr( self::FIELD ) . '" required autofocus autocomplete="current-password" style="width:100%;padding:6px;" /></p>';
+		$html .= '<p><button type="submit" class="button button-primary">' . esc_html__( 'Continue', 'clicklet-url-shortener' ) . '</button></p>';
 		$html .= '</form>';
 
 		wp_die(
 			$html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from escaped parts above.
-			esc_html__( 'Password required', 'fast-url-shortener' ),
+			esc_html__( 'Password required', 'clicklet-url-shortener' ),
 			[ 'response' => absint( $status ) ]
 		);
 	}

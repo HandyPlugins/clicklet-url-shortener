@@ -2,10 +2,10 @@
 /**
  * CSV format.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Transfer;
+namespace Clicklet\Transfer;
 
 /**
  * The three CSV file types and shared reading/writing rules.

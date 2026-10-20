@@ -2,13 +2,13 @@
 /**
  * Import REST endpoints.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Import\Importer;
-use FastUrlShortener\Import\Source;
+use Clicklet\Import\Importer;
+use Clicklet\Import\Source;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -123,7 +123,7 @@ class ImportController extends Controller {
 
 		$progress = $this->importer->step( $source );
 
-		return $progress ? $progress : new WP_Error( 'fast_url_shortener_import_not_started', __( 'Start the import first.', 'fast-url-shortener' ), [ 'status' => 400 ] );
+		return $progress ? $progress : new WP_Error( 'clicklet_import_not_started', __( 'Start the import first.', 'clicklet-url-shortener' ), [ 'status' => 400 ] );
 	}
 
 	/**
@@ -138,7 +138,7 @@ class ImportController extends Controller {
 		$source  = $sources[ $request['source'] ] ?? null;
 
 		if ( ! $source || ! $source->is_available() ) {
-			return new WP_Error( 'fast_url_shortener_import_unavailable', __( 'This import source is not available.', 'fast-url-shortener' ), [ 'status' => 404 ] );
+			return new WP_Error( 'clicklet_import_unavailable', __( 'This import source is not available.', 'clicklet-url-shortener' ), [ 'status' => 404 ] );
 		}
 
 		return $source;

@@ -2,13 +2,13 @@
 /**
  * Link groups.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Links;
+namespace Clicklet\Links;
 
-use FastUrlShortener\Rest\Controller;
-use FastUrlShortener\Schema;
+use Clicklet\Rest\Controller;
+use Clicklet\Schema;
 use WP_Error;
 
 /**
@@ -21,7 +21,7 @@ class Groups {
 	/**
 	 * Taxonomy name.
 	 */
-	const TAXONOMY = 'fast_url_shortener_group';
+	const TAXONOMY = 'clicklet_group';
 
 	/**
 	 * Register hooks.
@@ -46,8 +46,8 @@ class Groups {
 			Schema::META_TYPE,
 			[
 				'labels'                => [
-					'name'          => __( 'Groups', 'fast-url-shortener' ),
-					'singular_name' => __( 'Group', 'fast-url-shortener' ),
+					'name'          => __( 'Groups', 'clicklet-url-shortener' ),
+					'singular_name' => __( 'Group', 'clicklet-url-shortener' ),
 				],
 				'public'                => false,
 				'show_ui'               => false,

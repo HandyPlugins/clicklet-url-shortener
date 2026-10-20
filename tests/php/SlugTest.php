@@ -2,15 +2,15 @@
 /**
  * Slug helpers.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Slug;
+use Clicklet\Links\Slug;
 
 /**
- * @covers \FastUrlShortener\Links\Slug
+ * @covers \Clicklet\Links\Slug
  */
 class SlugTest extends TestCase {
 

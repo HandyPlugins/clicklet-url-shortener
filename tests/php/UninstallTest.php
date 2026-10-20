@@ -2,26 +2,26 @@
 /**
  * Uninstall routine.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Install;
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
-use FastUrlShortener\Tracking\Retention;
-use FastUrlShortener\Uninstall;
+use Clicklet\Install;
+use Clicklet\Links\Groups;
+use Clicklet\Links\PostLinks;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Schema;
+use Clicklet\Settings;
+use Clicklet\Tracking\Retention;
+use Clicklet\Uninstall;
 
 /**
  * Uninstall drops real tables, so the temporary-table rewrite of the test
  * suite is switched off here and the plugin is reinstalled afterwards.
  *
- * @covers \FastUrlShortener\Uninstall
+ * @covers \Clicklet\Uninstall
  */
 class UninstallTest extends TestCase {
 

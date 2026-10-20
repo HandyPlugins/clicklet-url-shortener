@@ -2,13 +2,13 @@
 /**
  * Fast path entry point, loaded by the must-use drop-in.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Redirect\Router;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Redirect\Router;
 
 defined( 'ABSPATH' ) || exit;
 

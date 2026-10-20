@@ -2,14 +2,14 @@
 /**
  * Links REST endpoints.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Tracking\Stats;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Tracking\Stats;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -260,7 +260,7 @@ class LinksController extends Controller {
 				if ( isset( $labels[ $dimension ] ) ) {
 					$row['label'] = $labels[ $dimension ][ (int) $row['value'] ] ?? $row['value'];
 				} else {
-					$row['label'] = '' !== $row['value'] ? $row['value'] : __( 'Direct / unknown', 'fast-url-shortener' );
+					$row['label'] = '' !== $row['value'] ? $row['value'] : __( 'Direct / unknown', 'clicklet-url-shortener' );
 				}
 			}
 			unset( $row );
@@ -288,12 +288,12 @@ class LinksController extends Controller {
 		 * Filter a link as returned by the REST API, e.g. to add fields
 		 * stored in link meta.
 		 *
-		 * @hook fast_url_shortener_rest_prepare_link
+		 * @hook clicklet_rest_prepare_link
 		 *
 		 * @param array $data Link data.
 		 * @param Link  $link Link.
 		 */
-		return apply_filters( 'fast_url_shortener_rest_prepare_link', $data, $link );
+		return apply_filters( 'clicklet_rest_prepare_link', $data, $link );
 	}
 
 	/**
@@ -309,13 +309,13 @@ class LinksController extends Controller {
 		/**
 		 * Fires after a link is created or updated through the REST API.
 		 *
-		 * @hook fast_url_shortener_rest_save_link
+		 * @hook clicklet_rest_save_link
 		 *
 		 * @param Link            $link     Saved link.
 		 * @param WP_REST_Request $request  Request.
 		 * @param bool            $creating Whether the link was just created.
 		 */
-		do_action( 'fast_url_shortener_rest_save_link', $link, $request, $creating );
+		do_action( 'clicklet_rest_save_link', $link, $request, $creating );
 	}
 
 	/**
@@ -384,12 +384,12 @@ class LinksController extends Controller {
 		/**
 		 * Filter the REST arguments accepted when creating or updating a link.
 		 *
-		 * @hook fast_url_shortener_rest_link_args
+		 * @hook clicklet_rest_link_args
 		 *
 		 * @param array $args     Argument schema.
 		 * @param bool  $creating Whether this is the create endpoint.
 		 */
-		return apply_filters( 'fast_url_shortener_rest_link_args', $args, $creating );
+		return apply_filters( 'clicklet_rest_link_args', $args, $creating );
 	}
 
 	/**
@@ -400,7 +400,7 @@ class LinksController extends Controller {
 	 * @return WP_Error
 	 */
 	protected function with_status( WP_Error $error ) {
-		$status = 'fast_url_shortener_not_found' === $error->get_error_code() ? 404 : 400;
+		$status = 'clicklet_not_found' === $error->get_error_code() ? 404 : 400;
 		$error->add_data( [ 'status' => $status ] );
 
 		return $error;
@@ -412,6 +412,6 @@ class LinksController extends Controller {
 	 * @return WP_Error
 	 */
 	protected function not_found() {
-		return new WP_Error( 'fast_url_shortener_not_found', __( 'Link not found.', 'fast-url-shortener' ), [ 'status' => 404 ] );
+		return new WP_Error( 'clicklet_not_found', __( 'Link not found.', 'clicklet-url-shortener' ), [ 'status' => 404 ] );
 	}
 }

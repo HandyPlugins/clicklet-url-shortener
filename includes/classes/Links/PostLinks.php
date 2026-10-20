@@ -2,13 +2,13 @@
 /**
  * Short links for posts.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Links;
+namespace Clicklet\Links;
 
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
+use Clicklet\Schema;
+use Clicklet\Settings;
 use WP_Error;
 use WP_Post;
 
@@ -22,7 +22,7 @@ class PostLinks {
 	/**
 	 * Post meta holding the link ID.
 	 */
-	const POST_META = '_fast_url_shortener_link_id';
+	const POST_META = '_clicklet_link_id';
 
 	/**
 	 * Link meta holding the post ID.
@@ -131,7 +131,7 @@ class PostLinks {
 		$post = get_post( $post_id );
 
 		if ( ! $post || 'publish' !== $post->post_status || ! is_post_type_viewable( $post->post_type ) ) {
-			return new WP_Error( 'fast_url_shortener_post_not_published', __( 'Short links can be created for published posts only.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_post_not_published', __( 'Short links can be created for published posts only.', 'clicklet-url-shortener' ) );
 		}
 
 		$link = $this->links->create(

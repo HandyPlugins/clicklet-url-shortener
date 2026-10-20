@@ -35,17 +35,17 @@ export default function QuickCreate( { onCreated } ) {
 	};
 
 	return (
-		<div className="fus-quick-create">
+		<div className="clicklet-quick-create">
 			<form onSubmit={ submit }>
 				<TextControl
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 					type="url"
-					label={ __( 'Long URL', 'fast-url-shortener' ) }
+					label={ __( 'Long URL', 'clicklet-url-shortener' ) }
 					hideLabelFromVision
 					placeholder={ __(
 						'Paste a long URL to shorten it',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 					value={ url }
 					onChange={ setUrl }
@@ -58,7 +58,7 @@ export default function QuickCreate( { onCreated } ) {
 					disabled={ saving || ! url.trim() }
 					__next40pxDefaultSize
 				>
-					{ __( 'Shorten', 'fast-url-shortener' ) }
+					{ __( 'Shorten', 'clicklet-url-shortener' ) }
 				</Button>
 			</form>
 
@@ -70,7 +70,7 @@ export default function QuickCreate( { onCreated } ) {
 
 			{ created && (
 				<Notice status="success" onRemove={ () => setCreated( null ) }>
-					{ __( 'Short link ready:', 'fast-url-shortener' ) }{ ' ' }
+					{ __( 'Short link ready:', 'clicklet-url-shortener' ) }{ ' ' }
 					<a
 						href={ created.short_url }
 						target="_blank"

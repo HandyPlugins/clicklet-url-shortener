@@ -2,13 +2,13 @@
 /**
  * Router test double.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests\Doubles;
+namespace Clicklet\Tests\Doubles;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Redirect\Router;
+use Clicklet\Links\Link;
+use Clicklet\Redirect\Router;
 
 /**
  * Router double: records the redirect instead of sending it and exiting.

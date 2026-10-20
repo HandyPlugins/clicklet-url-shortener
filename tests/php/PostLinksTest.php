@@ -2,19 +2,19 @@
 /**
  * Short links for posts.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
+use Clicklet\Links\PostLinks;
+use Clicklet\Links\Repository;
+use Clicklet\Schema;
 use WP_REST_Request;
 
 /**
- * @covers \FastUrlShortener\Links\PostLinks
- * @covers \FastUrlShortener\Rest\PostLinksController
+ * @covers \Clicklet\Links\PostLinks
+ * @covers \Clicklet\Rest\PostLinksController
  */
 class PostLinksTest extends TestCase {
 
@@ -96,7 +96,7 @@ class PostLinksTest extends TestCase {
 	 */
 	public function test_create() {
 		$draft = self::factory()->post->create( [ 'post_status' => 'draft' ] );
-		$this->assertSame( 'fast_url_shortener_post_not_published', $this->post_links->create( $draft )->get_error_code() );
+		$this->assertSame( 'clicklet_post_not_published', $this->post_links->create( $draft )->get_error_code() );
 
 		$post  = self::factory()->post->create();
 		$first = $this->post_links->create( $post );
@@ -140,7 +140,7 @@ class PostLinksTest extends TestCase {
 		$author = self::factory()->user->create( [ 'role' => 'author' ] );
 		$admin  = self::factory()->user->create( [ 'role' => 'administrator' ] );
 		$post   = self::factory()->post->create( [ 'post_author' => $admin ] );
-		$route  = '/fast-url-shortener/v1/posts/' . $post . '/link';
+		$route  = '/clicklet-url-shortener/v1/posts/' . $post . '/link';
 
 		wp_set_current_user( $author );
 		$this->assertSame( 403, rest_get_server()->dispatch( new WP_REST_Request( 'GET', $route ) )->get_status() );
@@ -155,7 +155,7 @@ class PostLinksTest extends TestCase {
 		$this->assertSame( $created->get_data()['link']['id'], rest_get_server()->dispatch( new WP_REST_Request( 'GET', $route ) )->get_data()['link']['id'] );
 
 		$draft = self::factory()->post->create( [ 'post_status' => 'draft' ] );
-		$this->assertSame( 400, rest_get_server()->dispatch( new WP_REST_Request( 'POST', '/fast-url-shortener/v1/posts/' . $draft . '/link' ) )->get_status() );
+		$this->assertSame( 400, rest_get_server()->dispatch( new WP_REST_Request( 'POST', '/clicklet-url-shortener/v1/posts/' . $draft . '/link' ) )->get_status() );
 	}
 
 	/**

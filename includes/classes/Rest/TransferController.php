@@ -2,12 +2,12 @@
 /**
  * CSV import REST endpoints.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Transfer\CsvImporter;
+use Clicklet\Transfer\CsvImporter;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -122,7 +122,7 @@ class TransferController extends Controller {
 		$files = $request->get_file_params();
 
 		if ( empty( $files['file'] ) ) {
-			return new WP_Error( 'fast_url_shortener_csv_missing', __( 'Choose a CSV file.', 'fast-url-shortener' ), [ 'status' => 400 ] );
+			return new WP_Error( 'clicklet_csv_missing', __( 'Choose a CSV file.', 'clicklet-url-shortener' ), [ 'status' => 400 ] );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -156,7 +156,7 @@ class TransferController extends Controller {
 		remove_filter( 'upload_dir', $filter );
 
 		if ( isset( $result['error'] ) ) {
-			return new WP_Error( 'fast_url_shortener_csv_upload', $result['error'], [ 'status' => 400 ] );
+			return new WP_Error( 'clicklet_csv_upload', $result['error'], [ 'status' => 400 ] );
 		}
 
 		$progress = $this->importer->start( $result['file'], (bool) $request['overwrite'], true );
@@ -177,7 +177,7 @@ class TransferController extends Controller {
 		$progress = $this->importer->step();
 
 		if ( null === $progress ) {
-			return new WP_Error( 'fast_url_shortener_csv_not_started', __( 'Upload a file first.', 'fast-url-shortener' ), [ 'status' => 400 ] );
+			return new WP_Error( 'clicklet_csv_not_started', __( 'Upload a file first.', 'clicklet-url-shortener' ), [ 'status' => 400 ] );
 		}
 
 		if ( is_wp_error( $progress ) ) {

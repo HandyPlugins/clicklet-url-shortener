@@ -1,12 +1,12 @@
 <?php
 /**
- * Uninstall entry point. See FastUrlShortener\Uninstall.
+ * Uninstall entry point. See Clicklet\Uninstall.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 require_once __DIR__ . '/includes/autoload.php';
 
-FastUrlShortener\Uninstall::run();
+Clicklet\Uninstall::run();

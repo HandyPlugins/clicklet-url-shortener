@@ -20,9 +20,9 @@ import {
 import { formatNumber, screenUrl } from '../utils';
 
 const TYPE_LABELS = {
-	links: __( 'links', 'fast-url-shortener' ),
-	stats: __( 'daily stats', 'fast-url-shortener' ),
-	clicks: __( 'click details', 'fast-url-shortener' ),
+	links: __( 'links', 'clicklet-url-shortener' ),
+	stats: __( 'daily stats', 'clicklet-url-shortener' ),
+	clicks: __( 'click details', 'clicklet-url-shortener' ),
 };
 
 /**
@@ -101,13 +101,13 @@ export default function CsvImportCard() {
 	return (
 		<Card>
 			<CardHeader>
-				<h2>{ __( 'Import from CSV', 'fast-url-shortener' ) }</h2>
+				<h2>{ __( 'Import from CSV', 'clicklet-url-shortener' ) }</h2>
 			</CardHeader>
 			<CardBody>
-				<p className="fus-muted">
+				<p className="clicklet-muted">
 					{ __(
 						'Upload a links, daily stats or click details file; the type is detected from its header row. Import links first. Only a target_url column is required, so you can also create links in bulk from a spreadsheet.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 				</p>
 
@@ -115,11 +115,11 @@ export default function CsvImportCard() {
 					__nextHasNoMarginBottom
 					label={ __(
 						'Update links that already exist',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 					help={ __(
 						'Off: links whose slug already exists are skipped. Stats and click files can be imported again safely either way.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 					checked={ overwrite }
 					onChange={ setOverwrite }
@@ -133,9 +133,9 @@ export default function CsvImportCard() {
 				) }
 
 				{ progress && (
-					<div className="fus-import-progress">
+					<div className="clicklet-import-progress">
 						<div
-							className="fus-progress"
+							className="clicklet-progress"
 							role="progressbar"
 							aria-valuenow={ percent }
 							aria-valuemin="0"
@@ -149,7 +149,7 @@ export default function CsvImportCard() {
 								/* translators: 1: file type, 2: processed rows, 3: total rows, 4: imported, 5: updated, 6: skipped. */
 								__(
 									'Importing %1$s: %2$s of %3$s rows. %4$s imported, %5$s updated, %6$s skipped.',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								),
 								TYPE_LABELS[ progress.type ] || progress.type,
 								formatNumber( progress.processed ),
@@ -165,30 +165,42 @@ export default function CsvImportCard() {
 				{ progress?.done && (
 					<Notice status="success" isDismissible={ false }>
 						<p>
-							{ __( 'Import complete.', 'fast-url-shortener' ) }{ ' ' }
+							{ __(
+								'Import complete.',
+								'clicklet-url-shortener'
+							) }{ ' ' }
 							<a href={ screenUrl() }>
-								{ __( 'View links', 'fast-url-shortener' ) }
+								{ __( 'View links', 'clicklet-url-shortener' ) }
 							</a>
 						</p>
 					</Notice>
 				) }
 
 				{ progress?.skipped_rows?.length > 0 && ! running && (
-					<details className="fus-skipped">
+					<details className="clicklet-skipped">
 						<summary>
-							{ __( 'Skipped rows', 'fast-url-shortener' ) }
+							{ __( 'Skipped rows', 'clicklet-url-shortener' ) }
 						</summary>
 						<table className="widefat striped">
 							<thead>
 								<tr>
 									<th>
-										{ __( 'Line', 'fast-url-shortener' ) }
+										{ __(
+											'Line',
+											'clicklet-url-shortener'
+										) }
 									</th>
 									<th>
-										{ __( 'Slug', 'fast-url-shortener' ) }
+										{ __(
+											'Slug',
+											'clicklet-url-shortener'
+										) }
 									</th>
 									<th>
-										{ __( 'Reason', 'fast-url-shortener' ) }
+										{ __(
+											'Reason',
+											'clicklet-url-shortener'
+										) }
 									</th>
 								</tr>
 							</thead>
@@ -207,17 +219,17 @@ export default function CsvImportCard() {
 					</details>
 				) }
 
-				<div className="fus-import-actions">
+				<div className="clicklet-import-actions">
 					{ progress && ! progress.done && ! running ? (
 						<>
 							<Button variant="primary" onClick={ resume }>
 								{ __(
 									'Continue import',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</Button>
 							<Button variant="tertiary" onClick={ cancel }>
-								{ __( 'Cancel', 'fast-url-shortener' ) }
+								{ __( 'Cancel', 'clicklet-url-shortener' ) }
 							</Button>
 						</>
 					) : (
@@ -233,7 +245,7 @@ export default function CsvImportCard() {
 								>
 									{ __(
 										'Choose CSV file…',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 								</Button>
 							) }

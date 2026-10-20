@@ -1,7 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 
-const BASE = '/fast-url-shortener/v1';
+const BASE = '/clicklet-url-shortener/v1';
 
 /**
  * Fetch a page of links.

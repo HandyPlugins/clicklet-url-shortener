@@ -1,50 +1,50 @@
-/* Fast URL Shortener admin. Native WordPress look; only layout additions. */
+/* Clicklet URL Shortener admin. Native WordPress look; layout additions. */
 
-.fast-url-shortener .components-card {
+.clicklet-url-shortener .components-card {
 	margin: 0 0 16px;
 	max-width: 960px;
 }
 
-.fast-url-shortener .components-card h2 {
+.clicklet-url-shortener .components-card h2 {
 	margin: 0;
 	font-size: 14px;
 }
 
-.fast-url-shortener .components-card__body > * + * {
+.clicklet-url-shortener .components-card__body > * + * {
 	margin-top: 16px;
 }
 
-.fus-muted {
+.clicklet-muted {
 	color: #646970;
 }
 
-.fus-intro {
+.clicklet-intro {
 	max-width: 720px;
 	font-size: 14px;
 }
 
 /* Quick create */
-.fus-quick-create {
+.clicklet-quick-create {
 	margin: 16px 0;
 	max-width: 960px;
 }
 
-.fus-quick-create form {
+.clicklet-quick-create form {
 	display: flex;
 	gap: 8px;
 	align-items: flex-start;
 }
 
-.fus-quick-create .components-base-control {
+.clicklet-quick-create .components-base-control {
 	flex: 1;
 }
 
-.fus-quick-create .components-notice {
+.clicklet-quick-create .components-notice {
 	margin: 12px 0 0;
 }
 
 /* List */
-.fus-toolbar {
+.clicklet-toolbar {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -52,20 +52,20 @@
 	margin: 16px 0 8px;
 }
 
-.fus-toolbar .components-search-control {
+.clicklet-toolbar .components-search-control {
 	max-width: 280px;
 }
 
-.fus-links .column-clicks,
-.fus-links .column-status {
+.clicklet-links .column-clicks,
+.clicklet-links .column-status {
 	width: 90px;
 }
 
-.fus-links .column-date {
+.clicklet-links .column-date {
 	width: 120px;
 }
 
-.fus-sort-button {
+.clicklet-sort-button {
 	display: flex;
 	align-items: center;
 	width: 100%;
@@ -80,7 +80,7 @@
 	cursor: pointer;
 }
 
-.fus-link-title {
+.clicklet-link-title {
 	padding: 0;
 	border: 0;
 	background: none;
@@ -91,19 +91,19 @@
 	cursor: pointer;
 }
 
-.fus-short-url {
+.clicklet-short-url {
 	margin-top: 2px;
 	word-break: break-all;
 }
 
-.fus-target {
+.clicklet-target {
 	display: block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.fus-status {
+.clicklet-status {
 	display: inline-block;
 	padding: 0 8px;
 	border-radius: 2px;
@@ -111,17 +111,17 @@
 	line-height: 2;
 }
 
-.fus-status-active {
+.clicklet-status-active {
 	background: #edfaef;
 	color: #00450c;
 }
 
-.fus-status-disabled {
+.clicklet-status-disabled {
 	background: #f0f0f1;
 	color: #50575e;
 }
 
-.fus-pagination {
+.clicklet-pagination {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
@@ -129,7 +129,7 @@
 	margin-top: 12px;
 }
 
-.fus-empty {
+.clicklet-empty {
 	max-width: 960px;
 	padding: 32px;
 	background: #fff;
@@ -138,18 +138,18 @@
 }
 
 /* Modals */
-.fus-form > * + * {
+.clicklet-form > * + * {
 	margin-top: 16px;
 }
 
-.fus-form-row {
+.clicklet-form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;
 }
 
 /* Short link field: base URL and slug in one box, like an address bar. */
-.fus-url-input {
+.clicklet-url-input {
 	display: flex;
 	align-items: center;
 	min-height: 40px;
@@ -159,12 +159,12 @@
 	overflow: hidden;
 }
 
-.fus-url-input:focus-within {
+.clicklet-url-input:focus-within {
 	border-color: var(--wp-admin-theme-color, #3858e9);
 	box-shadow: 0 0 0 0.5px var(--wp-admin-theme-color, #3858e9);
 }
 
-.fus-url-input__base {
+.clicklet-url-input__base {
 	flex: 0 1 auto;
 	max-width: 60%;
 	overflow: hidden;
@@ -174,7 +174,7 @@
 	white-space: nowrap;
 }
 
-.fus-url-input .fus-url-input__slug {
+.clicklet-url-input .clicklet-url-input__slug {
 	flex: 1;
 	min-width: 0;
 	min-height: 38px;
@@ -186,64 +186,64 @@
 	font-size: 13px;
 }
 
-.fus-url-input .fus-url-input__slug:focus {
+.clicklet-url-input .clicklet-url-input__slug:focus {
 	border: 0;
 	box-shadow: none;
 	outline: none;
 }
 
-.fus-form-actions {
+.clicklet-form-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 8px;
 }
 
 /* Stats */
-.fus-periods {
+.clicklet-periods {
 	display: flex;
 	gap: 4px;
 	margin-bottom: 16px;
 }
 
-.fus-totals {
+.clicklet-totals {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	gap: 16px;
 	margin-bottom: 16px;
 }
 
-.fus-totals > div {
+.clicklet-totals > div {
 	padding: 12px 16px;
 	border: 1px solid #dcdcde;
 	border-radius: 2px;
 }
 
-.fus-totals strong {
+.clicklet-totals strong {
 	display: block;
 	font-size: 24px;
 	line-height: 1.3;
 }
 
-.fus-chart {
+.clicklet-chart {
 	margin: 0 0 24px;
 }
 
-.fus-chart svg {
+.clicklet-chart svg {
 	display: block;
 	width: 100%;
 	height: 160px;
 	border-bottom: 1px solid #dcdcde;
 }
 
-.fus-chart rect {
+.clicklet-chart rect {
 	fill: var(--wp-admin-theme-color, #2271b1);
 }
 
-.fus-chart rect:hover {
+.clicklet-chart rect:hover {
 	opacity: 0.8;
 }
 
-.fus-chart figcaption {
+.clicklet-chart figcaption {
 	display: flex;
 	justify-content: space-between;
 	margin-top: 4px;
@@ -251,22 +251,22 @@
 	font-size: 12px;
 }
 
-.fus-breakdowns {
+.clicklet-breakdowns {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 	gap: 24px;
 }
 
-.fus-breakdown h3 {
+.clicklet-breakdown h3 {
 	margin: 0 0 8px;
 	font-size: 13px;
 }
 
-.fus-breakdown ul {
+.clicklet-breakdown ul {
 	margin: 0;
 }
 
-.fus-breakdown li {
+.clicklet-breakdown li {
 	position: relative;
 	display: flex;
 	justify-content: space-between;
@@ -275,7 +275,7 @@
 	padding: 4px 8px;
 }
 
-.fus-breakdown-bar {
+.clicklet-breakdown-bar {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -284,29 +284,29 @@
 	background: #f0f6fc;
 }
 
-.fus-breakdown-label,
-.fus-breakdown-value {
+.clicklet-breakdown-label,
+.clicklet-breakdown-value {
 	position: relative;
 	z-index: 1;
 }
 
-.fus-breakdown-label {
+.clicklet-breakdown-label {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 /* Import & Export */
-.fus-section-title {
+.clicklet-section-title {
 	margin: 32px 0 8px;
 	font-size: 1.3em;
 }
 
-.fus-export-list {
+.clicklet-export-list {
 	margin: 0;
 }
 
-.fus-export-list li {
+.clicklet-export-list li {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -316,86 +316,86 @@
 	border-top: 1px solid #f0f0f1;
 }
 
-.fus-export-list p {
+.clicklet-export-list p {
 	margin: 2px 0 0;
 }
 
 /* Import */
-.fus-import-grid {
+.clicklet-import-grid {
 	display: grid;
 	gap: 16px;
 	max-width: 960px;
 }
 
-.fus-import-card .components-card__header {
+.clicklet-import-card .components-card__header {
 	gap: 12px;
 }
 
-.fus-progress {
+.clicklet-progress {
 	height: 8px;
 	overflow: hidden;
 	background: #dcdcde;
 	border-radius: 4px;
 }
 
-.fus-progress span {
+.clicklet-progress span {
 	display: block;
 	height: 100%;
 	background: var(--wp-admin-theme-color, #2271b1);
 	transition: width 0.2s ease;
 }
 
-.fus-import-progress p {
+.clicklet-import-progress p {
 	display: flex;
 	align-items: center;
 	gap: 4px;
 }
 
-.fus-import-progress .components-spinner {
+.clicklet-import-progress .components-spinner {
 	margin: 0;
 }
 
-.fus-import-actions {
+.clicklet-import-actions {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 }
 
-.fus-skipped table {
+.clicklet-skipped table {
 	margin-top: 8px;
 }
 
 @media (max-width: 782px) {
 
-	.fus-form-row,
-	.fus-totals {
+	.clicklet-form-row,
+	.clicklet-totals {
 		grid-template-columns: 1fr;
 	}
 
-	.fus-quick-create form,
-	.fus-toolbar {
+	.clicklet-quick-create form,
+	.clicklet-toolbar {
 		flex-direction: column;
 		align-items: stretch;
 	}
 }
 
 /* Groups */
-.fus-toolbar-filters {
+.clicklet-toolbar-filters {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	margin-left: auto;
 }
 
-.fus-badges {
+.clicklet-badges {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	margin-top: 4px;
 }
 
-.fus-badge {
+.clicklet-badge {
 	padding: 0 8px;
 	border: 0;
 	border-radius: 2px;
@@ -406,16 +406,16 @@
 	cursor: pointer;
 }
 
-.fus-badge:hover,
-.fus-badge:focus {
+.clicklet-badge:hover,
+.clicklet-badge:focus {
 	background: #dcdcde;
 }
 
-.fus-groups {
+.clicklet-groups {
 	margin: 0 0 16px;
 }
 
-.fus-groups li {
+.clicklet-groups li {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -424,25 +424,25 @@
 	border-bottom: 1px solid #f0f0f1;
 }
 
-.fus-groups form {
+.clicklet-groups form {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	flex: 1;
 }
 
-.fus-groups form .components-base-control {
+.clicklet-groups form .components-base-control {
 	flex: 1;
 }
 
-.fus-post-types {
+.clicklet-post-types {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px 24px;
 }
 
 /* QR codes and passwords */
-.fus-qr-code {
+.clicklet-qr-code {
 	display: block;
 	width: 100%;
 	max-width: 280px;
@@ -450,12 +450,12 @@
 	margin: 0 auto 16px;
 }
 
-.fus-status-locked {
+.clicklet-status-locked {
 	margin-left: 4px;
 	background: #fcf9e8;
 	color: #614200;
 }
 
-.fus-password-set p {
+.clicklet-password-set p {
 	margin-top: 0;
 }

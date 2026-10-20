@@ -2,12 +2,12 @@
 /**
  * Post short link REST endpoints.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Links\PostLinks;
+use Clicklet\Links\PostLinks;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;

@@ -2,15 +2,15 @@
 /**
  * CSV helpers.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Transfer\Csv;
+use Clicklet\Transfer\Csv;
 
 /**
- * @covers \FastUrlShortener\Transfer\Csv
+ * @covers \Clicklet\Transfer\Csv
  */
 class CsvTest extends TestCase {
 

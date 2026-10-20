@@ -2,17 +2,17 @@
 /**
  * Uninstall routine.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
-use FastUrlShortener\Import\Importer;
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Tracking\Retention;
-use FastUrlShortener\Transfer\CsvImporter;
+use Clicklet\Import\Importer;
+use Clicklet\Links\Groups;
+use Clicklet\Links\PostLinks;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Tracking\Retention;
+use Clicklet\Transfer\CsvImporter;
 
 /**
  * Cleans up when the plugin is deleted.

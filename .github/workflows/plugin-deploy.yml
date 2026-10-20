@@ -20,7 +20,7 @@ jobs:
       - name: Check that the tag matches the plugin version
         run: |
           tag="${GITHUB_REF_NAME}"
-          grep -Eq "^ \* Version: +${tag}$" fast-url-shortener.php || { echo "::error::Plugin header Version is not ${tag}"; exit 1; }
+          grep -Eq "^ \* Version: +${tag}$" clicklet-url-shortener.php || { echo "::error::Plugin header Version is not ${tag}"; exit 1; }
           grep -Eq "^Stable tag: +${tag}$" readme.txt || { echo "::error::readme.txt Stable tag is not ${tag}"; exit 1; }
 
       - uses: actions/setup-node@v4
@@ -42,7 +42,7 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: fast-url-shortener
+          SLUG: clicklet-url-shortener
 
       - name: Attach the package to a GitHub release
         env:

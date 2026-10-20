@@ -2,16 +2,16 @@
 /**
  * CSV export.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Transfer;
+namespace Clicklet\Transfer;
 
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Rest\Controller;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\UserAgent;
+use Clicklet\Links\Groups;
+use Clicklet\Rest\Controller;
+use Clicklet\Schema;
+use Clicklet\Tracking\Stats;
+use Clicklet\Tracking\UserAgent;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Batched export reads on the plugin's own tables.
 // phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Streams CSV rows to the response or a file; WP_Filesystem has no streaming API.
@@ -25,7 +25,7 @@ class Exporter {
 	/**
 	 * admin-post action and nonce action.
 	 */
-	const ACTION = 'fast_url_shortener_export';
+	const ACTION = 'clicklet_export';
 
 	/**
 	 * Rows per query.
@@ -59,7 +59,7 @@ class Exporter {
 	 */
 	public function download() {
 		if ( ! current_user_can( Controller::capability( 'settings' ) ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to export links.', 'fast-url-shortener' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to export links.', 'clicklet-url-shortener' ), 403 );
 		}
 
 		check_admin_referer( self::ACTION );
@@ -67,10 +67,10 @@ class Exporter {
 		$type = isset( $_GET['type'] ) ? sanitize_key( $_GET['type'] ) : '';
 
 		if ( ! isset( Csv::COLUMNS[ $type ] ) ) {
-			wp_die( esc_html__( 'Unknown export type.', 'fast-url-shortener' ), 400 );
+			wp_die( esc_html__( 'Unknown export type.', 'clicklet-url-shortener' ), 400 );
 		}
 
-		$filename = sprintf( 'fast-url-shortener-%s-%s.csv', $type, wp_date( 'Y-m-d' ) );
+		$filename = sprintf( 'clicklet-url-shortener-%s-%s.csv', $type, wp_date( 'Y-m-d' ) );
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );
@@ -143,14 +143,14 @@ class Exporter {
 
 				/**
 				 * Filter a links CSV row, e.g. to fill columns added with
-				 * fast_url_shortener_csv_link_columns.
+				 * clicklet_csv_link_columns.
 				 *
-				 * @hook fast_url_shortener_csv_export_link
+				 * @hook clicklet_csv_export_link
 				 *
 				 * @param array $cells Column => value.
 				 * @param array $row   Database row.
 				 */
-				$cells = apply_filters( 'fast_url_shortener_csv_export_link', $cells, $row );
+				$cells = apply_filters( 'clicklet_csv_export_link', $cells, $row );
 
 				$this->put(
 					$handle,
@@ -273,13 +273,13 @@ class Exporter {
 	protected function link_columns() {
 		/**
 		 * Filter the columns of the links CSV file. Extra columns are passed to
-		 * fast_url_shortener_csv_import_link when the file is imported.
+		 * clicklet_csv_import_link when the file is imported.
 		 *
-		 * @hook fast_url_shortener_csv_link_columns
+		 * @hook clicklet_csv_link_columns
 		 *
 		 * @param string[] $columns Column names.
 		 */
-		return (array) apply_filters( 'fast_url_shortener_csv_link_columns', Csv::COLUMNS['links'] );
+		return (array) apply_filters( 'clicklet_csv_link_columns', Csv::COLUMNS['links'] );
 	}
 
 	/**

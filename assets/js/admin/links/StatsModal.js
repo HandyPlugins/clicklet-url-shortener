@@ -10,12 +10,15 @@ import BarChart from './BarChart';
 const PERIODS = [ 7, 30, 90, 365 ];
 
 const BREAKDOWNS = [
-	{ key: 'referrer_host', title: __( 'Referrers', 'fast-url-shortener' ) },
-	{ key: 'country', title: __( 'Countries', 'fast-url-shortener' ) },
-	{ key: 'device', title: __( 'Devices', 'fast-url-shortener' ) },
-	{ key: 'browser', title: __( 'Browsers', 'fast-url-shortener' ) },
-	{ key: 'os', title: __( 'Operating systems', 'fast-url-shortener' ) },
-	{ key: 'source', title: __( 'Sources', 'fast-url-shortener' ) },
+	{
+		key: 'referrer_host',
+		title: __( 'Referrers', 'clicklet-url-shortener' ),
+	},
+	{ key: 'country', title: __( 'Countries', 'clicklet-url-shortener' ) },
+	{ key: 'device', title: __( 'Devices', 'clicklet-url-shortener' ) },
+	{ key: 'browser', title: __( 'Browsers', 'clicklet-url-shortener' ) },
+	{ key: 'os', title: __( 'Operating systems', 'clicklet-url-shortener' ) },
+	{ key: 'source', title: __( 'Sources', 'clicklet-url-shortener' ) },
 ];
 
 /**
@@ -30,28 +33,28 @@ function Breakdown( { title, rows, dimension } ) {
 	const max = Math.max( 1, ...rows.map( ( row ) => row.clicks ) );
 
 	return (
-		<div className="fus-breakdown">
+		<div className="clicklet-breakdown">
 			<h3>{ title }</h3>
 			{ ! rows.length && (
-				<p className="fus-muted">
-					{ __( 'No data yet.', 'fast-url-shortener' ) }
+				<p className="clicklet-muted">
+					{ __( 'No data yet.', 'clicklet-url-shortener' ) }
 				</p>
 			) }
 			<ul>
 				{ rows.map( ( row ) => (
 					<li key={ row.value }>
 						<span
-							className="fus-breakdown-bar"
+							className="clicklet-breakdown-bar"
 							style={ {
 								width: `${ ( row.clicks / max ) * 100 }%`,
 							} }
 						/>
-						<span className="fus-breakdown-label">
+						<span className="clicklet-breakdown-label">
 							{ 'country' === dimension && row.value
 								? countryName( row.value )
 								: row.label }
 						</span>
-						<span className="fus-breakdown-value">
+						<span className="clicklet-breakdown-value">
 							{ formatNumber( row.clicks ) }
 						</span>
 					</li>
@@ -93,18 +96,18 @@ export default function StatsModal( { link, onClose } ) {
 		<Modal
 			title={ sprintf(
 				/* translators: %s: short URL. */
-				__( 'Stats for %s', 'fast-url-shortener' ),
+				__( 'Stats for %s', 'clicklet-url-shortener' ),
 				link.short_url
 			) }
 			onRequestClose={ onClose }
-			className="fus-modal fus-stats"
+			className="clicklet-modal clicklet-stats"
 			size="large"
 		>
-			<div className="fus-stats-toolbar">
+			<div className="clicklet-stats-toolbar">
 				<div
-					className="fus-periods"
+					className="clicklet-periods"
 					role="group"
-					aria-label={ __( 'Period', 'fast-url-shortener' ) }
+					aria-label={ __( 'Period', 'clicklet-url-shortener' ) }
 				>
 					{ PERIODS.map( ( period ) => (
 						<Button
@@ -118,7 +121,7 @@ export default function StatsModal( { link, onClose } ) {
 						>
 							{ sprintf(
 								/* translators: %d: number of days. */
-								__( '%d days', 'fast-url-shortener' ),
+								__( '%d days', 'clicklet-url-shortener' ),
 								period
 							) }
 						</Button>
@@ -135,11 +138,11 @@ export default function StatsModal( { link, onClose } ) {
 
 			{ stats && (
 				<>
-					<div className="fus-totals">
+					<div className="clicklet-totals">
 						<div>
 							<strong>{ formatNumber( totals.clicks ) }</strong>
 							<span>
-								{ __( 'Clicks', 'fast-url-shortener' ) }
+								{ __( 'Clicks', 'clicklet-url-shortener' ) }
 							</span>
 						</div>
 						<div>
@@ -147,7 +150,7 @@ export default function StatsModal( { link, onClose } ) {
 							<span>
 								{ __(
 									'Unique visitors',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</span>
 						</div>
@@ -156,7 +159,7 @@ export default function StatsModal( { link, onClose } ) {
 							<span>
 								{ __(
 									'Bots filtered out',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</span>
 						</div>
@@ -164,7 +167,7 @@ export default function StatsModal( { link, onClose } ) {
 
 					<BarChart data={ stats.daily } />
 
-					<div className="fus-breakdowns">
+					<div className="clicklet-breakdowns">
 						{ BREAKDOWNS.map( ( { key, title } ) => (
 							<Breakdown
 								key={ key }

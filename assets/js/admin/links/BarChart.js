@@ -16,12 +16,12 @@ export default function BarChart( { data } ) {
 	const width = 100 / data.length;
 
 	return (
-		<figure className="fus-chart">
+		<figure className="clicklet-chart">
 			<svg
 				viewBox={ `0 0 100 ${ HEIGHT }` }
 				preserveAspectRatio="none"
 				role="img"
-				aria-label={ __( 'Clicks per day', 'fast-url-shortener' ) }
+				aria-label={ __( 'Clicks per day', 'clicklet-url-shortener' ) }
 			>
 				{ data.map( ( day, index ) => {
 					const height = ( day.clicks / max ) * ( HEIGHT - 4 );
@@ -39,7 +39,7 @@ export default function BarChart( { data } ) {
 									/* translators: 1: date, 2: clicks, 3: unique visitors. */
 									__(
 										'%1$s: %2$s clicks, %3$s unique',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									),
 									day.day,
 									formatNumber( day.clicks ),
@@ -55,7 +55,7 @@ export default function BarChart( { data } ) {
 				<span>
 					{ sprintf(
 						/* translators: %s: highest daily click count. */
-						__( 'Peak: %s clicks/day', 'fast-url-shortener' ),
+						__( 'Peak: %s clicks/day', 'clicklet-url-shortener' ),
 						formatNumber(
 							max === 1 && ! data.some( ( d ) => d.clicks )
 								? 0

@@ -2,13 +2,13 @@
 /**
  * Link storage.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Links;
+namespace Clicklet\Links;
 
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
+use Clicklet\Schema;
+use Clicklet\Settings;
 use WP_Error;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom tables. The redirect path reads through the object cache in find_by_slug(); the rest are writes and admin/CLI reads.
@@ -21,7 +21,7 @@ class Repository {
 	/**
 	 * Object cache group.
 	 */
-	const CACHE_GROUP = 'fast_url_shortener';
+	const CACHE_GROUP = 'clicklet';
 
 	/**
 	 * Redirect status codes a link may use.
@@ -233,7 +233,7 @@ class Repository {
 		);
 
 		if ( ! $wpdb->insert( Schema::table( 'links' ), $fields ) ) {
-			return new WP_Error( 'fast_url_shortener_db_error', __( 'The link could not be saved.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_db_error', __( 'The link could not be saved.', 'clicklet-url-shortener' ) );
 		}
 
 		$this->flush_cache( $fields['slug'] );
@@ -249,11 +249,11 @@ class Repository {
 		/**
 		 * Fires after a link is created.
 		 *
-		 * @hook fast_url_shortener_link_created
+		 * @hook clicklet_link_created
 		 *
 		 * @param Link $link New link.
 		 */
-		do_action( 'fast_url_shortener_link_created', $link );
+		do_action( 'clicklet_link_created', $link );
 
 		return $link;
 	}
@@ -273,7 +273,7 @@ class Repository {
 		$link = $this->find( $id );
 
 		if ( ! $link ) {
-			return new WP_Error( 'fast_url_shortener_not_found', __( 'Link not found.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_not_found', __( 'Link not found.', 'clicklet-url-shortener' ) );
 		}
 
 		$fields = $this->prepare( $data, $link, $force );
@@ -285,7 +285,7 @@ class Repository {
 		$fields['updated_at'] = current_time( 'mysql', true );
 
 		if ( false === $wpdb->update( Schema::table( 'links' ), $fields, [ 'id' => $link->id ] ) ) {
-			return new WP_Error( 'fast_url_shortener_db_error', __( 'The link could not be saved.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_db_error', __( 'The link could not be saved.', 'clicklet-url-shortener' ) );
 		}
 
 		$this->flush_cache( $link->slug );
@@ -304,12 +304,12 @@ class Repository {
 		/**
 		 * Fires after a link is updated.
 		 *
-		 * @hook fast_url_shortener_link_updated
+		 * @hook clicklet_link_updated
 		 *
 		 * @param Link $updated Link after the update.
 		 * @param Link $link    Link before the update.
 		 */
-		do_action( 'fast_url_shortener_link_updated', $updated, $link );
+		do_action( 'clicklet_link_updated', $updated, $link );
 
 		return $updated;
 	}
@@ -343,11 +343,11 @@ class Repository {
 		/**
 		 * Fires after a link is deleted.
 		 *
-		 * @hook fast_url_shortener_link_deleted
+		 * @hook clicklet_link_deleted
 		 *
 		 * @param Link $link Deleted link.
 		 */
-		do_action( 'fast_url_shortener_link_deleted', $link );
+		do_action( 'clicklet_link_deleted', $link );
 
 		return true;
 	}
@@ -413,7 +413,7 @@ class Repository {
 			$url = preg_match( '#^https?://[^\s/?\#]+(?:[/?\#]|$)#i', $raw ) ? esc_url_raw( $raw, [ 'http', 'https' ] ) : '';
 
 			if ( '' === $url || ! wp_parse_url( $url, PHP_URL_HOST ) ) {
-				return new WP_Error( 'fast_url_shortener_invalid_target', __( 'Enter a valid http or https URL.', 'fast-url-shortener' ) );
+				return new WP_Error( 'clicklet_invalid_target', __( 'Enter a valid http or https URL.', 'clicklet-url-shortener' ) );
 			}
 
 			$fields['target_url'] = $url;
@@ -433,7 +433,7 @@ class Repository {
 		}
 
 		if ( isset( $data['groups'] ) && ! is_array( $data['groups'] ) ) {
-			return new WP_Error( 'fast_url_shortener_invalid_groups', __( 'Groups must be a list.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_invalid_groups', __( 'Groups must be a list.', 'clicklet-url-shortener' ) );
 		}
 
 		if ( isset( $data['title'] ) ) {
@@ -442,7 +442,7 @@ class Repository {
 
 		if ( isset( $data['redirect_type'] ) ) {
 			if ( ! in_array( (int) $data['redirect_type'], self::REDIRECT_TYPES, true ) ) {
-				return new WP_Error( 'fast_url_shortener_invalid_redirect_type', __( 'Redirect type must be 301, 302, 307 or 308.', 'fast-url-shortener' ) );
+				return new WP_Error( 'clicklet_invalid_redirect_type', __( 'Redirect type must be 301, 302, 307 or 308.', 'clicklet-url-shortener' ) );
 			}
 
 			$fields['redirect_type'] = (int) $data['redirect_type'];
@@ -450,7 +450,7 @@ class Repository {
 
 		if ( isset( $data['status'] ) ) {
 			if ( ! in_array( $data['status'], self::STATUSES, true ) ) {
-				return new WP_Error( 'fast_url_shortener_invalid_status', __( 'Status must be active or disabled.', 'fast-url-shortener' ) );
+				return new WP_Error( 'clicklet_invalid_status', __( 'Status must be active or disabled.', 'clicklet-url-shortener' ) );
 			}
 
 			$fields['status'] = $data['status'];
@@ -466,7 +466,7 @@ class Repository {
 			if ( empty( $data['expires_at'] ) ) {
 				$fields['expires_at'] = null;
 			} elseif ( false === strtotime( $data['expires_at'] ) ) {
-				return new WP_Error( 'fast_url_shortener_invalid_expiry', __( 'Enter a valid expiry date.', 'fast-url-shortener' ) );
+				return new WP_Error( 'clicklet_invalid_expiry', __( 'Enter a valid expiry date.', 'clicklet-url-shortener' ) );
 			} else {
 				// Input is in the site's timezone; storage is UTC.
 				$fields['expires_at'] = get_gmt_from_date( $data['expires_at'] );
@@ -486,7 +486,7 @@ class Repository {
 		// An existing hash, from an export of another WordPress site.
 		if ( ! empty( $data['password_hash'] ) && is_string( $data['password_hash'] ) ) {
 			if ( 0 !== strpos( $data['password_hash'], '$' ) || strlen( $data['password_hash'] ) > 255 ) {
-				return new WP_Error( 'fast_url_shortener_invalid_password_hash', __( 'The password hash is not valid.', 'fast-url-shortener' ) );
+				return new WP_Error( 'clicklet_invalid_password_hash', __( 'The password hash is not valid.', 'clicklet-url-shortener' ) );
 			}
 
 			$fields['password_hash'] = $data['password_hash'];
@@ -500,13 +500,13 @@ class Repository {
 		 * Filter validated link columns before they are saved. Return a
 		 * WP_Error to reject the change.
 		 *
-		 * @hook fast_url_shortener_prepare_link
+		 * @hook clicklet_prepare_link
 		 *
 		 * @param array|\WP_Error $fields   Column => value.
 		 * @param array           $data     Raw input.
 		 * @param Link|null       $existing Link being updated, or null when creating.
 		 */
-		return apply_filters( 'fast_url_shortener_prepare_link', $fields, $data, $existing );
+		return apply_filters( 'clicklet_prepare_link', $fields, $data, $existing );
 	}
 
 	/**
@@ -520,19 +520,19 @@ class Repository {
 	 */
 	protected function validate_slug( $slug, $exclude_id, $force ) {
 		if ( ! Slug::is_valid( $slug ) ) {
-			return new WP_Error( 'fast_url_shortener_invalid_slug', __( 'Slugs may contain letters, numbers, hyphens and underscores, up to 100 characters.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_invalid_slug', __( 'Slugs may contain letters, numbers, hyphens and underscores, up to 100 characters.', 'clicklet-url-shortener' ) );
 		}
 
 		if ( Slug::is_reserved( $slug ) ) {
-			return new WP_Error( 'fast_url_shortener_reserved_slug', __( 'This slug is reserved by WordPress.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_reserved_slug', __( 'This slug is reserved by WordPress.', 'clicklet-url-shortener' ) );
 		}
 
 		if ( $this->slug_exists( $slug, $exclude_id ) ) {
-			return new WP_Error( 'fast_url_shortener_slug_exists', __( 'Another link already uses this slug.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_slug_exists', __( 'Another link already uses this slug.', 'clicklet-url-shortener' ) );
 		}
 
 		if ( ! $force && Slug::conflicting_post( $slug ) ) {
-			return new WP_Error( 'fast_url_shortener_slug_conflict', __( 'Published content already uses this URL. The short link would replace it.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_slug_conflict', __( 'Published content already uses this URL. The short link would replace it.', 'clicklet-url-shortener' ) );
 		}
 
 		return null;

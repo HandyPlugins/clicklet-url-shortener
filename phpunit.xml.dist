@@ -9,7 +9,7 @@
 	convertDeprecationsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite name="Fast URL Shortener">
+		<testsuite name="Clicklet URL Shortener">
 			<directory suffix="Test.php">./tests/php</directory>
 		</testsuite>
 	</testsuites>

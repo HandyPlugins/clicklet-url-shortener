@@ -2,18 +2,18 @@
 /**
  * REST API.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
 use WP_REST_Request;
 
 /**
- * @covers \FastUrlShortener\Rest\LinksController
- * @covers \FastUrlShortener\Rest\SettingsController
- * @covers \FastUrlShortener\Rest\ImportController
- * @covers \FastUrlShortener\Rest\TransferController
+ * @covers \Clicklet\Rest\LinksController
+ * @covers \Clicklet\Rest\SettingsController
+ * @covers \Clicklet\Rest\ImportController
+ * @covers \Clicklet\Rest\TransferController
  */
 class RestTest extends TestCase {
 
@@ -60,7 +60,7 @@ class RestTest extends TestCase {
 	 * @return \WP_REST_Response
 	 */
 	protected function request( $method, $path, array $params = [] ) {
-		$request = new WP_REST_Request( $method, '/fast-url-shortener/v1' . $path );
+		$request = new WP_REST_Request( $method, '/clicklet-url-shortener/v1' . $path );
 
 		foreach ( $params as $key => $value ) {
 			$request->set_param( $key, $value );
@@ -93,7 +93,7 @@ class RestTest extends TestCase {
 		}
 
 		add_filter(
-			'fast_url_shortener_capability',
+			'clicklet_capability',
 			static function () {
 				return 'edit_posts';
 			}
@@ -142,7 +142,7 @@ class RestTest extends TestCase {
 	 * Validation errors are 400s with their codes.
 	 */
 	public function test_validation() {
-		$this->assertSame( 'fast_url_shortener_invalid_target', $this->request( 'POST', '/links', [ 'target_url' => 'not a url' ] )->get_data()['code'] );
+		$this->assertSame( 'clicklet_invalid_target', $this->request( 'POST', '/links', [ 'target_url' => 'not a url' ] )->get_data()['code'] );
 		$this->assertSame( 'rest_missing_callback_param', $this->request( 'POST', '/links', [] )->get_data()['code'] );
 		$this->assertSame(
 			'rest_invalid_param',
@@ -172,7 +172,7 @@ class RestTest extends TestCase {
 			]
 		);
 		$this->assertSame( 400, $conflict->get_status() );
-		$this->assertSame( 'fast_url_shortener_slug_conflict', $conflict->get_data()['code'] );
+		$this->assertSame( 'clicklet_slug_conflict', $conflict->get_data()['code'] );
 
 		$forced = $this->request(
 			'POST',
@@ -238,7 +238,7 @@ class RestTest extends TestCase {
 
 		$this->assertSame( 'go-links', $response->get_data()['prefix'] );
 		$this->assertSame( 8, $response->get_data()['slug_length'] );
-		$this->assertArrayNotHasKey( 'unknown', get_option( 'fast_url_shortener_settings' ) );
+		$this->assertArrayNotHasKey( 'unknown', get_option( 'clicklet_settings' ) );
 
 		$this->assertSame( 400, $this->request( 'POST', '/settings', [ 'slug_length' => 2 ] )->get_status() );
 		$this->assertSame( 400, $this->request( 'POST', '/settings', [ 'ip_header' => 'HTTP_X_EVIL' ] )->get_status() );

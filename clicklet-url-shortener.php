@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Fast URL Shortener
+ * Plugin Name:       Clicklet URL Shortener
  * Description:       Fast, self-hosted URL shortener with privacy-friendly click tracking.
  * Version:           1.0.0
  * Requires at least: 6.5
@@ -9,9 +9,9 @@
  * Author URI:        https://handyplugins.co/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       fast-url-shortener
+ * Text Domain:       clicklet-url-shortener
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
 /*
@@ -23,12 +23,12 @@
  * (at your option) any later version.
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FAST_URL_SHORTENER_VERSION', '1.0.0' );
-define( 'FAST_URL_SHORTENER_FILE', __FILE__ );
+define( 'CLICKLET_VERSION', '1.0.0' );
+define( 'CLICKLET_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/autoload.php';
 

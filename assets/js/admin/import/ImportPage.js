@@ -20,10 +20,10 @@ import CsvImportCard from './CsvImportCard';
 import ExportCard from './ExportCard';
 
 const STEP_LABELS = {
-	links: __( 'Importing links…', 'fast-url-shortener' ),
-	clicks: __( 'Importing click history…', 'fast-url-shortener' ),
-	stats: __( 'Building statistics…', 'fast-url-shortener' ),
-	done: __( 'Done', 'fast-url-shortener' ),
+	links: __( 'Importing links…', 'clicklet-url-shortener' ),
+	clicks: __( 'Importing click history…', 'clicklet-url-shortener' ),
+	stats: __( 'Building statistics…', 'clicklet-url-shortener' ),
+	done: __( 'Done', 'clicklet-url-shortener' ),
 };
 
 /**
@@ -99,16 +99,16 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 	const unfinished = progress && ! progress.done;
 
 	return (
-		<Card className="fus-import-card">
+		<Card className="clicklet-import-card">
 			<CardHeader>
 				<h2>{ source.label }</h2>
 				{ source.available && (
-					<span className="fus-muted">
+					<span className="clicklet-muted">
 						{ sprintf(
 							/* translators: 1: number of links, 2: number of clicks. */
 							__(
 								'%1$s links · %2$s clicks',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							),
 							formatNumber( source.links ),
 							formatNumber( source.clicks )
@@ -118,12 +118,12 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 			</CardHeader>
 			<CardBody>
 				{ ! source.available && (
-					<p className="fus-muted">
+					<p className="clicklet-muted">
 						{ sprintf(
 							/* translators: %s: plugin name. */
 							__(
 								'No %s data found on this site.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							),
 							source.label
 						) }
@@ -139,7 +139,7 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 									/* translators: 1: plugin name, 2: prefix. */
 									__(
 										'Most %1$s links start with /%2$s/. Use the same prefix so they keep their URLs; otherwise those links are skipped.',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									),
 									source.label,
 									source.prefix
@@ -154,7 +154,7 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 									/* translators: %s: prefix. */
 									__(
 										'Use /%s/ as prefix',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									),
 									source.prefix
 								) }
@@ -169,9 +169,9 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 				) }
 
 				{ progress && (
-					<div className="fus-import-progress">
+					<div className="clicklet-import-progress">
 						<div
-							className="fus-progress"
+							className="clicklet-progress"
 							role="progressbar"
 							aria-valuenow={ percent( progress ) }
 							aria-valuemin="0"
@@ -188,7 +188,7 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 								/* translators: 1: imported links, 2: skipped links, 3: imported clicks. */
 								__(
 									'%1$s links imported, %2$s skipped, %3$s clicks imported.',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								),
 								formatNumber( progress.links_imported ),
 								formatNumber( progress.links_skipped ),
@@ -204,31 +204,37 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 							{ sprintf(
 								/* translators: %s: plugin name. */
 								__(
-									'Import complete. You can deactivate %s: imported links keep working through Fast URL Shortener.',
-									'fast-url-shortener'
+									'Import complete. You can deactivate %s: imported links keep working through Clicklet URL Shortener.',
+									'clicklet-url-shortener'
 								),
 								source.label
 							) }{ ' ' }
 							<a href={ screenUrl() }>
-								{ __( 'View links', 'fast-url-shortener' ) }
+								{ __( 'View links', 'clicklet-url-shortener' ) }
 							</a>
 						</p>
 					</Notice>
 				) }
 
 				{ progress?.skipped?.length > 0 && ! running && (
-					<details className="fus-skipped">
+					<details className="clicklet-skipped">
 						<summary>
-							{ __( 'Skipped links', 'fast-url-shortener' ) }
+							{ __( 'Skipped links', 'clicklet-url-shortener' ) }
 						</summary>
 						<table className="widefat striped">
 							<thead>
 								<tr>
 									<th>
-										{ __( 'Slug', 'fast-url-shortener' ) }
+										{ __(
+											'Slug',
+											'clicklet-url-shortener'
+										) }
 									</th>
 									<th>
-										{ __( 'Reason', 'fast-url-shortener' ) }
+										{ __(
+											'Reason',
+											'clicklet-url-shortener'
+										) }
 									</th>
 								</tr>
 							</thead>
@@ -247,7 +253,7 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 				) }
 
 				{ source.available && (
-					<div className="fus-import-actions">
+					<div className="clicklet-import-actions">
 						{ unfinished && ! running && (
 							<Button
 								variant="primary"
@@ -255,7 +261,7 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 							>
 								{ __(
 									'Continue import',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</Button>
 						) }
@@ -266,17 +272,17 @@ function SourceCard( { source, prefix, onPrefixChange } ) {
 							isBusy={ running }
 						>
 							{ progress
-								? __( 'Import again', 'fast-url-shortener' )
+								? __( 'Import again', 'clicklet-url-shortener' )
 								: __(
 										'Import links and clicks',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 						</Button>
 						{ progress?.done && (
-							<span className="fus-muted">
+							<span className="clicklet-muted">
 								{ __(
 									'Links that already exist are skipped.',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</span>
 						) }
@@ -294,7 +300,7 @@ export default function ImportPage() {
 	const [ sources, setSources ] = useState( null );
 	const [ error, setError ] = useState( '' );
 	const [ prefix, setPrefix ] = useState(
-		( window.fastUrlShortener || {} ).prefix || ''
+		( window.clicklet || {} ).prefix || ''
 	);
 
 	useEffect( () => {
@@ -305,20 +311,23 @@ export default function ImportPage() {
 
 	return (
 		<>
-			<h1>{ __( 'Import & Export', 'fast-url-shortener' ) }</h1>
+			<h1>{ __( 'Import & Export', 'clicklet-url-shortener' ) }</h1>
 
-			<div className="fus-import-grid">
+			<div className="clicklet-import-grid">
 				<ExportCard />
 				<CsvImportCard />
 			</div>
 
-			<h2 className="fus-section-title">
-				{ __( 'Migrate from another plugin', 'fast-url-shortener' ) }
+			<h2 className="clicklet-section-title">
+				{ __(
+					'Migrate from another plugin',
+					'clicklet-url-shortener'
+				) }
 			</h2>
-			<p className="fus-intro">
+			<p className="clicklet-intro">
 				{ __(
 					'Bring your short links and their click history from another plugin on this site. Slugs stay the same, so links you already shared keep working. The other plugin is not changed and can be inactive.',
-					'fast-url-shortener'
+					'clicklet-url-shortener'
 				) }
 			</p>
 
@@ -329,7 +338,7 @@ export default function ImportPage() {
 			) }
 			{ ! sources && ! error && <Spinner /> }
 
-			<div className="fus-import-grid">
+			<div className="clicklet-import-grid">
 				{ ( sources || [] ).map( ( source ) => (
 					<SourceCard
 						key={ source.id }

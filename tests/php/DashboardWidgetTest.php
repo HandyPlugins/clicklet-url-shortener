@@ -2,19 +2,19 @@
 /**
  * Dashboard widget.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Admin\DashboardWidget;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Stats;
+use Clicklet\Admin\DashboardWidget;
+use Clicklet\Links\Repository;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Stats;
 
 /**
- * @covers \FastUrlShortener\Admin\DashboardWidget
- * @covers \FastUrlShortener\Tracking\Stats::top_links
+ * @covers \Clicklet\Admin\DashboardWidget
+ * @covers \Clicklet\Tracking\Stats::top_links
  */
 class DashboardWidgetTest extends TestCase {
 
@@ -79,11 +79,11 @@ class DashboardWidgetTest extends TestCase {
 
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'editor' ] ) );
 		$widget->add();
-		$this->assertFalse( isset( $GLOBALS['wp_meta_boxes']['dashboard']['normal']['core']['fast_url_shortener'] ) );
+		$this->assertFalse( isset( $GLOBALS['wp_meta_boxes']['dashboard']['normal']['core']['clicklet'] ) );
 
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 		$widget->add();
-		$this->assertTrue( isset( $GLOBALS['wp_meta_boxes']['dashboard']['normal']['core']['fast_url_shortener'] ) );
+		$this->assertTrue( isset( $GLOBALS['wp_meta_boxes']['dashboard']['normal']['core']['clicklet'] ) );
 
 		set_current_screen( 'front' );
 	}

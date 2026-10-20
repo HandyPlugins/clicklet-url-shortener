@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Fast URL Shortener">
-	<description>Coding standards for Fast URL Shortener.</description>
+<ruleset name="Clicklet URL Shortener">
+	<description>Coding standards for Clicklet URL Shortener.</description>
 
 	<file>.</file>
 	<exclude-pattern>/vendor/</exclude-pattern>
@@ -33,7 +33,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="fast-url-shortener"/>
+				<element value="clicklet-url-shortener"/>
 			</property>
 		</properties>
 	</rule>
@@ -41,9 +41,9 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="fast_url_shortener"/>
-				<element value="FastUrlShortener"/>
-				<element value="FAST_URL_SHORTENER"/>
+				<element value="clicklet"/>
+				<element value="Clicklet"/>
+				<element value="CLICKLET"/>
 			</property>
 		</properties>
 	</rule>

@@ -2,10 +2,10 @@
 /**
  * Plugin settings.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
 /**
  * Typed access to the single, autoloaded settings option.
@@ -15,7 +15,7 @@ class Settings {
 	/**
 	 * Option name.
 	 */
-	const OPTION = 'fast_url_shortener_settings';
+	const OPTION = 'clicklet_settings';
 
 	/**
 	 * Default values.

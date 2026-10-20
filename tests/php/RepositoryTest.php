@@ -2,16 +2,16 @@
 /**
  * Link storage.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Tracking\ClickStore;
+use Clicklet\Links\Repository;
+use Clicklet\Tracking\ClickStore;
 
 /**
- * @covers \FastUrlShortener\Links\Repository
+ * @covers \Clicklet\Links\Repository
  */
 class RepositoryTest extends TestCase {
 
@@ -84,7 +84,7 @@ class RepositoryTest extends TestCase {
 			$this->assertNotWPError( $result );
 		} else {
 			$this->assertWPError( $result );
-			$this->assertSame( 'fast_url_shortener_invalid_target', $result->get_error_code() );
+			$this->assertSame( 'clicklet_invalid_target', $result->get_error_code() );
 		}
 	}
 
@@ -103,10 +103,10 @@ class RepositoryTest extends TestCase {
 		);
 
 		$cases = [
-			'go/promo' => 'fast_url_shortener_invalid_slug',
-			'wp-admin' => 'fast_url_shortener_reserved_slug',
-			'TAKEN'    => 'fast_url_shortener_slug_exists',
-			'about'    => 'fast_url_shortener_slug_conflict',
+			'go/promo' => 'clicklet_invalid_slug',
+			'wp-admin' => 'clicklet_reserved_slug',
+			'TAKEN'    => 'clicklet_slug_exists',
+			'about'    => 'clicklet_slug_conflict',
 		];
 
 		foreach ( $cases as $slug => $code ) {
@@ -135,7 +135,7 @@ class RepositoryTest extends TestCase {
 	 */
 	public function test_field_validation() {
 		$this->assertSame(
-			'fast_url_shortener_invalid_redirect_type',
+			'clicklet_invalid_redirect_type',
 			$this->links->create(
 				[
 					'target_url'    => 'https://example.com/',
@@ -144,7 +144,7 @@ class RepositoryTest extends TestCase {
 			)->get_error_code()
 		);
 		$this->assertSame(
-			'fast_url_shortener_invalid_status',
+			'clicklet_invalid_status',
 			$this->links->create(
 				[
 					'target_url' => 'https://example.com/',
@@ -153,7 +153,7 @@ class RepositoryTest extends TestCase {
 			)->get_error_code()
 		);
 		$this->assertSame(
-			'fast_url_shortener_invalid_expiry',
+			'clicklet_invalid_expiry',
 			$this->links->create(
 				[
 					'target_url' => 'https://example.com/',
@@ -223,7 +223,7 @@ class RepositoryTest extends TestCase {
 		$this->assertSame( 'Keep me', $updated->title );
 		$this->assertNull( $this->links->find_by_slug( 'old' ) );
 		$this->assertSame( 'https://example.com/changed', $this->links->find_by_slug( 'new' )->target_url );
-		$this->assertSame( 'fast_url_shortener_not_found', $this->links->update( 999999, [ 'title' => 'x' ] )->get_error_code() );
+		$this->assertSame( 'clicklet_not_found', $this->links->update( 999999, [ 'title' => 'x' ] )->get_error_code() );
 	}
 
 	/**

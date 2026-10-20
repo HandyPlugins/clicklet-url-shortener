@@ -1,4 +1,4 @@
-=== Fast URL Shortener ===
+=== Clicklet URL Shortener ===
 Contributors:      handyplugins, m_uysl
 Tags:              url shortener, short links, link tracking, affiliate links, redirect
 Requires at least: 6.5
@@ -12,7 +12,7 @@ Fast, self-hosted URL shortener for WordPress. Branded short links on your own d
 
 == Description ==
 
-Fast URL Shortener turns long URLs into short links on your own domain, like `example.com/promo`, and tells you how they perform. No third-party service, no monthly fee, and your data stays on your site.
+Clicklet URL Shortener turns long URLs into short links on your own domain, like `example.com/promo`, and tells you how they perform. No third-party service, no monthly fee, and your data stays on your site.
 
 = Built for speed =
 
@@ -50,19 +50,19 @@ Fast URL Shortener turns long URLs into short links on your own domain, like `ex
 
 == Installation ==
 
-1. Install the plugin from Plugins → Add New, or upload the `fast-url-shortener` folder to `/wp-content/plugins/`.
+1. Install the plugin from Plugins → Add New, or upload the `clicklet-url-shortener` folder to `/wp-content/plugins/`.
 2. Activate it.
 
 = WP-CLI =
 
-`wp fast-url-shortener link create https://example.com/a/very/long/url --slug=promo`
-`wp fast-url-shortener link list`
-`wp fast-url-shortener stats promo --days=7`
-`wp fast-url-shortener export links --file=links.csv`
-`wp fast-url-shortener import links.csv`
-`wp fast-url-shortener migrate pretty-links`
-`wp fast-url-shortener post-links --post_type=post,page`
-`wp fast-url-shortener fast-path enable`
+`wp clicklet link create https://example.com/a/very/long/url --slug=promo`
+`wp clicklet link list`
+`wp clicklet stats promo --days=7`
+`wp clicklet export links --file=links.csv`
+`wp clicklet import links.csv`
+`wp clicklet migrate pretty-links`
+`wp clicklet post-links --post_type=post,page`
+`wp clicklet fast-path enable`
 
 == Frequently Asked Questions ==
 

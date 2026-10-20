@@ -2,10 +2,10 @@
 /**
  * Shared REST controller logic.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
 /**
  * Base class for the plugin's REST controllers.
@@ -15,7 +15,7 @@ abstract class Controller {
 	/**
 	 * Route namespace.
 	 */
-	const NAMESPACE = 'fast-url-shortener/v1';
+	const NAMESPACE = 'clicklet-url-shortener/v1';
 
 	/**
 	 * Register routes. Called on `rest_api_init`.
@@ -52,12 +52,12 @@ abstract class Controller {
 		/**
 		 * Filter the capability required for a part of the plugin.
 		 *
-		 * @hook fast_url_shortener_capability
+		 * @hook clicklet_capability
 		 *
 		 * @param string $capability Capability. Default manage_options.
 		 * @param string $context    "links" (links and stats) or "settings" (settings, import and export).
 		 */
-		return (string) apply_filters( 'fast_url_shortener_capability', 'manage_options', $context );
+		return (string) apply_filters( 'clicklet_capability', 'manage_options', $context );
 	}
 
 	/**

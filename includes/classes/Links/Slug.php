@@ -2,12 +2,12 @@
 /**
  * Slug helpers.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Links;
+namespace Clicklet\Links;
 
-use FastUrlShortener\Settings;
+use Clicklet\Settings;
 
 /**
  * Slug normalization, validation and generation.

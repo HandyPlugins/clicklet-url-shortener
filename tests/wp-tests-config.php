@@ -5,23 +5,23 @@
  * Defaults fit a local install where this plugin lives in wp-content/plugins.
  * Override with environment variables, e.g. in CI.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test suite configuration constants.
 
-$fus_env = static function ( $name, $fallback ) {
+$clicklet_env = static function ( $name, $fallback ) {
 	$value = getenv( $name );
 
 	return false === $value || '' === $value ? $fallback : $value;
 };
 
-define( 'ABSPATH', rtrim( $fus_env( 'WP_CORE_DIR', dirname( __DIR__, 4 ) ), '/' ) . '/' );
+define( 'ABSPATH', rtrim( $clicklet_env( 'WP_CORE_DIR', dirname( __DIR__, 4 ) ), '/' ) . '/' );
 
-define( 'DB_NAME', $fus_env( 'WP_TESTS_DB_NAME', 'local_tests' ) );
-define( 'DB_USER', $fus_env( 'WP_TESTS_DB_USER', 'root' ) );
-define( 'DB_PASSWORD', $fus_env( 'WP_TESTS_DB_PASSWORD', 'root' ) );
-define( 'DB_HOST', $fus_env( 'WP_TESTS_DB_HOST', 'localhost' ) );
+define( 'DB_NAME', $clicklet_env( 'WP_TESTS_DB_NAME', 'local_tests' ) );
+define( 'DB_USER', $clicklet_env( 'WP_TESTS_DB_USER', 'root' ) );
+define( 'DB_PASSWORD', $clicklet_env( 'WP_TESTS_DB_PASSWORD', 'root' ) );
+define( 'DB_HOST', $clicklet_env( 'WP_TESTS_DB_HOST', 'localhost' ) );
 define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 
@@ -36,4 +36,4 @@ define( 'WPLANG', '' );
 define( 'WP_DEBUG', true );
 
 // Keep the fast path drop-in out of the real mu-plugins folder.
-define( 'WPMU_PLUGIN_DIR', sys_get_temp_dir() . '/fast-url-shortener-tests/mu-plugins' );
+define( 'WPMU_PLUGIN_DIR', sys_get_temp_dir() . '/clicklet-url-shortener-tests/mu-plugins' );

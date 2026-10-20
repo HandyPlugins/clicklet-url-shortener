@@ -1,5 +1,5 @@
 {
-  "name": "fast-url-shortener",
+  "name": "clicklet-url-shortener",
   "private": true,
   "description": "Fast, self-hosted URL shortener with privacy-friendly click tracking.",
   "license": "GPL-2.0-or-later",

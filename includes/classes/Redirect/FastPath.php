@@ -2,10 +2,10 @@
 /**
  * Fast path drop-in.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Redirect;
+namespace Clicklet\Redirect;
 
 use WP_Error;
 
@@ -21,7 +21,7 @@ class FastPath {
 	/**
 	 * Drop-in file name.
 	 */
-	const FILENAME = 'fast-url-shortener-fast-path.php';
+	const FILENAME = 'clicklet-url-shortener-fast-path.php';
 
 	/**
 	 * Absolute path of the drop-in.
@@ -49,7 +49,7 @@ class FastPath {
 	 * @return bool
 	 */
 	public static function is_plugin_active() {
-		$basename = basename( FAST_URL_SHORTENER_PATH ) . '/fast-url-shortener.php';
+		$basename = basename( CLICKLET_PATH ) . '/clicklet-url-shortener.php';
 
 		if ( in_array( $basename, (array) get_option( 'active_plugins', [] ), true ) ) {
 			return true;
@@ -66,17 +66,17 @@ class FastPath {
 	public static function install() {
 		// Many sites have no mu-plugins folder yet; the write check below needs it to exist.
 		if ( ! wp_mkdir_p( WPMU_PLUGIN_DIR ) ) {
-			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The mu-plugins directory could not be created.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_filesystem', __( 'The mu-plugins directory could not be created.', 'clicklet-url-shortener' ) );
 		}
 
 		$filesystem = self::filesystem();
 
 		if ( ! $filesystem ) {
-			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The file system is not writable without credentials.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_filesystem', __( 'The file system is not writable without credentials.', 'clicklet-url-shortener' ) );
 		}
 
 		if ( ! $filesystem->put_contents( self::path(), self::contents(), FS_CHMOD_FILE ) ) {
-			return new WP_Error( 'fast_url_shortener_filesystem', __( 'The fast path file could not be written.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_filesystem', __( 'The fast path file could not be written.', 'clicklet-url-shortener' ) );
 		}
 
 		return true;
@@ -103,28 +103,28 @@ class FastPath {
 	 * @return string
 	 */
 	protected static function contents() {
-		$loader = basename( FAST_URL_SHORTENER_PATH ) . '/includes/fast-path.php';
+		$loader = basename( CLICKLET_PATH ) . '/includes/fast-path.php';
 
 		return implode(
 			"\n",
 			[
 				'<?php',
 				'/**',
-				' * Plugin Name: Fast URL Shortener (Fast Path)',
-				' * Description: Resolves short links before other plugins load. Managed by Fast URL Shortener; turn it off from the plugin settings.',
+				' * Plugin Name: Clicklet URL Shortener (Fast Path)',
+				' * Description: Resolves short links before other plugins load. Managed by Clicklet URL Shortener; turn it off from the plugin settings.',
 				' *',
-				' * @package FastUrlShortener',
+				' * @package Clicklet',
 				' */',
 				'',
 				"defined( 'ABSPATH' ) || exit;",
 				'',
-				'$fast_url_shortener_loader = WP_PLUGIN_DIR . ' . var_export( '/' . $loader, true ) . ';', // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Builds a PHP string literal.
+				'$clicklet_loader = WP_PLUGIN_DIR . ' . var_export( '/' . $loader, true ) . ';', // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Builds a PHP string literal.
 				'',
-				'if ( is_readable( $fast_url_shortener_loader ) ) {',
-				"\trequire_once \$fast_url_shortener_loader;",
+				'if ( is_readable( $clicklet_loader ) ) {',
+				"\trequire_once \$clicklet_loader;",
 				'}',
 				'',
-				'unset( $fast_url_shortener_loader );',
+				'unset( $clicklet_loader );',
 				'',
 			]
 		);

@@ -32,9 +32,9 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 
 	return (
 		<Modal
-			title={ __( 'Groups', 'fast-url-shortener' ) }
+			title={ __( 'Groups', 'clicklet-url-shortener' ) }
 			onRequestClose={ onClose }
-			className="fus-modal"
+			className="clicklet-modal"
 			size="medium"
 		>
 			{ error && (
@@ -44,15 +44,15 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 			) }
 
 			{ ! groups.length && (
-				<p className="fus-muted">
+				<p className="clicklet-muted">
 					{ __(
 						'No groups yet. Add groups to a link when you create or edit it.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 				</p>
 			) }
 
-			<ul className="fus-groups">
+			<ul className="clicklet-groups">
 				{ groups.map( ( group ) => (
 					<li key={ group.id }>
 						{ editing === group.id ? (
@@ -67,34 +67,34 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 									__next40pxDefaultSize
 									label={ __(
 										'Group name',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 									hideLabelFromVision
 									value={ name }
 									onChange={ setName }
 								/>
 								<Button variant="primary" type="submit">
-									{ __( 'Save', 'fast-url-shortener' ) }
+									{ __( 'Save', 'clicklet-url-shortener' ) }
 								</Button>
 								<Button
 									variant="tertiary"
 									onClick={ () => setEditing( null ) }
 								>
-									{ __( 'Cancel', 'fast-url-shortener' ) }
+									{ __( 'Cancel', 'clicklet-url-shortener' ) }
 								</Button>
 							</form>
 						) : (
 							<>
 								<span>
 									<strong>{ group.name }</strong>{ ' ' }
-									<span className="fus-muted">
+									<span className="clicklet-muted">
 										{ sprintf(
 											/* translators: %s: number of links. */
 											_n(
 												'%s link',
 												'%s links',
 												group.count,
-												'fast-url-shortener'
+												'clicklet-url-shortener'
 											),
 											formatNumber( group.count )
 										) }
@@ -108,7 +108,10 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 											setName( group.name );
 										} }
 									>
-										{ __( 'Rename', 'fast-url-shortener' ) }
+										{ __(
+											'Rename',
+											'clicklet-url-shortener'
+										) }
 									</Button>{ ' ' }
 									|{ ' ' }
 									<Button
@@ -118,7 +121,10 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 											run( () => deleteGroup( group.id ) )
 										}
 									>
-										{ __( 'Delete', 'fast-url-shortener' ) }
+										{ __(
+											'Delete',
+											'clicklet-url-shortener'
+										) }
 									</Button>
 								</span>
 							</>
@@ -126,10 +132,10 @@ export default function GroupsManager( { groups, onChange, onClose } ) {
 					</li>
 				) ) }
 			</ul>
-			<p className="fus-muted">
+			<p className="clicklet-muted">
 				{ __(
 					'Deleting a group keeps its links.',
-					'fast-url-shortener'
+					'clicklet-url-shortener'
 				) }
 			</p>
 		</Modal>

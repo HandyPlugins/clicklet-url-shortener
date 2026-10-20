@@ -16,7 +16,7 @@ import CopyButton from '../admin/components/CopyButton';
 const PluginDocumentSettingPanel =
 	editor.PluginDocumentSettingPanel || editPost.PluginDocumentSettingPanel;
 
-const config = window.fastUrlShortenerEditor || {};
+const config = window.clickletEditor || {};
 
 /**
  * Panel content.
@@ -38,7 +38,7 @@ function ShortLinkPanel() {
 	const [ creating, setCreating ] = useState( false );
 	const wasSaving = useRef( false );
 
-	const path = `/fast-url-shortener/v1/posts/${ postId }/link`;
+	const path = `/clicklet-url-shortener/v1/posts/${ postId }/link`;
 
 	const load = useCallback( () => {
 		apiFetch( { path } )
@@ -104,17 +104,17 @@ function ShortLinkPanel() {
 							'%s click',
 							'%s clicks',
 							link.total_clicks,
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						),
 						Number( link.total_clicks ).toLocaleString()
 					) }
 				</p>
 				<ExternalLink
-					href={ `${ config.adminUrl }?page=fast-url-shortener&s=${ encodeURIComponent(
+					href={ `${ config.adminUrl }?page=clicklet-url-shortener&s=${ encodeURIComponent(
 						link.slug
 					) }` }
 				>
-					{ __( 'Manage short link', 'fast-url-shortener' ) }
+					{ __( 'Manage short link', 'clicklet-url-shortener' ) }
 				</ExternalLink>
 			</>
 		);
@@ -128,7 +128,7 @@ function ShortLinkPanel() {
 				isBusy={ creating }
 				disabled={ creating }
 			>
-				{ __( 'Create short link', 'fast-url-shortener' ) }
+				{ __( 'Create short link', 'clicklet-url-shortener' ) }
 			</Button>
 		);
 	}
@@ -138,21 +138,21 @@ function ShortLinkPanel() {
 			{ ( config.autoPostTypes || [] ).includes( postType )
 				? __(
 						'A short link is created when you publish.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					)
 				: __(
 						'You can create a short link once this is published.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 		</p>
 	);
 }
 
-registerPlugin( 'fast-url-shortener', {
+registerPlugin( 'clicklet-url-shortener', {
 	render: () => (
 		<PluginDocumentSettingPanel
-			name="fast-url-shortener"
-			title={ __( 'Short link', 'fast-url-shortener' ) }
+			name="clicklet-url-shortener"
+			title={ __( 'Short link', 'clicklet-url-shortener' ) }
 		>
 			<ShortLinkPanel />
 		</PluginDocumentSettingPanel>

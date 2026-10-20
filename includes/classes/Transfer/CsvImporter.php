@@ -2,17 +2,17 @@
 /**
  * CSV import.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Transfer;
+namespace Clicklet\Transfer;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Links\Slug;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Retention;
-use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\UserAgent;
+use Clicklet\Links\Repository;
+use Clicklet\Links\Slug;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Retention;
+use Clicklet\Tracking\Stats;
+use Clicklet\Tracking\UserAgent;
 use WP_Error;
 
 // phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Reads uploaded CSV files row by row from a byte offset; WP_Filesystem has no streaming API.
@@ -31,12 +31,12 @@ class CsvImporter {
 	/**
 	 * Progress option.
 	 */
-	const OPTION = 'fast_url_shortener_csv_import';
+	const OPTION = 'clicklet_csv_import';
 
 	/**
 	 * Uploads subdirectory for pending files.
 	 */
-	const UPLOAD_DIR = 'fast-url-shortener-import';
+	const UPLOAD_DIR = 'clicklet-url-shortener-import';
 
 	/**
 	 * Rows per step, per file type.
@@ -108,7 +108,7 @@ class CsvImporter {
 		$handle = is_readable( $file ) ? fopen( $file, 'r' ) : false;
 
 		if ( ! $handle ) {
-			return new WP_Error( 'fast_url_shortener_csv_unreadable', __( 'The file could not be read.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_csv_unreadable', __( 'The file could not be read.', 'clicklet-url-shortener' ) );
 		}
 
 		$delimiter = Csv::detect_delimiter( (string) fgets( $handle ) );
@@ -156,7 +156,7 @@ class CsvImporter {
 				wp_delete_file( $file );
 			}
 
-			return new WP_Error( 'fast_url_shortener_csv_unknown', __( 'This file does not look like a links, stats or clicks CSV. A links file needs at least a target_url column.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_csv_unknown', __( 'This file does not look like a links, stats or clicks CSV. A links file needs at least a target_url column.', 'clicklet-url-shortener' ) );
 		}
 
 		$state = [
@@ -201,7 +201,7 @@ class CsvImporter {
 
 		if ( ! $handle ) {
 			delete_option( self::OPTION );
-			return new WP_Error( 'fast_url_shortener_csv_unreadable', __( 'The import file is gone. Upload it again.', 'fast-url-shortener' ) );
+			return new WP_Error( 'clicklet_csv_unreadable', __( 'The import file is gone. Upload it again.', 'clicklet-url-shortener' ) );
 		}
 
 		fseek( $handle, $state['offset'] );
@@ -347,7 +347,7 @@ class CsvImporter {
 
 		if ( $existing ) {
 			if ( ! $state['overwrite'] ) {
-				return __( 'A link with this slug already exists.', 'fast-url-shortener' );
+				return __( 'A link with this slug already exists.', 'clicklet-url-shortener' );
 			}
 
 			$link = $this->links->update( $existing->id, $data );
@@ -380,8 +380,8 @@ class CsvImporter {
 	/**
 	 * Let extensions read their own columns of a links row.
 	 *
-	 * @param \FastUrlShortener\Links\Link $link Created or updated link.
-	 * @param array                        $row  Cells by column.
+	 * @param \Clicklet\Links\Link $link Created or updated link.
+	 * @param array                $row  Cells by column.
 	 *
 	 * @return void
 	 */
@@ -389,12 +389,12 @@ class CsvImporter {
 		/**
 		 * Fires after a links CSV row is imported (created or updated).
 		 *
-		 * @hook fast_url_shortener_csv_import_link
+		 * @hook clicklet_csv_import_link
 		 *
-		 * @param \FastUrlShortener\Links\Link $link Link.
+		 * @param \Clicklet\Links\Link $link Link.
 		 * @param array                        $row  Cells by column, including extra columns.
 		 */
-		do_action( 'fast_url_shortener_csv_import_link', $link, $row );
+		do_action( 'clicklet_csv_import_link', $link, $row );
 	}
 
 	/**
@@ -409,11 +409,11 @@ class CsvImporter {
 		$link_id = $this->link_id( $row['slug'] );
 
 		if ( ! $link_id ) {
-			return __( 'No link with this slug. Import the links file first.', 'fast-url-shortener' );
+			return __( 'No link with this slug. Import the links file first.', 'clicklet-url-shortener' );
 		}
 
 		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $row['day'] ) ) {
-			return __( 'Invalid day.', 'fast-url-shortener' );
+			return __( 'Invalid day.', 'clicklet-url-shortener' );
 		}
 
 		$this->clicks->set_daily( $link_id, $row['day'], absint( $row['clicks'] ), absint( $row['uniques'] ?? 0 ), absint( $row['bots'] ?? 0 ) );
@@ -434,14 +434,14 @@ class CsvImporter {
 		$link_id = $this->link_id( $row['slug'] );
 
 		if ( ! $link_id ) {
-			return __( 'No link with this slug. Import the links file first.', 'fast-url-shortener' );
+			return __( 'No link with this slug. Import the links file first.', 'clicklet-url-shortener' );
 		}
 
 		$hash       = strtolower( $row['visitor_hash'] );
 		$clicked_at = $row['clicked_at_utc'];
 
 		if ( ! preg_match( '/^[0-9a-f]{32}$/', $hash ) || false === strtotime( $clicked_at . ' UTC' ) ) {
-			return __( 'Invalid click data.', 'fast-url-shortener' );
+			return __( 'Invalid click data.', 'clicklet-url-shortener' );
 		}
 
 		$clicked_at = gmdate( 'Y-m-d H:i:s', strtotime( $clicked_at . ' UTC' ) );

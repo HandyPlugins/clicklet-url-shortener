@@ -2,19 +2,19 @@
 /**
  * Short link router.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\Router;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\Router;
 
 /**
  * Redirects end the request with exit, so these tests cover how requests are
  * matched and how the destination is built.
  *
- * @covers \FastUrlShortener\Redirect\Router
+ * @covers \Clicklet\Redirect\Router
  */
 class RouterTest extends TestCase {
 

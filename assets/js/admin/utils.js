@@ -1,4 +1,4 @@
-const config = window.fastUrlShortener || {};
+const config = window.clicklet || {};
 
 /**
  * Admin URL of one of the plugin screens.

@@ -2,15 +2,15 @@
 /**
  * Base test case.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Settings;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Schema;
+use Clicklet\Settings;
 
 /**
  * Shared helpers. Each test runs in a transaction that is rolled back, and

@@ -2,10 +2,10 @@
 /**
  * Database schema.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
 /**
  * Custom tables. Links and clicks are high-volume, so they live in lean
@@ -27,7 +27,7 @@ class Schema {
 	/**
 	 * Object type for the WordPress metadata API: get_metadata( Schema::META_TYPE, $link_id, … ).
 	 */
-	const META_TYPE = 'fast_url_shortener_link';
+	const META_TYPE = 'clicklet_link';
 
 	/**
 	 * Full table name for the current site.
@@ -39,7 +39,7 @@ class Schema {
 	public static function table( $name ) {
 		global $wpdb;
 
-		return $wpdb->prefix . 'fast_url_shortener_' . $name;
+		return $wpdb->prefix . 'clicklet_' . $name;
 	}
 
 	/**
@@ -102,15 +102,15 @@ class Schema {
 		);
 
 		// Per-link extra data (used by extensions), in the layout the WordPress
-		// metadata API expects for the fast_url_shortener_link object type.
+		// metadata API expects for the clicklet_link object type.
 		dbDelta(
 			"CREATE TABLE {$meta} (
 				meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-				fast_url_shortener_link_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				clicklet_link_id bigint(20) unsigned NOT NULL DEFAULT 0,
 				meta_key varchar(255) DEFAULT NULL,
 				meta_value longtext,
 				PRIMARY KEY  (meta_id),
-				KEY fast_url_shortener_link_id (fast_url_shortener_link_id),
+				KEY clicklet_link_id (clicklet_link_id),
 				KEY meta_key (meta_key(191))
 			) {$collate};"
 		);

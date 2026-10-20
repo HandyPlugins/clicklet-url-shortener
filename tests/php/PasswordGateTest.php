@@ -2,20 +2,20 @@
 /**
  * Password-protected links.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\PasswordGate;
-use FastUrlShortener\Tests\Doubles\RecordingRouter;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\PasswordGate;
+use Clicklet\Tests\Doubles\RecordingRouter;
 use WP_REST_Request;
 
 /**
- * @covers \FastUrlShortener\Redirect\PasswordGate
- * @covers \FastUrlShortener\Links\Link::check_password
+ * @covers \Clicklet\Redirect\PasswordGate
+ * @covers \Clicklet\Links\Link::check_password
  */
 class PasswordGateTest extends TestCase {
 
@@ -82,7 +82,7 @@ class PasswordGateTest extends TestCase {
 		$links = new Repository();
 		$this->assertTrue( $links->update( $link->id, [ 'title' => 'x' ] )->has_password(), 'Other updates keep it.' );
 		$this->assertFalse( $links->update( $link->id, [ 'password' => '' ] )->has_password() );
-		$this->assertSame( 'fast_url_shortener_invalid_password_hash', $links->update( $link->id, [ 'password_hash' => 'plain' ] )->get_error_code() );
+		$this->assertSame( 'clicklet_invalid_password_hash', $links->update( $link->id, [ 'password_hash' => 'plain' ] )->get_error_code() );
 	}
 
 	/**
@@ -124,7 +124,7 @@ class PasswordGateTest extends TestCase {
 	public function test_rest_write_only() {
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 
-		$request = new WP_REST_Request( 'POST', '/fast-url-shortener/v1/links' );
+		$request = new WP_REST_Request( 'POST', '/clicklet-url-shortener/v1/links' );
 		$request->set_param( 'target_url', 'https://example.com/' );
 		$request->set_param( 'password', 's3cret' );
 		$data = rest_get_server()->dispatch( $request )->get_data();

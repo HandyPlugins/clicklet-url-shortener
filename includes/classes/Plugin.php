@@ -2,31 +2,31 @@
 /**
  * Plugin bootstrap.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener;
+namespace Clicklet;
 
-use FastUrlShortener\Admin\DashboardWidget;
-use FastUrlShortener\Admin\Editor;
-use FastUrlShortener\Admin\Page;
-use FastUrlShortener\CLI\Command;
-use FastUrlShortener\CLI\LinkCommand;
-use FastUrlShortener\Import\Importer;
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\Router;
-use FastUrlShortener\Rest\GroupsController;
-use FastUrlShortener\Rest\ImportController;
-use FastUrlShortener\Rest\LinksController;
-use FastUrlShortener\Rest\PostLinksController;
-use FastUrlShortener\Rest\SettingsController;
-use FastUrlShortener\Rest\TransferController;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Retention;
-use FastUrlShortener\Transfer\CsvImporter;
-use FastUrlShortener\Transfer\Exporter;
+use Clicklet\Admin\DashboardWidget;
+use Clicklet\Admin\Editor;
+use Clicklet\Admin\Page;
+use Clicklet\CLI\Command;
+use Clicklet\CLI\LinkCommand;
+use Clicklet\Import\Importer;
+use Clicklet\Links\Groups;
+use Clicklet\Links\PostLinks;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\Router;
+use Clicklet\Rest\GroupsController;
+use Clicklet\Rest\ImportController;
+use Clicklet\Rest\LinksController;
+use Clicklet\Rest\PostLinksController;
+use Clicklet\Rest\SettingsController;
+use Clicklet\Rest\TransferController;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Retention;
+use Clicklet\Transfer\CsvImporter;
+use Clicklet\Transfer\Exporter;
 
 /**
  * Wires the plugin modules together.
@@ -77,15 +77,15 @@ class Plugin {
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'fast-url-shortener', Command::class );
-			\WP_CLI::add_command( 'fast-url-shortener link', LinkCommand::class );
+			\WP_CLI::add_command( 'clicklet', Command::class );
+			\WP_CLI::add_command( 'clicklet link', LinkCommand::class );
 		}
 
 		/**
-		 * Fires once Fast URL Shortener has loaded.
+		 * Fires once Clicklet URL Shortener has loaded.
 		 *
-		 * @hook fast_url_shortener_loaded
+		 * @hook clicklet_loaded
 		 */
-		do_action( 'fast_url_shortener_loaded' );
+		do_action( 'clicklet_loaded' );
 	}
 }

@@ -2,14 +2,14 @@
 /**
  * Click recording.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tracking;
+namespace Clicklet\Tracking;
 
-use FastUrlShortener\Links\Link;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Settings;
+use Clicklet\Links\Link;
+use Clicklet\Links\Repository;
+use Clicklet\Settings;
 
 /**
  * Records clicks without remote calls and without storing raw IPs.
@@ -97,12 +97,12 @@ class Tracker {
 		/**
 		 * Fires after a human click is recorded.
 		 *
-		 * @hook fast_url_shortener_click_recorded
+		 * @hook clicklet_click_recorded
 		 *
 		 * @param Link  $link  Link.
 		 * @param array $click Stored click data.
 		 */
-		do_action( 'fast_url_shortener_click_recorded', $link, $click );
+		do_action( 'clicklet_click_recorded', $link, $click );
 	}
 
 	/**

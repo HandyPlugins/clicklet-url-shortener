@@ -118,13 +118,13 @@ export default function QrModal( { link, onClose } ) {
 
 	return (
 		<Modal
-			title={ __( 'QR code', 'fast-url-shortener' ) }
+			title={ __( 'QR code', 'clicklet-url-shortener' ) }
 			onRequestClose={ onClose }
-			className="fus-modal fus-qr"
+			className="clicklet-modal clicklet-qr"
 			size="small"
 		>
 			<svg
-				className="fus-qr-code"
+				className="clicklet-qr-code"
 				viewBox={ `0 0 ${ box } ${ box }` }
 				shapeRendering="crispEdges"
 				role="img"
@@ -133,16 +133,16 @@ export default function QrModal( { link, onClose } ) {
 				<rect width={ box } height={ box } fill="#fff" />
 				<path d={ d } fill="#000" />
 			</svg>
-			<p className="fus-muted">
+			<p className="clicklet-muted">
 				{ __(
 					'Scans of this code are counted as "QR code" in the stats.',
-					'fast-url-shortener'
+					'clicklet-url-shortener'
 				) }
 			</p>
 			<SelectControl
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
-				label={ __( 'PNG size', 'fast-url-shortener' ) }
+				label={ __( 'PNG size', 'clicklet-url-shortener' ) }
 				value={ size }
 				options={ [ 512, 1024, 2048 ].map( ( value ) => ( {
 					value,
@@ -150,12 +150,12 @@ export default function QrModal( { link, onClose } ) {
 				} ) ) }
 				onChange={ ( value ) => setSize( Number( value ) ) }
 			/>
-			<div className="fus-form-actions">
+			<div className="clicklet-form-actions">
 				<Button variant="secondary" onClick={ downloadSvg }>
-					{ __( 'Download SVG', 'fast-url-shortener' ) }
+					{ __( 'Download SVG', 'clicklet-url-shortener' ) }
 				</Button>
 				<Button variant="primary" onClick={ downloadPng }>
-					{ __( 'Download PNG', 'fast-url-shortener' ) }
+					{ __( 'Download PNG', 'clicklet-url-shortener' ) }
 				</Button>
 			</div>
 		</Modal>

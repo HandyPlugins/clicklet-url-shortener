@@ -2,25 +2,25 @@
 /**
  * WP-CLI commands.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\CLI;
+namespace Clicklet\CLI;
 
-use FastUrlShortener\Import\Importer;
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Settings;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Transfer\CsvImporter;
-use FastUrlShortener\Transfer\Exporter;
+use Clicklet\Import\Importer;
+use Clicklet\Links\PostLinks;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Settings;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Stats;
+use Clicklet\Transfer\CsvImporter;
+use Clicklet\Transfer\Exporter;
 use WP_CLI;
 use WP_CLI\Utils;
 
 /**
- * Fast URL Shortener tools.
+ * Clicklet URL Shortener tools.
  */
 class Command extends \WP_CLI_Command {
 
@@ -54,8 +54,8 @@ class Command extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp fast-url-shortener stats promo --days=7
-	 *     wp fast-url-shortener stats 12 --by=country
+	 *     wp clicklet stats promo --days=7
+	 *     wp clicklet stats 12 --by=country
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Flags.
@@ -174,7 +174,7 @@ class Command extends \WP_CLI_Command {
 		}
 
 		if ( isset( $changes['fast_path'] ) ) {
-			WP_CLI::error( 'Use `wp fast-url-shortener fast-path enable|disable`.' );
+			WP_CLI::error( 'Use `wp clicklet fast-path enable|disable`.' );
 		}
 
 		if ( $changes ) {
@@ -222,7 +222,7 @@ class Command extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp fast-url-shortener post-links --post_type=post,page
+	 *     wp clicklet post-links --post_type=post,page
 	 *
 	 * @subcommand post-links
 	 *
@@ -312,8 +312,8 @@ class Command extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp fast-url-shortener export links --file=links.csv
-	 *     wp fast-url-shortener export stats > stats.csv
+	 *     wp clicklet export links --file=links.csv
+	 *     wp clicklet export stats > stats.csv
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Flags.
@@ -349,8 +349,8 @@ class Command extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp fast-url-shortener import links.csv
-	 *     wp fast-url-shortener import stats.csv
+	 *     wp clicklet import links.csv
+	 *     wp clicklet import stats.csv
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Flags.
@@ -393,7 +393,7 @@ class Command extends \WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp fast-url-shortener migrate pretty-links
+	 *     wp clicklet migrate pretty-links
 	 *
 	 * @param array $args Positional arguments.
 	 *

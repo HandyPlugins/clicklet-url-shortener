@@ -2,17 +2,17 @@
 /**
  * Import runner.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Import;
+namespace Clicklet\Import;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Settings;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Stats;
-use FastUrlShortener\Tracking\Tracker;
-use FastUrlShortener\Tracking\UserAgent;
+use Clicklet\Links\Repository;
+use Clicklet\Settings;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Stats;
+use Clicklet\Tracking\Tracker;
+use Clicklet\Tracking\UserAgent;
 
 /**
  * Imports a source in small steps, so each request stays short and an
@@ -249,11 +249,11 @@ class Importer {
 		 * A transaction keeps thousands of single-row inserts fast, but it
 		 * commits any transaction the caller has open.
 		 *
-		 * @hook fast_url_shortener_import_use_transaction
+		 * @hook clicklet_import_use_transaction
 		 *
 		 * @param bool $use Default true.
 		 */
-		$transaction = (bool) apply_filters( 'fast_url_shortener_import_use_transaction', true );
+		$transaction = (bool) apply_filters( 'clicklet_import_use_transaction', true );
 
 		if ( $transaction ) {
 			$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -349,7 +349,7 @@ class Importer {
 		if ( false !== strpos( $slug, '/' ) ) {
 			return sprintf(
 				/* translators: %s: first path segment of the slug, e.g. "go". */
-				__( 'Slug has more than one path segment. Set the prefix to "%s" in Settings and import again.', 'fast-url-shortener' ),
+				__( 'Slug has more than one path segment. Set the prefix to "%s" in Settings and import again.', 'clicklet-url-shortener' ),
 				strtok( $slug, '/' )
 			);
 		}
@@ -408,6 +408,6 @@ class Importer {
 	 * @return string
 	 */
 	public static function option_name( Source $source ) {
-		return 'fast_url_shortener_import_' . str_replace( '-', '_', $source->id() );
+		return 'clicklet_import_' . str_replace( '-', '_', $source->id() );
 	}
 }

@@ -2,12 +2,12 @@
 /**
  * Click statistics.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tracking;
+namespace Clicklet\Tracking;
 
-use FastUrlShortener\Schema;
+use Clicklet\Schema;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reporting queries on the plugin's own tables; admin-only.
 
@@ -45,8 +45,8 @@ class Stats {
 			UserAgent::labels(),
 			[
 				'source' => [
-					self::SOURCE_LINK => __( 'Link', 'fast-url-shortener' ),
-					self::SOURCE_QR   => __( 'QR code', 'fast-url-shortener' ),
+					self::SOURCE_LINK => __( 'Link', 'clicklet-url-shortener' ),
+					self::SOURCE_QR   => __( 'QR code', 'clicklet-url-shortener' ),
 				],
 			]
 		);

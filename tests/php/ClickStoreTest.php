@@ -2,20 +2,20 @@
 /**
  * Click storage and retention.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Tracking\Retention;
-use FastUrlShortener\Tracking\Stats;
+use Clicklet\Links\Repository;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Tracking\Retention;
+use Clicklet\Tracking\Stats;
 
 /**
- * @covers \FastUrlShortener\Tracking\ClickStore
- * @covers \FastUrlShortener\Tracking\Retention
- * @covers \FastUrlShortener\Tracking\Stats
+ * @covers \Clicklet\Tracking\ClickStore
+ * @covers \Clicklet\Tracking\Retention
+ * @covers \Clicklet\Tracking\Stats
  */
 class ClickStoreTest extends TestCase {
 

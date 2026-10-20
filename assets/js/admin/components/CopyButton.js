@@ -27,8 +27,8 @@ export default function CopyButton( { text, variant = 'link' } ) {
 	return (
 		<Button ref={ ref } variant={ variant } size="small">
 			{ copied
-				? __( 'Copied!', 'fast-url-shortener' )
-				: __( 'Copy', 'fast-url-shortener' ) }
+				? __( 'Copied!', 'clicklet-url-shortener' )
+				: __( 'Copy', 'clicklet-url-shortener' ) }
 		</Button>
 	);
 }

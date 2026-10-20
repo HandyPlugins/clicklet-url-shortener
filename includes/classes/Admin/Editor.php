@@ -2,13 +2,13 @@
 /**
  * Block editor integration.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Admin;
+namespace Clicklet\Admin;
 
-use FastUrlShortener\Links\PostLinks;
-use FastUrlShortener\Rest\Controller;
+use Clicklet\Links\PostLinks;
+use Clicklet\Rest\Controller;
 
 /**
  * Adds the "Short link" panel to the post editor.
@@ -18,7 +18,7 @@ class Editor {
 	/**
 	 * Script handle.
 	 */
-	const HANDLE = 'fast-url-shortener-editor';
+	const HANDLE = 'clicklet-url-shortener-editor';
 
 	/**
 	 * Register hooks.
@@ -37,7 +37,7 @@ class Editor {
 	 */
 	public function enqueue() {
 		$screen     = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		$asset_file = FAST_URL_SHORTENER_PATH . 'dist/editor.asset.php';
+		$asset_file = CLICKLET_PATH . 'dist/editor.asset.php';
 
 		if (
 			! $screen
@@ -51,12 +51,12 @@ class Editor {
 
 		$asset = require $asset_file;
 
-		wp_enqueue_script( self::HANDLE, plugins_url( 'dist/editor.js', FAST_URL_SHORTENER_FILE ), $asset['dependencies'], $asset['version'], true );
-		wp_set_script_translations( self::HANDLE, 'fast-url-shortener' );
+		wp_enqueue_script( self::HANDLE, plugins_url( 'dist/editor.js', CLICKLET_FILE ), $asset['dependencies'], $asset['version'], true );
+		wp_set_script_translations( self::HANDLE, 'clicklet-url-shortener' );
 
 		wp_add_inline_script(
 			self::HANDLE,
-			'window.fastUrlShortenerEditor = ' . wp_json_encode(
+			'window.clickletEditor = ' . wp_json_encode(
 				[
 					'adminUrl'      => admin_url( 'admin.php' ),
 					'autoPostTypes' => PostLinks::auto_post_types(),

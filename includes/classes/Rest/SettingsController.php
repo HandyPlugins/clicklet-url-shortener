@@ -2,14 +2,14 @@
 /**
  * Settings REST endpoint.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Rest;
+namespace Clicklet\Rest;
 
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Settings;
+use Clicklet\Links\Repository;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Settings;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -93,13 +93,13 @@ class SettingsController extends Controller {
 
 		/**
 		 * Filter the settings accepted by the REST API, e.g. to add an
-		 * extension's own settings. Save them on fast_url_shortener_rest_update_settings.
+		 * extension's own settings. Save them on clicklet_rest_update_settings.
 		 *
-		 * @hook fast_url_shortener_rest_settings_args
+		 * @hook clicklet_rest_settings_args
 		 *
 		 * @param array $args Argument schema.
 		 */
-		return apply_filters( 'fast_url_shortener_rest_settings_args', $args );
+		return apply_filters( 'clicklet_rest_settings_args', $args );
 	}
 
 	/**
@@ -111,11 +111,11 @@ class SettingsController extends Controller {
 		/**
 		 * Filter the settings returned by the REST API.
 		 *
-		 * @hook fast_url_shortener_rest_settings
+		 * @hook clicklet_rest_settings
 		 *
 		 * @param array $settings Settings.
 		 */
-		return apply_filters( 'fast_url_shortener_rest_settings', array_merge( Settings::all(), [ 'fast_path' => FastPath::is_installed() ] ) );
+		return apply_filters( 'clicklet_rest_settings', array_merge( Settings::all(), [ 'fast_path' => FastPath::is_installed() ] ) );
 	}
 
 	/**
@@ -145,7 +145,7 @@ class SettingsController extends Controller {
 			}
 
 			if ( ! $result ) {
-				return new WP_Error( 'fast_url_shortener_filesystem', __( 'The fast path file could not be removed.', 'fast-url-shortener' ), [ 'status' => 500 ] );
+				return new WP_Error( 'clicklet_filesystem', __( 'The fast path file could not be removed.', 'clicklet-url-shortener' ), [ 'status' => 500 ] );
 			}
 		}
 
@@ -155,11 +155,11 @@ class SettingsController extends Controller {
 		 * Fires after settings are saved through the REST API, so extensions
 		 * can save their own values from the same request.
 		 *
-		 * @hook fast_url_shortener_rest_update_settings
+		 * @hook clicklet_rest_update_settings
 		 *
 		 * @param WP_REST_Request $request Request.
 		 */
-		do_action( 'fast_url_shortener_rest_update_settings', $request );
+		do_action( 'clicklet_rest_update_settings', $request );
 
 		return $this->get_settings();
 	}

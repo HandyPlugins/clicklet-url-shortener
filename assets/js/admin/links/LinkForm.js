@@ -21,27 +21,27 @@ import { shortUrlBase } from '../utils';
 export const REDIRECT_TYPES = [
 	{
 		value: 302,
-		label: __( '302 – Temporary (recommended)', 'fast-url-shortener' ),
+		label: __( '302 – Temporary (recommended)', 'clicklet-url-shortener' ),
 	},
 	{
 		value: 307,
 		label: __(
 			'307 – Temporary, keeps request method',
-			'fast-url-shortener'
+			'clicklet-url-shortener'
 		),
 	},
 	{
 		value: 301,
 		label: __(
 			'301 – Permanent (browsers cache it)',
-			'fast-url-shortener'
+			'clicklet-url-shortener'
 		),
 	},
 	{
 		value: 308,
 		label: __(
 			'308 – Permanent, keeps request method',
-			'fast-url-shortener'
+			'clicklet-url-shortener'
 		),
 	},
 ];
@@ -56,7 +56,7 @@ export const REDIRECT_TYPES = [
  */
 export default function LinkForm( { link, onClose, onSaved } ) {
 	const isNew = ! link.id;
-	const slugId = useInstanceId( LinkForm, 'fus-link-slug' );
+	const slugId = useInstanceId( LinkForm, 'clicklet-link-slug' );
 	const base = shortUrlBase();
 	const [ values, setValues ] = useState( {
 		target_url: link.target_url || '',
@@ -89,7 +89,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 	const set = ( key ) => ( value ) =>
 		setValues( ( v ) => ( { ...v, [ key ]: value } ) );
 
-	const conflictError = error?.code === 'fast_url_shortener_slug_conflict';
+	const conflictError = error?.code === 'clicklet_slug_conflict';
 	const conflict = conflictError && values.slug === errorSlug;
 	// A conflict warning for a slug that has since been edited is stale.
 	const showError = error && ( ! conflictError || conflict );
@@ -129,14 +129,14 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 		<Modal
 			title={
 				isNew
-					? __( 'Add New Link', 'fast-url-shortener' )
-					: __( 'Edit Link', 'fast-url-shortener' )
+					? __( 'Add New Link', 'clicklet-url-shortener' )
+					: __( 'Edit Link', 'clicklet-url-shortener' )
 			}
 			onRequestClose={ onClose }
-			className="fus-modal"
+			className="clicklet-modal"
 			size="medium"
 		>
-			<form onSubmit={ submit } className="fus-form">
+			<form onSubmit={ submit } className="clicklet-form">
 				{ showError && (
 					<Notice
 						status={ conflict ? 'warning' : 'error' }
@@ -150,7 +150,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 					type="url"
-					label={ __( 'Destination URL', 'fast-url-shortener' ) }
+					label={ __( 'Destination URL', 'clicklet-url-shortener' ) }
 					value={ values.target_url }
 					onChange={ set( 'target_url' ) }
 					required
@@ -159,32 +159,35 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 				<BaseControl
 					__nextHasNoMarginBottom
 					id={ slugId }
-					label={ __( 'Short link', 'fast-url-shortener' ) }
+					label={ __( 'Short link', 'clicklet-url-shortener' ) }
 					help={
 						isNew
 							? __(
 									'Leave the slug empty to generate one.',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								)
 							: undefined
 					}
 				>
 					{ /* Reads like a browser address bar: the fixed base, then the editable slug. */ }
-					<div className="fus-url-input">
-						<span className="fus-url-input__base" title={ base }>
+					<div className="clicklet-url-input">
+						<span
+							className="clicklet-url-input__base"
+							title={ base }
+						>
 							{ base.replace( /^https?:\/\//, '' ) }
 						</span>
 						<input
 							id={ slugId }
 							type="text"
-							className="fus-url-input__slug"
+							className="clicklet-url-input__slug"
 							value={ values.slug }
 							onChange={ ( event ) =>
 								set( 'slug' )( event.target.value )
 							}
 							placeholder={
 								isNew
-									? __( 'random', 'fast-url-shortener' )
+									? __( 'random', 'clicklet-url-shortener' )
 									: undefined
 							}
 							pattern="[A-Za-z0-9][A-Za-z0-9_\-]*"
@@ -203,7 +206,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						__nextHasNoMarginBottom
 						label={ __(
 							'Use this slug anyway. The short link will replace the existing page at this URL.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ force }
 						onChange={ setForce }
@@ -213,8 +216,11 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 				<TextControl
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-					label={ __( 'Title', 'fast-url-shortener' ) }
-					help={ __( 'Only visible to you.', 'fast-url-shortener' ) }
+					label={ __( 'Title', 'clicklet-url-shortener' ) }
+					help={ __(
+						'Only visible to you.',
+						'clicklet-url-shortener'
+					) }
 					value={ values.title }
 					onChange={ set( 'title' ) }
 				/>
@@ -223,7 +229,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 					__experimentalExpandOnFocus
-					label={ __( 'Groups', 'fast-url-shortener' ) }
+					label={ __( 'Groups', 'clicklet-url-shortener' ) }
 					value={ values.groups }
 					suggestions={ groupNames }
 					onChange={ ( tokens ) =>
@@ -236,11 +242,11 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 				/>
 
 				{ link.has_password && ! removePassword ? (
-					<div className="fus-password-set">
+					<div className="clicklet-password-set">
 						<p>
 							{ __(
 								'This link is password protected.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }{ ' ' }
 							<Button
 								variant="link"
@@ -249,7 +255,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 							>
 								{ __(
 									'Remove password',
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								) }
 							</Button>
 						</p>
@@ -258,10 +264,13 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 							__next40pxDefaultSize
 							type="password"
 							autoComplete="new-password"
-							label={ __( 'New password', 'fast-url-shortener' ) }
+							label={ __(
+								'New password',
+								'clicklet-url-shortener'
+							) }
 							help={ __(
 								'Leave empty to keep the current password.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }
 							value={ values.password || '' }
 							onChange={ set( 'password' ) }
@@ -273,16 +282,16 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						__next40pxDefaultSize
 						type="password"
 						autoComplete="new-password"
-						label={ __( 'Password', 'fast-url-shortener' ) }
+						label={ __( 'Password', 'clicklet-url-shortener' ) }
 						help={
 							removePassword
 								? __(
 										'The password will be removed when you save.',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									)
 								: __(
 										'Optional. Visitors must enter it before they are redirected.',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									)
 						}
 						value={ values.password || '' }
@@ -296,7 +305,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 				<SelectControl
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-					label={ __( 'Redirect type', 'fast-url-shortener' ) }
+					label={ __( 'Redirect type', 'clicklet-url-shortener' ) }
 					value={ values.redirect_type }
 					options={ [
 						...( isNew
@@ -305,7 +314,7 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 										value: '',
 										label: __(
 											'Default (from settings)',
-											'fast-url-shortener'
+											'clicklet-url-shortener'
 										),
 									},
 								]
@@ -315,15 +324,15 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					onChange={ set( 'redirect_type' ) }
 				/>
 
-				<div className="fus-form-row">
+				<div className="clicklet-form-row">
 					<TextControl
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 						type="datetime-local"
-						label={ __( 'Expires', 'fast-url-shortener' ) }
+						label={ __( 'Expires', 'clicklet-url-shortener' ) }
 						help={ __(
 							'Optional. In the site timezone.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.expires_at }
 						onChange={ set( 'expires_at' ) }
@@ -333,10 +342,10 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						__next40pxDefaultSize
 						type="number"
 						min="0"
-						label={ __( 'Click limit', 'fast-url-shortener' ) }
+						label={ __( 'Click limit', 'clicklet-url-shortener' ) }
 						help={ __(
 							'Optional. Stops redirecting after this many clicks.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.max_clicks }
 						onChange={ set( 'max_clicks' ) }
@@ -347,28 +356,28 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					__nextHasNoMarginBottom
 					label={ __(
 						'Forward query parameters',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 					help={ __(
 						'Adds ?utm_source=… and other parameters of the short link to the destination.',
-						'fast-url-shortener'
+						'clicklet-url-shortener'
 					) }
 					checked={ values.forward_params }
 					onChange={ set( 'forward_params' ) }
 				/>
 				<ToggleControl
 					__nextHasNoMarginBottom
-					label={ __( 'Track clicks', 'fast-url-shortener' ) }
+					label={ __( 'Track clicks', 'clicklet-url-shortener' ) }
 					checked={ values.track_clicks }
 					onChange={ set( 'track_clicks' ) }
 				/>
 				{ ! isNew && (
 					<ToggleControl
 						__nextHasNoMarginBottom
-						label={ __( 'Active', 'fast-url-shortener' ) }
+						label={ __( 'Active', 'clicklet-url-shortener' ) }
 						help={ __(
 							'Disabled links stop redirecting.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ 'active' === values.status }
 						onChange={ ( on ) =>
@@ -386,9 +395,9 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 					} }
 				/>
 
-				<div className="fus-form-actions">
+				<div className="clicklet-form-actions">
 					<Button variant="tertiary" onClick={ onClose }>
-						{ __( 'Cancel', 'fast-url-shortener' ) }
+						{ __( 'Cancel', 'clicklet-url-shortener' ) }
 					</Button>
 					<Button
 						variant="primary"
@@ -397,8 +406,8 @@ export default function LinkForm( { link, onClose, onSaved } ) {
 						disabled={ saving || ( conflict && ! force ) }
 					>
 						{ isNew
-							? __( 'Create Link', 'fast-url-shortener' )
-							: __( 'Save', 'fast-url-shortener' ) }
+							? __( 'Create Link', 'clicklet-url-shortener' )
+							: __( 'Save', 'clicklet-url-shortener' ) }
 					</Button>
 				</div>
 			</form>

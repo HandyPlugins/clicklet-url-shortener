@@ -24,12 +24,12 @@ const IP_HEADERS = [
 		value: '',
 		label: __(
 			'Direct connection (REMOTE_ADDR) – recommended',
-			'fast-url-shortener'
+			'clicklet-url-shortener'
 		),
 	},
 	{
 		value: 'HTTP_CF_CONNECTING_IP',
-		label: __( 'Cloudflare (CF-Connecting-IP)', 'fast-url-shortener' ),
+		label: __( 'Cloudflare (CF-Connecting-IP)', 'clicklet-url-shortener' ),
 	},
 	{ value: 'HTTP_X_FORWARDED_FOR', label: 'X-Forwarded-For' },
 	{ value: 'HTTP_X_REAL_IP', label: 'X-Real-IP' },
@@ -86,7 +86,7 @@ export default function SettingsPage() {
 			setValues( settings );
 			setNotice( {
 				status: 'success',
-				message: __( 'Settings saved.', 'fast-url-shortener' ),
+				message: __( 'Settings saved.', 'clicklet-url-shortener' ),
 			} );
 		} catch ( e ) {
 			setNotice( { status: 'error', message: e.message } );
@@ -99,8 +99,8 @@ export default function SettingsPage() {
 	const caseChanged = values.case_sensitive !== saved.case_sensitive;
 
 	return (
-		<form onSubmit={ submit } className="fus-settings">
-			<h1>{ __( 'Short Link Settings', 'fast-url-shortener' ) }</h1>
+		<form onSubmit={ submit } className="clicklet-settings">
+			<h1>{ __( 'Short Link Settings', 'clicklet-url-shortener' ) }</h1>
 
 			{ notice && (
 				<Notice
@@ -113,18 +113,18 @@ export default function SettingsPage() {
 
 			<Card>
 				<CardHeader>
-					<h2>{ __( 'Links', 'fast-url-shortener' ) }</h2>
+					<h2>{ __( 'Links', 'clicklet-url-shortener' ) }</h2>
 				</CardHeader>
 				<CardBody>
 					<TextControl
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-						label={ __( 'Prefix', 'fast-url-shortener' ) }
+						label={ __( 'Prefix', 'clicklet-url-shortener' ) }
 						help={ sprintf(
 							/* translators: %s: example short URL. */
 							__(
 								'Optional path segment for all short links. Example: %s',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							),
 							shortUrlBase( values.prefix ) + 'promo'
 						) }
@@ -135,7 +135,7 @@ export default function SettingsPage() {
 						<Notice status="warning" isDismissible={ false }>
 							{ __(
 								'Changing the prefix changes every existing short URL. Links you already shared will stop working.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }
 						</Notice>
 					) }
@@ -145,7 +145,7 @@ export default function SettingsPage() {
 						__next40pxDefaultSize
 						label={ __(
 							'Default redirect type',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.redirect_type }
 						options={ REDIRECT_TYPES }
@@ -160,7 +160,7 @@ export default function SettingsPage() {
 						max="20"
 						label={ __(
 							'Generated slug length',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.slug_length }
 						onChange={ set( 'slug_length' ) }
@@ -170,11 +170,11 @@ export default function SettingsPage() {
 						__nextHasNoMarginBottom
 						label={ __(
 							'Case-sensitive slugs',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						help={ __(
 							'When on, /Promo and /promo are different links.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ values.case_sensitive }
 						onChange={ set( 'case_sensitive' ) }
@@ -183,7 +183,7 @@ export default function SettingsPage() {
 						<Notice status="warning" isDismissible={ false }>
 							{ __(
 								'Existing slugs are not changed. Links created while slugs were case-insensitive are stored in lowercase.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }
 						</Notice>
 					) }
@@ -193,18 +193,21 @@ export default function SettingsPage() {
 			<Card>
 				<CardHeader>
 					<h2>
-						{ __( 'Automatic short links', 'fast-url-shortener' ) }
+						{ __(
+							'Automatic short links',
+							'clicklet-url-shortener'
+						) }
 					</h2>
 				</CardHeader>
 				<CardBody>
-					<p className="fus-muted">
+					<p className="clicklet-muted">
 						{ __(
 							'Create a short link when content of these types is published. It is also used as the WordPress shortlink, for example in the admin bar.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 					</p>
-					<div className="fus-post-types">
-						{ ( window.fastUrlShortener?.postTypes || [] ).map(
+					<div className="clicklet-post-types">
+						{ ( window.clicklet?.postTypes || [] ).map(
 							( type ) => (
 								<CheckboxControl
 									key={ type.name }
@@ -234,10 +237,10 @@ export default function SettingsPage() {
 							)
 						) }
 					</div>
-					<p className="fus-muted">
+					<p className="clicklet-muted">
 						{ __(
-							'Existing content gets a short link when it is next updated, or all at once with: wp fast-url-shortener post-links',
-							'fast-url-shortener'
+							'Existing content gets a short link when it is next updated, or all at once with: wp clicklet post-links',
+							'clicklet-url-shortener'
 						) }
 					</p>
 				</CardBody>
@@ -246,16 +249,19 @@ export default function SettingsPage() {
 			<Card>
 				<CardHeader>
 					<h2>
-						{ __( 'Tracking and privacy', 'fast-url-shortener' ) }
+						{ __(
+							'Tracking and privacy',
+							'clicklet-url-shortener'
+						) }
 					</h2>
 				</CardHeader>
 				<CardBody>
 					<ToggleControl
 						__nextHasNoMarginBottom
-						label={ __( 'Track clicks', 'fast-url-shortener' ) }
+						label={ __( 'Track clicks', 'clicklet-url-shortener' ) }
 						help={ __(
 							'No raw IP addresses or cookies are stored. Visitors are counted with an anonymous hash that changes daily.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ values.track_clicks }
 						onChange={ set( 'track_clicks' ) }
@@ -268,11 +274,11 @@ export default function SettingsPage() {
 						min="0"
 						label={ __(
 							'Keep detailed click data for (days)',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						help={ __(
 							'0 keeps everything. Daily totals are always kept, so charts stay complete.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.retention_days }
 						onChange={ set( 'retention_days' ) }
@@ -283,11 +289,11 @@ export default function SettingsPage() {
 						__next40pxDefaultSize
 						label={ __(
 							'Visitor IP source',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						help={ __(
 							'Only change this behind a proxy or CDN you trust. Forwarded headers can be faked otherwise.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						value={ values.ip_header }
 						options={ IP_HEADERS }
@@ -298,15 +304,15 @@ export default function SettingsPage() {
 
 			<Card>
 				<CardHeader>
-					<h2>{ __( 'Performance', 'fast-url-shortener' ) }</h2>
+					<h2>{ __( 'Performance', 'clicklet-url-shortener' ) }</h2>
 				</CardHeader>
 				<CardBody>
 					<ToggleControl
 						__nextHasNoMarginBottom
-						label={ __( 'Fast path', 'fast-url-shortener' ) }
+						label={ __( 'Fast path', 'clicklet-url-shortener' ) }
 						help={ __(
 							'Resolves short links before other plugins load, using a small file in wp-content/mu-plugins. Redirect filters from regular plugins do not run for short links when this is on.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ values.fast_path }
 						onChange={ set( 'fast_path' ) }
@@ -316,18 +322,18 @@ export default function SettingsPage() {
 
 			<Card>
 				<CardHeader>
-					<h2>{ __( 'Uninstall', 'fast-url-shortener' ) }</h2>
+					<h2>{ __( 'Uninstall', 'clicklet-url-shortener' ) }</h2>
 				</CardHeader>
 				<CardBody>
 					<ToggleControl
 						__nextHasNoMarginBottom
 						label={ __(
 							'Delete all links and statistics when the plugin is deleted',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						help={ __(
 							'Off by default, so reinstalling brings everything back.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 						checked={ values.delete_data_on_uninstall }
 						onChange={ set( 'delete_data_on_uninstall' ) }
@@ -350,7 +356,7 @@ export default function SettingsPage() {
 					isBusy={ saving }
 					disabled={ saving }
 				>
-					{ __( 'Save Settings', 'fast-url-shortener' ) }
+					{ __( 'Save Settings', 'clicklet-url-shortener' ) }
 				</Button>
 			</p>
 		</form>

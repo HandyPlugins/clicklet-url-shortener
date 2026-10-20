@@ -2,18 +2,18 @@
 /**
  * Link groups.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\Repository;
+use Clicklet\Links\Groups;
+use Clicklet\Links\Repository;
 use WP_REST_Request;
 
 /**
- * @covers \FastUrlShortener\Links\Groups
- * @covers \FastUrlShortener\Rest\GroupsController
+ * @covers \Clicklet\Links\Groups
+ * @covers \Clicklet\Rest\GroupsController
  */
 class GroupsTest extends TestCase {
 
@@ -65,7 +65,7 @@ class GroupsTest extends TestCase {
 		$links->update( $link->id, [ 'groups' => [] ] );
 		$this->assertSame( [], Groups::of( $link->id ) );
 
-		$this->assertSame( 'fast_url_shortener_invalid_groups', $links->update( $link->id, [ 'groups' => 'A' ] )->get_error_code() );
+		$this->assertSame( 'clicklet_invalid_groups', $links->update( $link->id, [ 'groups' => 'A' ] )->get_error_code() );
 	}
 
 	/**
@@ -126,20 +126,20 @@ class GroupsTest extends TestCase {
 		$this->create_link( [ 'groups' => [ 'Old name' ] ] );
 		$term = get_term_by( 'name', 'Old name', Groups::TAXONOMY );
 
-		$this->assertSame( 401, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/fast-url-shortener/v1/groups' ) )->get_status() );
+		$this->assertSame( 401, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/clicklet-url-shortener/v1/groups' ) )->get_status() );
 
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 
-		$list = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/fast-url-shortener/v1/groups' ) )->get_data();
+		$list = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/clicklet-url-shortener/v1/groups' ) )->get_data();
 		$this->assertSame( 'Old name', $list[0]['name'] );
 		$this->assertSame( 1, $list[0]['count'] );
 
-		$rename = new WP_REST_Request( 'PUT', '/fast-url-shortener/v1/groups/' . $term->term_id );
+		$rename = new WP_REST_Request( 'PUT', '/clicklet-url-shortener/v1/groups/' . $term->term_id );
 		$rename->set_param( 'name', 'New name' );
 		$this->assertSame( 'New name', rest_get_server()->dispatch( $rename )->get_data()['name'] );
 		$this->assertSame( 'new-name', get_term( $term->term_id, Groups::TAXONOMY )->slug );
 
-		$delete = new WP_REST_Request( 'DELETE', '/fast-url-shortener/v1/groups/' . $term->term_id );
+		$delete = new WP_REST_Request( 'DELETE', '/clicklet-url-shortener/v1/groups/' . $term->term_id );
 		$this->assertSame( 200, rest_get_server()->dispatch( $delete )->get_status() );
 		$this->assertSame( 404, rest_get_server()->dispatch( $delete )->get_status() );
 		$this->assertSame( 1, $this->count_rows( 'links' ), 'Links survive their group.' );

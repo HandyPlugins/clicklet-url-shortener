@@ -2,23 +2,23 @@
 /**
  * CSV export and import.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Links\Groups;
-use FastUrlShortener\Links\Repository;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Tracking\ClickStore;
-use FastUrlShortener\Transfer\CsvImporter;
-use FastUrlShortener\Transfer\Exporter;
+use Clicklet\Links\Groups;
+use Clicklet\Links\Repository;
+use Clicklet\Schema;
+use Clicklet\Tracking\ClickStore;
+use Clicklet\Transfer\CsvImporter;
+use Clicklet\Transfer\Exporter;
 
 // phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.DB -- Test files and snapshots.
 
 /**
- * @covers \FastUrlShortener\Transfer\Exporter
- * @covers \FastUrlShortener\Transfer\CsvImporter
+ * @covers \Clicklet\Transfer\Exporter
+ * @covers \Clicklet\Transfer\CsvImporter
  */
 class TransferTest extends TestCase {
 
@@ -34,7 +34,7 @@ class TransferTest extends TestCase {
 	 */
 	public function set_up() {
 		parent::set_up();
-		$this->dir = get_temp_dir() . 'fus-transfer-' . wp_generate_password( 8, false );
+		$this->dir = get_temp_dir() . 'clicklet-transfer-' . wp_generate_password( 8, false );
 		wp_mkdir_p( $this->dir );
 	}
 
@@ -288,7 +288,7 @@ class TransferTest extends TestCase {
 		$result = ( new CsvImporter( new Repository(), new ClickStore() ) )->start( $path, false, false );
 
 		$this->assertWPError( $result );
-		$this->assertSame( 'fast_url_shortener_csv_unknown', $result->get_error_code() );
+		$this->assertSame( 'clicklet_csv_unknown', $result->get_error_code() );
 		$this->assertFileExists( $path, 'Files passed in by path are not deleted.' );
 	}
 }

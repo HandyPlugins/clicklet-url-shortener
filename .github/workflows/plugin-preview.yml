@@ -32,7 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" build/fast-url-shortener.zip \
+          gh release create "${GITHUB_REF_NAME}" build/clicklet-url-shortener.zip \
             --prerelease \
             --title "${GITHUB_REF_NAME}" \
             --notes "Package for WordPress.org plugin review, built from ${GITHUB_SHA}. Not deployed to WordPress.org."

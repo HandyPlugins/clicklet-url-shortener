@@ -2,15 +2,15 @@
 /**
  * User agent classification.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Tracking\UserAgent;
+use Clicklet\Tracking\UserAgent;
 
 /**
- * @covers \FastUrlShortener\Tracking\UserAgent
+ * @covers \Clicklet\Tracking\UserAgent
  */
 class UserAgentTest extends TestCase {
 

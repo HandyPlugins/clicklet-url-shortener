@@ -52,7 +52,7 @@ function SortableHeader( { field, label, query, onSort, className = '' } ) {
 		>
 			<button
 				type="button"
-				className="fus-sort-button"
+				className="clicklet-sort-button"
 				onClick={ () => onSort( field ) }
 			>
 				<span>{ label }</span>
@@ -160,14 +160,14 @@ export default function LinksPage() {
 	return (
 		<>
 			<h1 className="wp-heading-inline">
-				{ __( 'Short Links', 'fast-url-shortener' ) }
+				{ __( 'Short Links', 'clicklet-url-shortener' ) }
 			</h1>
 			<Button
 				variant="secondary"
 				className="page-title-action"
 				onClick={ () => setEditing( {} ) }
 			>
-				{ __( 'Add New Link', 'fast-url-shortener' ) }
+				{ __( 'Add New Link', 'clicklet-url-shortener' ) }
 			</Button>
 			<hr className="wp-header-end" />
 
@@ -180,25 +180,25 @@ export default function LinksPage() {
 			) }
 
 			{ isEmpty ? (
-				<div className="fus-empty">
+				<div className="clicklet-empty">
 					<p>
 						{ __(
 							'No short links yet. Paste a URL above to create your first one.',
-							'fast-url-shortener'
+							'clicklet-url-shortener'
 						) }
 					</p>
 					<p>
 						<a href={ screenUrl( 'import' ) }>
 							{ __(
 								'Switching from another plugin? Import your links and their click history.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }
 						</a>
 					</p>
 				</div>
 			) : (
 				<>
-					<div className="fus-toolbar">
+					<div className="clicklet-toolbar">
 						<span className="displaying-num">
 							{ sprintf(
 								/* translators: %s: number of links. */
@@ -206,19 +206,19 @@ export default function LinksPage() {
 									'%s link',
 									'%s links',
 									result.total,
-									'fast-url-shortener'
+									'clicklet-url-shortener'
 								),
 								formatNumber( result.total )
 							) }
 						</span>
-						<div className="fus-toolbar-filters">
+						<div className="clicklet-toolbar-filters">
 							{ groups.length > 0 && (
 								<SelectControl
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 									label={ __(
 										'Filter by group',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 									hideLabelFromVision
 									value={ query.group }
@@ -227,7 +227,7 @@ export default function LinksPage() {
 											value: 0,
 											label: __(
 												'All groups',
-												'fast-url-shortener'
+												'clicklet-url-shortener'
 											),
 										},
 										...groups.map( ( group ) => ( {
@@ -244,7 +244,10 @@ export default function LinksPage() {
 								variant="tertiary"
 								onClick={ () => setManagingGroups( true ) }
 							>
-								{ __( 'Manage groups', 'fast-url-shortener' ) }
+								{ __(
+									'Manage groups',
+									'clicklet-url-shortener'
+								) }
 							</Button>
 						</div>
 						<SearchControl
@@ -256,19 +259,19 @@ export default function LinksPage() {
 							} }
 							placeholder={ __(
 								'Search links',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							) }
 						/>
 					</div>
 
-					<table className="wp-list-table widefat fixed striped table-view-list fus-links">
+					<table className="wp-list-table widefat fixed striped table-view-list clicklet-links">
 						<thead>
 							<tr>
 								<SortableHeader
 									field="slug"
 									label={ __(
 										'Short link',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 									query={ query }
 									onSort={ sort }
@@ -277,7 +280,7 @@ export default function LinksPage() {
 								<th scope="col" className="column-target">
 									{ __(
 										'Destination',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 								</th>
 								{ extraColumns.map( ( column ) => (
@@ -293,20 +296,20 @@ export default function LinksPage() {
 									field="total_clicks"
 									label={ __(
 										'Clicks',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 									query={ query }
 									onSort={ sort }
 									className="column-clicks"
 								/>
 								<th scope="col" className="column-status">
-									{ __( 'Status', 'fast-url-shortener' ) }
+									{ __( 'Status', 'clicklet-url-shortener' ) }
 								</th>
 								<SortableHeader
 									field="created_at"
 									label={ __(
 										'Created',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									) }
 									query={ query }
 									onSort={ sort }
@@ -327,7 +330,7 @@ export default function LinksPage() {
 									<td colSpan={ colSpan }>
 										{ __(
 											'No links match your search.',
-											'fast-url-shortener'
+											'clicklet-url-shortener'
 										) }
 									</td>
 								</tr>
@@ -339,7 +342,7 @@ export default function LinksPage() {
 											<strong>
 												<button
 													type="button"
-													className="fus-link-title"
+													className="clicklet-link-title"
 													onClick={ () =>
 														setEditing( link )
 													}
@@ -348,7 +351,7 @@ export default function LinksPage() {
 														`/${ link.slug }` }
 												</button>
 											</strong>
-											<div className="fus-short-url">
+											<div className="clicklet-short-url">
 												<a
 													href={ link.short_url }
 													target="_blank"
@@ -361,13 +364,13 @@ export default function LinksPage() {
 												/>
 											</div>
 											{ link.groups?.length > 0 && (
-												<div className="fus-badges">
+												<div className="clicklet-badges">
 													{ link.groups.map(
 														( group ) => (
 															<button
 																key={ group.id }
 																type="button"
-																className="fus-badge"
+																className="clicklet-badge"
 																onClick={ () =>
 																	filterByGroup(
 																		group.id
@@ -390,7 +393,7 @@ export default function LinksPage() {
 													>
 														{ __(
 															'Edit',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														) }
 													</Button>{ ' ' }
 													|{ ' ' }
@@ -406,7 +409,7 @@ export default function LinksPage() {
 													>
 														{ __(
 															'Stats',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														) }
 													</Button>{ ' ' }
 													|{ ' ' }
@@ -420,7 +423,7 @@ export default function LinksPage() {
 													>
 														{ __(
 															'QR code',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														) }
 													</Button>{ ' ' }
 													|{ ' ' }
@@ -452,7 +455,7 @@ export default function LinksPage() {
 													>
 														{ __(
 															'Delete',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														) }
 													</Button>
 												</span>
@@ -463,7 +466,7 @@ export default function LinksPage() {
 												href={ link.target_url }
 												target="_blank"
 												rel="noreferrer"
-												className="fus-target"
+												className="clicklet-target"
 												title={ link.target_url }
 											>
 												{ link.target_url }
@@ -491,23 +494,23 @@ export default function LinksPage() {
 										</td>
 										<td className="column-status">
 											<span
-												className={ `fus-status fus-status-${ link.status }` }
+												className={ `clicklet-status clicklet-status-${ link.status }` }
 											>
 												{ 'active' === link.status
 													? __(
 															'Active',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														)
 													: __(
 															'Disabled',
-															'fast-url-shortener'
+															'clicklet-url-shortener'
 														) }
 											</span>
 											{ link.has_password && (
-												<span className="fus-status fus-status-locked">
+												<span className="clicklet-status clicklet-status-locked">
 													{ __(
 														'Password',
-														'fast-url-shortener'
+														'clicklet-url-shortener'
 													) }
 												</span>
 											) }
@@ -521,7 +524,7 @@ export default function LinksPage() {
 					</table>
 
 					{ result.totalPages > 1 && (
-						<div className="fus-pagination">
+						<div className="clicklet-pagination">
 							<Button
 								variant="secondary"
 								disabled={ query.page <= 1 }
@@ -532,14 +535,14 @@ export default function LinksPage() {
 									} ) )
 								}
 							>
-								{ __( 'Previous', 'fast-url-shortener' ) }
+								{ __( 'Previous', 'clicklet-url-shortener' ) }
 							</Button>
 							<span>
 								{ sprintf(
 									/* translators: 1: current page, 2: total pages. */
 									__(
 										'Page %1$d of %2$d',
-										'fast-url-shortener'
+										'clicklet-url-shortener'
 									),
 									query.page,
 									result.totalPages
@@ -555,7 +558,7 @@ export default function LinksPage() {
 									} ) )
 								}
 							>
-								{ __( 'Next', 'fast-url-shortener' ) }
+								{ __( 'Next', 'clicklet-url-shortener' ) }
 							</Button>
 						</div>
 					) }
@@ -571,7 +574,7 @@ export default function LinksPage() {
 			) }
 			{ deleting && (
 				<Modal
-					title={ __( 'Delete link?', 'fast-url-shortener' ) }
+					title={ __( 'Delete link?', 'clicklet-url-shortener' ) }
 					onRequestClose={ () => setDeleting( null ) }
 					size="small"
 				>
@@ -580,24 +583,24 @@ export default function LinksPage() {
 							/* translators: %s: short URL. */
 							__(
 								'%s will stop working and its click data will be deleted. This cannot be undone.',
-								'fast-url-shortener'
+								'clicklet-url-shortener'
 							),
 							deleting.short_url
 						) }
 					</p>
-					<div className="fus-form-actions">
+					<div className="clicklet-form-actions">
 						<Button
 							variant="tertiary"
 							onClick={ () => setDeleting( null ) }
 						>
-							{ __( 'Cancel', 'fast-url-shortener' ) }
+							{ __( 'Cancel', 'clicklet-url-shortener' ) }
 						</Button>
 						<Button
 							variant="primary"
 							isDestructive
 							onClick={ () => remove( deleting ) }
 						>
-							{ __( 'Delete', 'fast-url-shortener' ) }
+							{ __( 'Delete', 'clicklet-url-shortener' ) }
 						</Button>
 					</div>
 				</Modal>

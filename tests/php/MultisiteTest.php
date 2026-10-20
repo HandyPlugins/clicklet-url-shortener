@@ -2,21 +2,21 @@
 /**
  * Multisite.
  *
- * @package FastUrlShortener
+ * @package Clicklet
  */
 
-namespace FastUrlShortener\Tests;
+namespace Clicklet\Tests;
 
-use FastUrlShortener\Install;
-use FastUrlShortener\Redirect\FastPath;
-use FastUrlShortener\Schema;
-use FastUrlShortener\Uninstall;
+use Clicklet\Install;
+use Clicklet\Redirect\FastPath;
+use Clicklet\Schema;
+use Clicklet\Uninstall;
 
 /**
  * Runs with WP_MULTISITE=1; skipped on single sites.
  *
- * @covers \FastUrlShortener\Install::install_new_site
- * @covers \FastUrlShortener\Uninstall
+ * @covers \Clicklet\Install::install_new_site
+ * @covers \Clicklet\Uninstall
  */
 class MultisiteTest extends TestCase {
 
@@ -64,7 +64,7 @@ class MultisiteTest extends TestCase {
 	 * uninstall cleans every site.
 	 */
 	public function test_sites() {
-		$basename = plugin_basename( FAST_URL_SHORTENER_FILE );
+		$basename = plugin_basename( CLICKLET_FILE );
 		update_site_option( 'active_sitewide_plugins', [ $basename => time() ] );
 
 		$site_id = self::factory()->blog->create();
@@ -73,7 +73,7 @@ class MultisiteTest extends TestCase {
 		$table = Schema::table( 'links' );
 		$this->assertTrue( $this->exists( $table ), 'New site is installed.' );
 		$this->assertTrue( Install::is_installed() );
-		update_option( 'fast_url_shortener_settings', [ 'delete_data_on_uninstall' => true ] );
+		update_option( 'clicklet_settings', [ 'delete_data_on_uninstall' => true ] );
 		restore_current_blog();
 
 		$this->assertNotSame( $table, Schema::table( 'links' ), 'Each site has its own tables.' );
