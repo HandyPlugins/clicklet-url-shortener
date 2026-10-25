@@ -105,7 +105,15 @@ No. Short links, click statistics and QR codes are all handled on your site. Cou
 
 The scripts in `dist/` are built from the readable sources in `assets/js/`, which are included in the plugin together with `package.json`. To rebuild them, run `npm install && npm run build` in the plugin folder. Development happens on GitHub: https://github.com/HandyPlugins/clicklet-url-shortener. QR codes use the qrcode-generator library (MIT): https://github.com/kazuhikoarase/qrcode-generator.
 
+== Screenshots ==
+
+1. All your short links in one place: shorten a URL in one step, search, sort and copy links.
+2. Click statistics per link: clicks, unique visitors, referrers, countries, devices, browsers and QR scans.
+3. Link options: password protection, redirect type, expiry date, click limit and query string forwarding.
+4. Import & Export: move links and statistics between sites as CSV, or migrate from another plugin.
+5. Settings: privacy-friendly tracking, data retention and the optional fast path.
+
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0 (October 25, 2026) =
 * Initial release.
