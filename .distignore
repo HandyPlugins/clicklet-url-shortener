@@ -9,6 +9,7 @@ composer.json
 composer.lock
 phpcs.xml.dist
 README.md
+CONTRIBUTING.md
 bin
 node_modules
 tests
