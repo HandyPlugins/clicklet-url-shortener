@@ -12,7 +12,7 @@
     "lint:typos": "typos"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^36.1.0"
+    "@wordpress/scripts": "^37.0.0"
   },
   "dependencies": {
     "qrcode-generator": "^2.0.4"
